@@ -45,9 +45,21 @@ extension UIImage {
     }
   }
   
-  public func resizing(to newSize: CGSize) -> UIImage {
+  final public func resizing(to newSize: CGSize) -> UIImage {
     return UIImage(size: newSize, opaque: false, scale: scale) { _ in
       draw(in: CGRect(origin: .zero, size: newSize))
+    }
+  }
+  
+  /// Rotates the image by `angle` radians.
+  /// - Parameter angle: The angle, in radians, by which to rotate the image. Positive values rotate counterclockwise and negative values rotate clockwise.
+  /// - Returns: The rotated image.
+  final public func rotated(by angle: CGFloat) -> UIImage {
+    let newSize = CGRect(origin: .zero, size: size).applying(CGAffineTransform(rotationAngle: angle)).size
+    return UIImage(size: newSize, opaque: false, scale: scale) { context in
+      context.translateBy(x: newSize.width/2, y: newSize.height/2)
+      context.rotate(by: angle)
+      draw(in: CGRect(x: -size.width/2, y: -size.height/2, width: size.width, height: size.height))
     }
   }
   
