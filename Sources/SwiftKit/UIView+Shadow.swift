@@ -20,112 +20,96 @@ extension UIView {
   
   private static var shadowViewsKey: Void?
   
-  /// Return all shadow views added by `addShadowView(at:color:height:)`
   final public fileprivate(set) var shadowViews: [CGRectEdge: UIView] {
     get { return associatedValue(forKey: &Self.shadowViewsKey, default: [:]) }
     set { setAssociatedValue(newValue, forKey: &Self.shadowViewsKey) }
   }
   
-  /// Add shadow view
-  /// - Parameters:
-  ///   - edge: edge to add shadow
-  ///   - color: shadow color. `UIColor.separator` is used when the value is nil
-  ///   - height: shadow height
-  ///   - layoutGuide: set to nil to use autoresizing mask
   @discardableResult
-  final public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel, layoutGuide: LayoutGuide? = nil) -> UIView {
-    if let shadowView = shadowViews[edge] {
-      assertionFailure("Existing shadow view at \(edge) edge found.")
-      return shadowView
+  final public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel) -> UIView {
+    assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
+    let frame: CGRect
+    let autoresizingMask: UIView.AutoresizingMask
+    switch edge {
+    case .minXEdge:
+      frame = CGRect(x: clipsToBounds ? 0 : -thickness, y: 0, width: thickness, height: bounds.size.height)
+      autoresizingMask = .flexibleHeight
+      
+    case .maxXEdge:
+      frame = CGRect(x: clipsToBounds ? (bounds.size.width - thickness) : bounds.size.width, y: 0, width: thickness, height: bounds.size.height)
+      autoresizingMask = [.flexibleLeftMargin, .flexibleHeight]
+      
+    case .minYEdge:
+      frame = CGRect(x: 0, y: clipsToBounds ? 0 : -thickness, width: bounds.size.width, height: thickness)
+      autoresizingMask = .flexibleWidth
+      
+    case .maxYEdge:
+      frame = CGRect(x: 0, y: clipsToBounds ? (bounds.size.height - thickness) : bounds.size.height, width: bounds.size.width, height: thickness)
+      autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
     }
+    let shadowView = UIView(frame: frame)
+    shadowView.autoresizingMask = autoresizingMask
+    shadowView.backgroundColor = color ?? Self.defaultShadowColor
+    addSubview(shadowView)
+    shadowViews[edge] = shadowView
+    return shadowView
+  }
+  
+  @discardableResult
+  final public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel, target: LayoutGuide? = nil, layoutGuide: LayoutGuide, inset: UIEdgeInsets = .zero) -> UIView {
+    assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
     shadowView.backgroundColor = color ?? Self.defaultShadowColor
-    if let layoutGuide = layoutGuide {
-      shadowView.translatesAutoresizingMaskIntoConstraints = false
-      addSubview(shadowView)
+    shadowView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(shadowView)
+    
+    let target = target ?? self
+    let constraints: [NSLayoutConstraint]
+    switch edge {
+    case .minXEdge:
+      constraints = [
+        shadowView.widthAnchor.constraint(equalToConstant: thickness),
+        shadowView.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: inset.top),
+        layoutGuide.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: inset.bottom),
+        target.leftAnchor.constraint(equalTo: shadowView.rightAnchor, constant: clipsToBounds ? -thickness : thickness),
+      ]
       
-      var constraints: [NSLayoutConstraint]
-      switch edge {
-      case .minXEdge:
-        constraints = [
-          shadowView.widthAnchor.constraint(equalToConstant: thickness),
-          shadowView.topAnchor.constraint(equalTo: layoutGuide.topAnchor),
-          layoutGuide.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor)
-        ]
-        if clipsToBounds {
-          constraints.append(shadowView.leftAnchor.constraint(equalTo: leftAnchor))
-        } else {
-          constraints.append(leftAnchor.constraint(equalTo: shadowView.rightAnchor))
-        }
-        
-      case .maxXEdge:
-        constraints = [
-          shadowView.widthAnchor.constraint(equalToConstant: thickness),
-          shadowView.topAnchor.constraint(equalTo: layoutGuide.topAnchor),
-          layoutGuide.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor)
-        ]
-        if clipsToBounds {
-          constraints.append(shadowView.leftAnchor.constraint(equalTo: rightAnchor))
-        } else {
-          constraints.append(rightAnchor.constraint(equalTo: shadowView.rightAnchor))
-        }
-        
-      case .minYEdge:
-        constraints = [
-          shadowView.heightAnchor.constraint(equalToConstant: thickness),
-          shadowView.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor),
-          layoutGuide.rightAnchor.constraint(equalTo: shadowView.rightAnchor)
-        ]
-        if clipsToBounds {
-          constraints.append(shadowView.topAnchor.constraint(equalTo: topAnchor))
-        } else {
-          constraints.append(topAnchor.constraint(equalTo: shadowView.bottomAnchor))
-        }
-        
-      case .maxYEdge:
-        constraints = [
-          shadowView.heightAnchor.constraint(equalToConstant: thickness),
-          shadowView.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor),
-          layoutGuide.rightAnchor.constraint(equalTo: shadowView.rightAnchor)
-        ]
-        if clipsToBounds {
-          constraints.append(bottomAnchor.constraint(equalTo: shadowView.bottomAnchor))
-        } else {
-          constraints.append(shadowView.topAnchor.constraint(equalTo: bottomAnchor))
-        }
-      }
-      NSLayoutConstraint.activate(constraints)
-    } else {
-      switch edge {
-      case .minXEdge:
-        shadowView.frame = CGRect(x: clipsToBounds ? 0 : -thickness, y: 0, width: thickness, height: bounds.size.height)
-        shadowView.autoresizingMask = .flexibleHeight
-        
-      case .maxXEdge:
-        shadowView.frame = CGRect(x: clipsToBounds ? (bounds.size.width - thickness) : bounds.size.width, y: 0, width: thickness, height: bounds.size.height)
-        shadowView.autoresizingMask = [.flexibleLeftMargin, .flexibleHeight]
-        
-      case .minYEdge:
-        shadowView.frame = CGRect(x: 0, y: clipsToBounds ? 0 : -thickness, width: bounds.size.width, height: thickness)
-        shadowView.autoresizingMask = .flexibleWidth
-        
-      case .maxYEdge:
-        shadowView.frame = CGRect(x: 0, y: clipsToBounds ? (bounds.size.height - thickness) : bounds.size.height, width: bounds.size.width, height: thickness)
-        shadowView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-      }
-      addSubview(shadowView)
+    case .maxXEdge:
+      constraints = [
+        shadowView.widthAnchor.constraint(equalToConstant: thickness),
+        shadowView.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: inset.top),
+        shadowView.leftAnchor.constraint(equalTo: target.rightAnchor, constant: clipsToBounds ? -thickness : thickness),
+        layoutGuide.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: inset.bottom),
+      ]
+      
+    case .minYEdge:
+      constraints = [
+        shadowView.heightAnchor.constraint(equalToConstant: thickness),
+        shadowView.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor, constant: inset.left),
+        target.topAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: clipsToBounds ? -thickness : thickness),
+        layoutGuide.rightAnchor.constraint(equalTo: shadowView.rightAnchor, constant: inset.right),
+      ]
+      
+    case .maxYEdge:
+      constraints = [
+        shadowView.heightAnchor.constraint(equalToConstant: thickness),
+        shadowView.topAnchor.constraint(equalTo: target.bottomAnchor, constant: clipsToBounds ? -thickness : thickness),
+        shadowView.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor, constant: inset.left),
+        layoutGuide.rightAnchor.constraint(equalTo: shadowView.rightAnchor, constant: inset.right),
+      ]
     }
+    NSLayoutConstraint.activate(constraints)
     shadowViews[edge] = shadowView
     return shadowView
   }
   
   @discardableResult
   final public func removeShadowView(at edge: CGRectEdge) -> UIView? {
-    guard let shadowView = shadowViews.removeValue(forKey: edge) else {
-      return nil
+    if let shadowView = shadowViews.removeValue(forKey: edge) {
+      shadowView.removeFromSuperview()
+      return shadowView
     }
-    shadowView.removeFromSuperview()
-    return shadowView
+    return nil
   }
 }
 
@@ -133,10 +117,7 @@ extension NSObjectProtocol where Self: UIView {
   
   @discardableResult
   public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, constraintsProvider: (Self, UIView) -> [NSLayoutConstraint]) -> UIView {
-    if let shadowView = shadowViews[edge] {
-      assertionFailure("Existing shadow view at \(edge) edge found.")
-      return shadowView
-    }
+    assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
     shadowView.backgroundColor = color ?? Self.defaultShadowColor
     shadowView.translatesAutoresizingMaskIntoConstraints = false
