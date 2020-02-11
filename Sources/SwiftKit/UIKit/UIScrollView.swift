@@ -55,5 +55,27 @@ extension UIScrollView {
       fatalError()
     }
   }
+  
+  @available(iOS 11.0, *)
+  final public func addContentView(_ contentView: UIView, insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
+    contentView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(contentView)
+    
+    var constraints: [NSLayoutConstraint] = [
+      contentView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor, constant: insets.top),
+      contentView.leftAnchor.constraint(equalTo: contentLayoutGuide.leftAnchor, constant: insets.left),
+      contentLayoutGuide.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: insets.bottom),
+      contentLayoutGuide.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: insets.right),
+    ]
+    switch axis {
+    case .horizontal:
+      constraints.append(contentLayoutGuide.heightAnchor.constraint(equalTo: frameLayoutGuide.heightAnchor))
+    case .vertical:
+      constraints.append(contentLayoutGuide.widthAnchor.constraint(equalTo: frameLayoutGuide.widthAnchor))
+    @unknown default:
+      fatalError()
+    }
+    NSLayoutConstraint.activate(constraints)
+  }
 }
 #endif
