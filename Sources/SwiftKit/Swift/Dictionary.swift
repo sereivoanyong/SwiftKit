@@ -39,6 +39,14 @@ extension Dictionary {
       return targetValue
     }
   }
+  
+  public static func + (lhs: Self, rhs: Self) -> Self {
+    var merged = lhs
+    for (key, value) in rhs {
+      merged[key] = value
+    }
+    return merged
+  }
 }
 
 extension Dictionary where Key == String {
