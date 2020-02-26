@@ -70,5 +70,21 @@ extension UITableViewCell {
     let rect = tableView.convert(frame, to: tableView.superview)
     return tableView.frame.contains(rect)
   }
+  
+  final public func _disclosureChevronImage(_ arg1: Bool) -> UIImage? {
+    return perform(Selector(("_disclosureChevronImage:")), with: arg1 as NSNumber)?.takeRetainedValue() as? UIImage
+  }
+  
+  final public func _tintedDisclosureImagePressed(_ arg1: Bool) -> UIImage? {
+    return perform(Selector(("_tintedDisclosureImagePressed:")), with: arg1 as NSNumber)?.takeRetainedValue() as? UIImage
+  }
+  
+  final public func _detailDisclosureImage(_ arg1: Bool) -> UIImage? {
+    return perform(Selector(("_detailDisclosureImage:")), with: arg1 as NSNumber)?.takeRetainedValue() as? UIImage
+  }
+  
+  final public func _checkmarkImage(_ arg1: Bool) -> UIImage? {
+    return perform(Selector(("_checkmarkImage:")), with: arg1 as NSNumber)?.takeRetainedValue() as? UIImage
+  }
 }
 #endif
