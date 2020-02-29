@@ -9,10 +9,10 @@ extension Result {
   @inlinable public init?(_ success: Success?, _ failure: Failure?) {
     if let success = success {
       self = .success(success)
-    }
-    if let failure = failure {
+    } else if let failure = failure {
       self = .failure(failure)
+    } else {
+      return nil
     }
-    return nil
   }
 }
