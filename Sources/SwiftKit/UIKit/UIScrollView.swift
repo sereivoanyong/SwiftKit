@@ -22,8 +22,27 @@ extension UIScrollView {
     return image
   }
   
+  public enum ArrangmentSpacing {
+    
+    case fixed(CGFloat)
+    case respective([CGFloat])
+    case custom((Int) -> CGFloat)
+    
+    public func value(at index: Int) -> CGFloat {
+      switch self {
+      case .fixed(let value):
+        return value
+      case .respective(let values):
+        return values[index]
+      case .custom(let provider):
+        return provider(index)
+      }
+    }
+  }
+  
   @available(iOS 11.0, *)
-  @inlinable final public func addArrangedSubviews(_ views: [UIView], spacing: CGFloat = 0, insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
+  @inlinable final public func addArrangedSubviews(_ views: [UIView], alignmentLayoutGuide: LayoutGuide? = nil, spacing: ArrangmentSpacing = .fixed(0.0), insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
+    let alignmentLayoutGuide = alignmentLayoutGuide ?? contentLayoutGuide
     switch axis {
     case .horizontal:
       var lastRightAnchor = contentLayoutGuide.leftAnchor
@@ -31,8 +50,8 @@ extension UIScrollView {
         view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(view)
         
-        view.pinVerticalAnchors(inside: contentLayoutGuide)
-        view.leftAnchor.equalTo(lastRightAnchor, constant: index > 0 ? spacing : insets.left)
+        view.pinVerticalAnchors(inside: alignmentLayoutGuide, topConstant: insets.top, bottomConstant: insets.bottom)
+        view.leftAnchor.equalTo(lastRightAnchor, constant: index > 0 ? spacing.value(at: index - 1) : insets.left)
         lastRightAnchor = view.rightAnchor
       }
       contentLayoutGuide.rightAnchor.equalTo(views.last!.rightAnchor, constant: insets.right)
@@ -44,8 +63,8 @@ extension UIScrollView {
         view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(view)
         
-        view.pinHorizontalAnchors(inside: contentLayoutGuide)
-        view.topAnchor.equalTo(lastBottomAnchor, constant: index > 0 ? spacing : insets.top)
+        view.pinHorizontalAnchors(inside: alignmentLayoutGuide, leftConstant: insets.left, rightConstant: insets.right)
+        view.topAnchor.equalTo(lastBottomAnchor, constant: index > 0 ? spacing.value(at: index - 1) : insets.top)
         lastBottomAnchor = view.bottomAnchor
       }
       contentLayoutGuide.bottomAnchor.equalTo(views.last!.bottomAnchor, constant: insets.bottom)
