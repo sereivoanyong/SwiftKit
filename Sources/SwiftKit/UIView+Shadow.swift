@@ -116,13 +116,20 @@ extension UIView {
 extension NSObjectProtocol where Self: UIView {
   
   @discardableResult
-  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, constraintsProvider: (Self, UIView) -> [NSLayoutConstraint]) -> UIView {
+  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel, constraintsProvider: (Self, UIView) -> [NSLayoutConstraint]) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
     shadowView.backgroundColor = color ?? Self.defaultShadowColor
     shadowView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(shadowView)
-    NSLayoutConstraint.activate(constraintsProvider(self, shadowView))
+    var constraints = constraintsProvider(self, shadowView)
+    switch edge {
+    case .minXEdge, .maxXEdge:
+      constraints.append(shadowView.widthAnchor.constraint(equalToConstant: thickness))
+    case .minYEdge, .maxYEdge:
+      constraints.append(shadowView.heightAnchor.constraint(equalToConstant: thickness))
+    }
+    NSLayoutConstraint.activate(constraints)
     shadowViews[edge] = shadowView
     return shadowView
   }
