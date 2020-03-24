@@ -58,6 +58,12 @@ extension UIView {
       addSubview(view)
     }
   }
+  
+  final public func addTapGestureRecognizerToEndEditing() {
+    addGestureRecognizer(UITapGestureRecognizer(handler: { [unowned self] _ in
+      self.endEditing(true)
+    }))
+  }
 }
 
 extension UIView.AutoresizingMask {
@@ -107,6 +113,48 @@ extension NSObjectProtocol where Self: UIView {
   @discardableResult
   @inlinable public func with(_ keyPath: ReferenceWritableKeyPath<Self, UIFont>, size: CGFloat, weight: UIFont.Weight = .regular) -> Self {
     return with(keyPath, .systemFont(ofSize: size, weight: weight))
+  }
+}
+
+extension UIView {
+  
+  func addStackLayoutGuide(_ views: [UIView], axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, spacing: CGFloat = 0, insets: UIEdgeInsets = .zero) -> UILayoutGuide {
+    addSubviews(views)
+    
+    let layoutGuide = UILayoutGuide()
+    addLayoutGuide(layoutGuide)
+    
+    layoutGuide.stack(views, axis: axis, distribution: distribution, alignment: alignment, spacing: spacing, insets: insets)
+    return layoutGuide
+  }
+}
+
+extension LayoutGuide {
+  
+  func stack(_ views: [LayoutGuide], axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, spacing: CGFloat = 0, insets: UIEdgeInsets = .zero) {
+    switch axis {
+    case .horizontal:
+      var constraints: [NSLayoutConstraint] = []
+      
+      precondition(distribution == .fillProportionally)
+      var lastLayout: (anchor: NSLayoutXAxisAnchor, spacing: CGFloat) = (leftAnchor, insets.left)
+      for view in views {
+        constraints += view.leftAnchor.constraint(equalTo: lastLayout.anchor, constant: lastLayout.spacing)
+        lastLayout = (view.rightAnchor, spacing)
+      }
+      constraints += rightAnchor.constraint(equalTo: lastLayout.anchor, constant: insets.right)
+      
+      precondition(alignment == .fill)
+      for view in views {
+        constraints += view.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
+        constraints += bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: insets.bottom)
+      }
+      
+      NSLayoutConstraint.activate(constraints)
+      
+    default:
+      fatalError()
+    }
   }
 }
 #endif
