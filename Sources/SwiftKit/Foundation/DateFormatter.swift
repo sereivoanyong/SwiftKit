@@ -9,6 +9,17 @@ import Foundation
 
 extension DateFormatter {
   
+  @inlinable public convenience init(dateStyle: Style, timeStyle: Style) {
+    self.init()
+    self.dateStyle = dateStyle
+    self.timeStyle = timeStyle
+  }
+  
+  @inlinable public convenience init(dateFormat: String) {
+    self.init()
+    self.dateFormat = dateFormat
+  }
+  
   public static func iso8601(withFractionalSeconds: Bool) -> DateFormatter {
     let dateFormatter = DateFormatter()
     dateFormatter.calendar = Calendar(identifier: .iso8601)
