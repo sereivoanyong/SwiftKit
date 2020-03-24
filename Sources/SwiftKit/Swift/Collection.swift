@@ -6,6 +6,10 @@
 
 extension Collection {
   
+  @inlinable public var nonEmpty: Self? {
+    return isEmpty ? nil : self
+  }
+  
   @inlinable public subscript(safe index: Index) -> Element? {
     return indices.contains(index) ? self[index] : nil
   }
