@@ -86,7 +86,7 @@ extension UIDevice {
    WifiVendor
    */
   final public func deviceInfo<T>(forKey key: String) -> T? {
-    return performIfResponds(Selector(("_deviceInfoForKey:")), with: key as NSString) as? T
+    return performIfResponds(Selector(("_deviceInfoForKey:")), with: key as NSString)?.takeUnretainedValue() as? T
   }
 }
 #endif

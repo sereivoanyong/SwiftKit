@@ -98,10 +98,12 @@ extension UIScrollView {
   }
   
   private static var accessoryViewKey: Void?
+  @available(iOS 11.0, *)
   final public var accessoryView: UIView? {
     return associatedObject(forKey: &Self.accessoryViewKey)
   }
   
+  @available(iOS 11.0, *)
   final public func setAccessoryView(_ accessoryView: UIView, alignmentLayoutGuide: LayoutGuide? = nil, preferredHeight: CGFloat, insets: UIEdgeInsets = .zero) {
     setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     addSubview(accessoryView)
@@ -111,11 +113,11 @@ extension UIScrollView {
     
     let alignmentLayoutGuide = alignmentLayoutGuide ?? frameLayoutGuide
     NSLayoutConstraint.activate([
-      accessoryView.heightAnchor == preferredHeight,
-      accessoryView.topAnchor >= safeAreaLayoutGuide.topAnchor + insets.top,
-      accessoryView.leftAnchor == alignmentLayoutGuide.leftAnchor,
-      alignmentLayoutGuide.rightAnchor == accessoryView.rightAnchor,
-      contentLayoutGuide.topAnchor <= accessoryView.bottomAnchor + insets.bottom,
+      accessoryView.heightAnchor.constraint(equalToConstant: preferredHeight),
+      accessoryView.topAnchor.constraint(greaterThanOrEqualTo: safeAreaLayoutGuide.topAnchor, constant: insets.top),
+      accessoryView.leftAnchor.constraint(equalTo: alignmentLayoutGuide.leftAnchor),
+      alignmentLayoutGuide.rightAnchor.constraint(equalTo: accessoryView.rightAnchor),
+      contentLayoutGuide.topAnchor.constraint(lessThanOrEqualTo: accessoryView.bottomAnchor, constant: insets.bottom),
     ])
   }
 }
