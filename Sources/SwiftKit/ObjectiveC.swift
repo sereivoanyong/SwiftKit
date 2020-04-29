@@ -9,16 +9,21 @@ import ObjectiveC
 
 // MARK: - Swizzle
 
-public func class_exchangeClassMethodImplementations(_ cls: AnyClass, _ selector1: Selector, _ selector2: Selector) {
-  let method1 = class_getClassMethod(cls, selector1).unsafelyUnwrapped
-  let method2 = class_getClassMethod(cls, selector2).unsafelyUnwrapped
-  method_exchangeImplementations(method1, method2)
+public func class_exchangeClassMethodImplementations(_ cls: AnyClass, _ originalSelector: Selector, _ swizzledSelector: Selector) {
+  let originalMethod = class_getClassMethod(cls, originalSelector).unsafelyUnwrapped
+  let swizzledMethod = class_getClassMethod(cls, swizzledSelector).unsafelyUnwrapped
+  method_exchangeImplementations(originalMethod, swizzledMethod)
 }
 
-public func class_exchangeInstanceMethodImplementations(_ cls: AnyClass, _ selector1: Selector, _ selector2: Selector) {
-  let method1 = class_getInstanceMethod(cls, selector1).unsafelyUnwrapped
-  let method2 = class_getInstanceMethod(cls, selector2).unsafelyUnwrapped
-  method_exchangeImplementations(method1, method2)
+public func class_exchangeInstanceMethodImplementations(_ cls: AnyClass, _ originalSelector: Selector, _ swizzledSelector: Selector) {
+  let originalMethod = class_getInstanceMethod(cls, originalSelector).unsafelyUnwrapped
+  let swizzledMethod = class_getInstanceMethod(cls, swizzledSelector).unsafelyUnwrapped
+  let wasMethodAdded = class_addMethod(cls, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
+  if wasMethodAdded {
+    class_replaceMethod(cls, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
+  } else {
+    method_exchangeImplementations(originalMethod, swizzledMethod)
+  }
 }
 
 extension NSObjectProtocol {
