@@ -58,16 +58,76 @@ extension UINavigationController {
     }
   }
   
-  open override func viewDidLoad() {
-    super.viewDidLoad()
+  public static func swizzleForAppearanceAndRotationMethodsForwarding() {
+    class_exchangeInstanceMethodImplementations(self, #selector(viewDidLoad), #selector(_a_viewDidLoad))
+    class_exchangeInstanceMethodImplementations(self, #selector(getter: prefersStatusBarHidden), #selector(getter: _a_prefersStatusBarHidden))
+    class_exchangeInstanceMethodImplementations(self, #selector(getter: preferredStatusBarStyle), #selector(getter: _a_preferredStatusBarStyle))
+    class_exchangeInstanceMethodImplementations(self, #selector(getter: preferredStatusBarUpdateAnimation), #selector(getter: _a_preferredStatusBarUpdateAnimation))
     
-    if #available(iOS 13.0, *) {
-      view.backgroundColor = .systemBackground
-    } else {
-      view.backgroundColor = .white
+    class_exchangeInstanceMethodImplementations(self, #selector(getter: shouldAutorotate), #selector(getter: _r_shouldAutorotate))
+    class_exchangeInstanceMethodImplementations(self, #selector(getter: supportedInterfaceOrientations), #selector(getter: _r_supportedInterfaceOrientations))
+    class_exchangeInstanceMethodImplementations(self, #selector(getter: preferredInterfaceOrientationForPresentation), #selector(getter: _r_preferredInterfaceOrientationForPresentation))
+  }
+  
+  // Appearances
+  
+  @objc private func _a_viewDidLoad() {
+    _a_viewDidLoad()
+    
+    if type(of: self) == UINavigationController.self {
+      if #available(iOS 13.0, *) {
+        view.backgroundColor = .systemBackground
+      } else {
+        view.backgroundColor = .white
+      }
     }
   }
   
+  @objc private var _a_prefersStatusBarHidden: Bool {
+    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
+      return lastViewController.prefersStatusBarHidden
+    }
+    return self._a_prefersStatusBarHidden
+  }
+  
+  @objc private var _a_preferredStatusBarStyle: UIStatusBarStyle {
+    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
+      return lastViewController.preferredStatusBarStyle
+    }
+    return self._a_preferredStatusBarStyle
+  }
+  
+  @objc private var _a_preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
+      return lastViewController.preferredStatusBarUpdateAnimation
+    }
+    return self._a_preferredStatusBarUpdateAnimation
+  }
+  
+  // Rotations
+  
+  @objc private var _r_shouldAutorotate: Bool {
+    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
+      return lastViewController.shouldAutorotate
+    }
+    return self._r_shouldAutorotate
+  }
+  
+  @objc private var _r_supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
+      return lastViewController.supportedInterfaceOrientations
+    }
+    return self._r_supportedInterfaceOrientations
+  }
+  
+  @objc private var _r_preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
+      return lastViewController.preferredInterfaceOrientationForPresentation
+    }
+    return self._r_preferredInterfaceOrientationForPresentation
+  }
+  
+  /*
   open override var transitionCoordinator: UIViewControllerTransitionCoordinator? {
     guard let transitionCoordinator = super.transitionCoordinator else {
       return nil
@@ -79,44 +139,6 @@ extension UINavigationController {
     }
     return transitionCoordinator
   }
-  
-  open override var preferredStatusBarStyle: UIStatusBarStyle {
-    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
-      return lastViewController.preferredStatusBarStyle
-    }
-    return super.preferredStatusBarStyle
-  }
-  
-  open override var shouldAutorotate: Bool {
-    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
-      return lastViewController.shouldAutorotate
-    }
-    return super.shouldAutorotate
-  }
-  
-  open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
-      return lastViewController.supportedInterfaceOrientations
-    }
-    return super.supportedInterfaceOrientations
-  }
-  
-  open override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
-      return lastViewController.preferredInterfaceOrientationForPresentation
-    }
-    return super.preferredInterfaceOrientationForPresentation
-  }
-  
-  open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-    if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
-      return lastViewController.preferredStatusBarUpdateAnimation
-    }
-    return super.preferredStatusBarUpdateAnimation
-  }
-  
-  open override var previewActionItems: [UIPreviewActionItem] {
-    return topViewController?.previewActionItems ?? super.previewActionItems
-  }
+   */
 }
 #endif
