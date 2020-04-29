@@ -16,6 +16,10 @@ public func deinitLog(_ object: Any) {
   printIfDEBUG("\(type(of: object)) deinit")
 }
 
+@inlinable public func address(of object: AnyObject) -> UnsafeMutableRawPointer {
+  return Unmanaged<AnyObject>.passUnretained(object).toOpaque()
+}
+
 @discardableResult
 @inlinable public func configure<T>(_ object: T, _ handler: (T) -> Void) -> T {
   handler(object)
