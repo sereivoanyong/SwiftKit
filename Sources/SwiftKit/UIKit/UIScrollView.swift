@@ -96,5 +96,27 @@ extension UIScrollView {
     }
     NSLayoutConstraint.activate(constraints)
   }
+  
+  private static var accessoryViewKey: Void?
+  final public var accessoryView: UIView? {
+    return associatedObject(forKey: &Self.accessoryViewKey)
+  }
+  
+  final public func setAccessoryView(_ accessoryView: UIView, alignmentLayoutGuide: LayoutGuide? = nil, preferredHeight: CGFloat, insets: UIEdgeInsets = .zero) {
+    setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    addSubview(accessoryView)
+    
+    contentInset.top = preferredHeight + insets.vertical
+    scrollIndicatorInsets.top = contentInset.top
+    
+    let alignmentLayoutGuide = alignmentLayoutGuide ?? frameLayoutGuide
+    NSLayoutConstraint.activate([
+      accessoryView.heightAnchor == preferredHeight,
+      accessoryView.topAnchor >= safeAreaLayoutGuide.topAnchor + insets.top,
+      accessoryView.leftAnchor == alignmentLayoutGuide.leftAnchor,
+      alignmentLayoutGuide.rightAnchor == accessoryView.rightAnchor,
+      contentLayoutGuide.topAnchor <= accessoryView.bottomAnchor + insets.bottom,
+    ])
+  }
 }
 #endif
