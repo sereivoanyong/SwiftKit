@@ -29,6 +29,17 @@ extension UIButton {
     contentEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: dx)
   }
   
+  final public func setTitle(_ title: String?, for state: State, animated: Bool) {
+    if animated {
+      setTitle(title, for: state)
+    } else {
+      UIView.performWithoutAnimation {
+        setTitle(title, for: state)
+        layoutIfNeeded()
+      }
+    }
+  }
+  
   public static func system(image: UIImage? = nil, title: String? = nil, target: AnyObject, action: Selector) -> UIButton {
     let button = UIButton(type: .system)
     button.setImage(image, for: .normal)
