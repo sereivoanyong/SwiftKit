@@ -120,6 +120,7 @@ extension String {
     }
   }
   
+  /*
   @inlinable public var localized: String {
     return NSLocalizedString(self, tableName: nil, bundle: .main, value: "", comment: "")
   }
@@ -134,6 +135,7 @@ extension String {
       NSString(format: format, locale: Locale.current, arguments: parameter)
     } as String
   }
+   */
 }
 
 #endif
