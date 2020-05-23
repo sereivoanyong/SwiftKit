@@ -16,6 +16,13 @@ extension URL {
 #if canImport(MobileCoreServices)
 import MobileCoreServices
 
+public func fileExtension(mimeType: String) -> String? {
+  guard let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType as CFString, nil) else {
+    return nil
+  }
+  return UTTypeCopyPreferredTagWithClass(uti.takeRetainedValue(), kUTTagClassFilenameExtension)?.takeRetainedValue() as String?
+}
+
 extension URL {
   
   public func mimeType() -> String? {
