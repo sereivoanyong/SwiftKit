@@ -14,10 +14,6 @@ extension Collection {
     return indices.contains(index) ? self[index] : nil
   }
   
-  @inlinable public func first<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Element? where T: Equatable {
-    return first(where: { $0[keyPath: keyPath] == value })
-  }
-  
   public func indices(where predicate: (Element) throws -> Bool) rethrows -> [Index] {
     var indices: [Index] = []
     indices.reserveCapacity(count)
