@@ -11,7 +11,7 @@ extension UISearchBar {
   
   @available(iOS 7.0, *)
   final public var searchBarTextField: UITextField? {
-    return valueIfResponds(forKey: "searchBarTextField") as? UITextField
+    return valueIfResponds(forKey: "_searchBarTextField") as? UITextField
   }
   
   final public var cancelButtonText: String? {
