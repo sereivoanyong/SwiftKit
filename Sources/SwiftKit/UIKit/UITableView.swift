@@ -12,15 +12,21 @@ import UIKit
 extension UITableView {
   
   private static var allowsHeaderViewsToFloatKey: Void?
-  @objc open var allowsHeaderViewsToFloat: Bool {
-    get { return associatedValue(forKey: &UITableView.allowsHeaderViewsToFloatKey, default: true) }
-    set { setAssociatedValue(newValue, forKey: &UITableView.allowsHeaderViewsToFloatKey) }
+  @objc final public var allowsHeaderViewsToFloat: Bool {
+    get { return associatedValue(forKey: &Self.allowsHeaderViewsToFloatKey, default: true) }
+    set { setAssociatedValue(newValue, forKey: &Self.allowsHeaderViewsToFloatKey) }
   }
   
   private static var allowsFooterViewsToFloatKey: Void?
-  @objc open var allowsFooterViewsToFloat: Bool {
-    get { return associatedValue(forKey: &UITableView.allowsFooterViewsToFloatKey, default: true) }
-    set { setAssociatedValue(newValue, forKey: &UITableView.allowsFooterViewsToFloatKey) }
+  @objc final public var allowsFooterViewsToFloat: Bool {
+    get { return associatedValue(forKey: &Self.allowsFooterViewsToFloatKey, default: true) }
+    set { setAssociatedValue(newValue, forKey: &Self.allowsFooterViewsToFloatKey) }
+  }
+  
+  private static var _headerAndFooterViewsFloatKey: Void?
+  @objc final public var _headerAndFooterViewsFloat: Bool {
+    get { return associatedValue(forKey: &Self._headerAndFooterViewsFloatKey, default: true) }
+    set { setAssociatedValue(newValue, forKey: &Self._headerAndFooterViewsFloatKey) }
   }
   
   @inlinable public convenience init(style: Style) {
