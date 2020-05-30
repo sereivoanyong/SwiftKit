@@ -38,8 +38,8 @@ extension UITableViewCell {
   
   @available(iOS 7.0, *)
   final public var isSeparatorHidden: Bool {
-    get { return value(forKey: "separatorHidden") as? Bool ?? false }
-    set { setValue(newValue as NSNumber, forKey: "separatorHidden") }
+    get { (performIfResponds(Selector(("_separatorHidden")))?.takeUnretainedValue() as? NSNumber)?.boolValue ?? false }
+    set { performIfResponds(Selector(("_setSeparatorHidden:")), with: newValue as NSNumber) }
   }
   
   final public var selectedBackgroundColor: UIColor? {
