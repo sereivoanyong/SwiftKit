@@ -7,5 +7,6 @@
 public protocol ObjectConfigurable {
   
   associatedtype Object
-  func configure(object: Object)
+  
+  func configure(_ object: Object)
 }
