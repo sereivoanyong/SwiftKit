@@ -23,10 +23,9 @@ extension UITableView {
     set { setAssociatedValue(newValue, forKey: &Self.allowsFooterViewsToFloatKey) }
   }
   
-  private static var _headerAndFooterViewsFloatKey: Void?
-  @objc final public var _headerAndFooterViewsFloat: Bool {
-    get { return associatedValue(forKey: &Self._headerAndFooterViewsFloatKey, default: true) }
-    set { setAssociatedValue(newValue, forKey: &Self._headerAndFooterViewsFloatKey) }
+  final public var _headerAndFooterViewsFloat: Bool {
+    get { return valueIfResponds(forKey: "_headerAndFooterViewsFloat") as? Bool ?? false }
+    set { performIfResponds(Selector(("_setHeaderAndFooterViewsFloat:")), with: newValue as NSNumber) }
   }
   
   @inlinable public convenience init(style: Style) {
