@@ -29,6 +29,10 @@ extension UIFont {
     }
   }
   
+  @inlinable public func addingFallback(to fallbackFont: UIFont) -> UIFont {
+    return UIFont(descriptor: fontDescriptor.addingAttributes([.cascadeList: [fallbackFont.fontDescriptor]]), size: 0)
+  }
+  
   public func data() -> Data? {
     return CTFontCopyTable(CTFontCreateWithName(fontName as CFString, pointSize, nil), CTFontTableTag(kCTFontTableCFF), []) as Data?
   }
