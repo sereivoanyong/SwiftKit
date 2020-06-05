@@ -12,7 +12,18 @@ extension URL {
   public mutating func append(_ string: String) {
     self = URL(string: absoluteString + string)!
   }
+  
+  @discardableResult
+  public mutating func append(_ queryItems: URLQueryItem...) -> Bool {
+    guard var components = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
+      return false
+    }
+    components.queryItems = components.queryItems.map { $0 + queryItems } ?? queryItems
+    self = components.url!
+    return true
+  }
 }
+
 #if canImport(MobileCoreServices)
 import MobileCoreServices
 
