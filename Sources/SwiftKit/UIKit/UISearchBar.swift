@@ -18,5 +18,9 @@ extension UISearchBar {
     get { return valueIfResponds(forKey: "_cancelButtonText") as? String }
     set { performIfResponds(Selector(("_setCancelButtonText:")), with: newValue) }
   }
+  
+  final public var cancelButton: UIButton? {
+    return performIfResponds(Selector(("cancelButton")))?.takeUnretainedValue() as? UIButton
+  }
 }
 #endif
