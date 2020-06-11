@@ -49,8 +49,10 @@ extension UIViewController {
     return tapGestureRecognizer
   }
   
-  open func embeddingInNavigationController() -> UINavigationController {
-    return UINavigationController(rootViewController: self)
+  open func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
+    let navigationController = UINavigationController(rootViewController: self)
+    configurationHandler?(navigationController)
+    return navigationController
   }
   
   // MARK: - Layout Convenience
