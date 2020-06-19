@@ -22,10 +22,20 @@ extension UIButton {
     setBackgroundImage(backgroundImage, for: state)
   }
   
-  final public func setSpacingBetweenImageTitle(_ spacing: CGFloat) {
+  final public func reverseImageAndTitleHorizontally(spacing: CGFloat) {
+    sizeToFit()
+    let titleWidth = titleRect(forContentRect: bounds).width
+    let imageWidth = imageRect(forContentRect: bounds).width
     let dx = spacing / 2
-    imageEdgeInsets = UIEdgeInsets(top: 0, left: -dx, bottom: 0, right: dx)
+    titleEdgeInsets = UIEdgeInsets(top: 0, left: -imageWidth - dx, bottom: 0, right: imageWidth + dx)
+    imageEdgeInsets = UIEdgeInsets(top: 0, left: titleWidth + dx, bottom: 0, right: -titleWidth - dx)
+    contentEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: dx)
+  }
+  
+  final public func setSpacingBetweenImageAndTitle(_ spacing: CGFloat) {
+    let dx = spacing / 2
     titleEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: -dx)
+    imageEdgeInsets = UIEdgeInsets(top: 0, left: -dx, bottom: 0, right: dx)
     contentEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: dx)
   }
   
