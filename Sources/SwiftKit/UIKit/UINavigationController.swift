@@ -58,6 +58,15 @@ extension UINavigationController {
     }
   }
   
+  final public func setTopViewController(_ topViewController: UIViewController, animated: Bool) {
+    var newViewControllers = viewControllers
+    if !newViewControllers.isEmpty {
+      newViewControllers.removeLast()
+    }
+    newViewControllers.append(topViewController)
+    setViewControllers(newViewControllers, animated: animated)
+  }
+  
   public static func swizzleForAppearanceAndRotationMethodsForwarding() {
     class_exchangeInstanceMethodImplementations(self, #selector(viewDidLoad), #selector(_a_viewDidLoad))
     class_exchangeInstanceMethodImplementations(self, #selector(getter: prefersStatusBarHidden), #selector(getter: _a_prefersStatusBarHidden))
