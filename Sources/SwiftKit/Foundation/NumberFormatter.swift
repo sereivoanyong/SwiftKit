@@ -15,7 +15,7 @@ extension NumberFormatter {
     self.locale = locale
   }
   
-  @inlinable public func string<T>(from number: T) -> String? where T: _ObjectiveCBridgeable, T._ObjectiveCType == NSNumber {
+  @inlinable public func string<T>(from number: T) -> String? where T: _ObjectiveCBridgeable, T._ObjectiveCType: NSNumber {
     return string(from: number._bridgeToObjectiveC())
   }
 }
