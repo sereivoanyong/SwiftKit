@@ -9,11 +9,11 @@ import UIKit
 
 extension UITextField {
   
-  @inlinable public convenience init(text: String? = nil, placeholder: String? = nil, font: UIFont, textAlignment: NSTextAlignment = .left, textColor: UIColor? = nil) {
+  @inlinable public convenience init(text: String? = nil, placeholder: String? = nil, font: UIFont, textAlignment: NSTextAlignment = .natural, textColor: UIColor? = nil) {
     self.init(frame: .zero)
     self.font = font
     self.textAlignment = textAlignment
-    self.textColor = textColor
+    self.textColor = textColor ?? .preferredLabel
     self.text = text
     self.placeholder = placeholder
   }
