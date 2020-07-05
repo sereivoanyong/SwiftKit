@@ -71,29 +71,29 @@ extension UIView {
         shadowView.widthAnchor.constraint(equalToConstant: thickness),
         shadowView.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: inset.top),
         layoutGuide.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: inset.bottom),
-        target.leftAnchor.constraint(equalTo: shadowView.rightAnchor, constant: clipsToBounds ? -thickness : thickness),
+        (clipsToBounds ? shadowView.leftAnchor.constraint(equalTo: target.leftAnchor) : target.leftAnchor.constraint(equalTo: shadowView.rightAnchor)),
       ]
       
     case .maxXEdge:
       constraints = [
         shadowView.widthAnchor.constraint(equalToConstant: thickness),
         shadowView.topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: inset.top),
-        shadowView.leftAnchor.constraint(equalTo: target.rightAnchor, constant: clipsToBounds ? -thickness : thickness),
+        (clipsToBounds ? target.rightAnchor.constraint(equalTo: shadowView.rightAnchor) : shadowView.leftAnchor.constraint(equalTo: target.rightAnchor)),
         layoutGuide.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: inset.bottom),
       ]
       
     case .minYEdge:
       constraints = [
         shadowView.heightAnchor.constraint(equalToConstant: thickness),
+        (clipsToBounds ? shadowView.topAnchor.constraint(equalTo: target.topAnchor) : target.topAnchor.constraint(equalTo: shadowView.bottomAnchor)),
         shadowView.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor, constant: inset.left),
-        target.topAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: clipsToBounds ? -thickness : thickness),
         layoutGuide.rightAnchor.constraint(equalTo: shadowView.rightAnchor, constant: inset.right),
       ]
       
     case .maxYEdge:
       constraints = [
         shadowView.heightAnchor.constraint(equalToConstant: thickness),
-        shadowView.topAnchor.constraint(equalTo: target.bottomAnchor, constant: clipsToBounds ? -thickness : thickness),
+        (clipsToBounds ? target.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor) : shadowView.topAnchor.constraint(equalTo: target.bottomAnchor)),
         shadowView.leftAnchor.constraint(equalTo: layoutGuide.leftAnchor, constant: inset.left),
         layoutGuide.rightAnchor.constraint(equalTo: shadowView.rightAnchor, constant: inset.right),
       ]
