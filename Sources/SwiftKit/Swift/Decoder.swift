@@ -38,3 +38,14 @@ extension KeyedDecodingContainerProtocol {
     return try decodeIfPresent(T.self, forKey: key)
   }
 }
+
+extension SingleValueDecodingContainer {
+  
+  @inlinable public func decode<T>() throws -> T where T: Decodable {
+    return try decode(T.self)
+  }
+  
+  @inlinable public func decodeIfPresent<T>() throws -> T? where T: Decodable {
+    return try decodeNil() ? decode(T.self) : nil
+  }
+}
