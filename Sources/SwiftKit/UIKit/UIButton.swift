@@ -50,11 +50,17 @@ extension UIButton {
     }
   }
   
-  public static func system(image: UIImage? = nil, title: String? = nil, target: AnyObject, action: Selector) -> UIButton {
-    let button = UIButton(type: .system)
+  @inlinable public convenience init(type: ButtonType, target: AnyObject? = nil, action: Selector? = nil) {
+    self.init(type: type)
+    if let action = action {
+      addTarget(target, action: action, for: .touchUpInside)
+    }
+  }
+  
+  public static func system(image: UIImage? = nil, title: String? = nil, target: AnyObject? = nil, action: Selector? = nil) -> UIButton {
+    let button = UIButton(type: .system, target: target, action: action)
     button.setImage(image, for: .normal)
     button.setTitle(title, for: .normal)
-    button.addTarget(target, action: action, for: .touchUpInside)
     return button
   }
 }

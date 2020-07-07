@@ -19,22 +19,27 @@ extension UIBarButtonItem {
     self.action = action
   }
   
-  public static var flexibleSpace: UIBarButtonItem {
-    return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+  public static func flexibleSpace() -> Self {
+    return Self(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
   }
   
-  public static func fixedSpace(width: CGFloat) -> UIBarButtonItem {
-    let barButtonItem = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+  public static func fixedSpace(width: CGFloat) -> Self {
+    let barButtonItem = Self(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
     barButtonItem.width = width
     return barButtonItem
   }
   
-  @inlinable public static func system(item: SystemItem, target: Any?, action: Selector?) -> Self {
-    return Self(barButtonSystemItem: item, target: target, action: action)
+  @inlinable public convenience init(systemItem: SystemItem, target: AnyObject? = nil, action: Selector? = nil) {
+    self.init(barButtonSystemItem: systemItem, target: target, action: action)
   }
   
-  @inlinable public static func custom(view: UIView) -> Self {
-    return Self(customView: view)
+  @inlinable public convenience init(title: String? = nil, image: UIImage? = nil, style: Style = .plain, target: AnyObject? = nil, action: Selector? = nil) {
+    self.init()
+    self.title = title
+    self.image = image
+    self.style = style
+    self.target = target
+    self.action = action
   }
 }
 #endif
