@@ -7,9 +7,9 @@
 #if canImport(UIKit)
 import UIKit
 
-// MARK: - Floating Header/Footer Views
-
 extension UITableView {
+  
+  public typealias CellProvider<Item> = (UITableView, IndexPath, Item) -> UITableViewCell?
   
   private static var allowsHeaderViewsToFloatKey: Void?
   @objc final public var allowsHeaderViewsToFloat: Bool {
