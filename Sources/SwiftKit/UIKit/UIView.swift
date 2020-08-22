@@ -69,6 +69,12 @@ extension UIView {
     addGestureRecognizer(tapGestureRecognizer)
     return tapGestureRecognizer
   }
+  
+  /// Sets the priority with which a view resists being made larger or smaller than its intrinsic size
+  final public func setContentResistancePriority(_ priority: UILayoutPriority, for axis: NSLayoutConstraint.Axis) {
+    setContentHuggingPriority(priority, for: axis)
+    setContentCompressionResistancePriority(priority, for: axis)
+  }
 }
 
 extension UIView.AutoresizingMask {
