@@ -29,6 +29,10 @@ extension UIFont {
     }
   }
   
+  @inlinable public static func system(size: CGFloat, weight: Weight = .regular) -> UIFont {
+    return systemFont(ofSize: size, weight: weight)
+  }
+  
   @inlinable public func addingFallback(to fallbackFont: UIFont) -> UIFont {
     return UIFont(descriptor: fontDescriptor.addingAttributes([.cascadeList: [fallbackFont.fontDescriptor]]), size: 0)
   }
