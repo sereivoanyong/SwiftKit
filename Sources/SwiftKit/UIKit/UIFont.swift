@@ -29,6 +29,16 @@ extension UIFont {
     }
   }
   
+  @inlinable public static func preferred(for textStyle: TextStyle) -> UIFont {
+    return preferredFont(forTextStyle: textStyle)
+  }
+
+  // Returns an instance of the font associated with the text style and scaled appropriately for the content size category defined in the trait collection.
+  @available(iOS 10.0, *)
+  @inlinable public static func preferred(for textStyle: TextStyle, compatibleWith traitCollection: UITraitCollection?) -> UIFont {
+    return preferredFont(forTextStyle: textStyle, compatibleWith: traitCollection)
+  }
+  
   @inlinable public static func system(size: CGFloat, weight: Weight = .regular) -> UIFont {
     return systemFont(ofSize: size, weight: weight)
   }
