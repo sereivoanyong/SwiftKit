@@ -149,9 +149,8 @@ extension UITableView {
     return unsafeDowncast(dequeueReusableCell(withIdentifier: identifier, for: indexPath), to: Cell.self)
   }
   
-  @inlinable final public func dequeue<Cell>(_ cellClass: Cell.Type, style: UITableViewCell.CellStyle) -> Cell where Cell: UITableViewCell {
-    let identifier = String(describing: cellClass)
-    return dequeueReusableCell(withIdentifier: identifier) as? Cell ?? Cell(style: style, reuseIdentifier: identifier)
+  @inlinable final public func dequeue<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), style: UITableViewCell.CellStyle = .default) -> Cell where Cell: UITableViewCell {
+    return dequeueReusableCell(withIdentifier: identifier) as! Cell? ?? Cell(style: style, reuseIdentifier: identifier)
   }
 }
 #endif
