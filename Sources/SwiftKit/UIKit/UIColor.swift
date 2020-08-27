@@ -169,10 +169,234 @@ extension UIColor {
       return String(format: "#%02X%02X%02X", Int(red * 255), Int(green * 255), Int(blue * 255))
     }
   }
+}
+
+// MARK: iOS 13 Color Compatibility
+// https://github.com/noahsark769/ColorCompatibility/blob/master/ColorCompatibility.swift
+extension UIColor {
   
-  // MARK: iOS 13 Color Compatibility
-  // https://github.com/noahsark769/ColorCompatibility/blob/master/ColorCompatibility.swift
+  #if swift(>=5.3)
+  /* Shades of gray. systemGray is the base gray color.
+   */
+  @inlinable public static func systemGray() -> UIColor {
+    return systemGray
+  }
   
+  /* The numbered variations, systemGray2 through systemGray6, are grays which increasingly
+   * trend away from systemGray and in the direction of systemBackgroundColor.
+   *
+   * In UIUserInterfaceStyleLight: systemGray1 is slightly lighter than systemGray.
+   *                               systemGray2 is lighter than that, and so on.
+   * In UIUserInterfaceStyleDark:  systemGray1 is slightly darker than systemGray.
+   *                               systemGray2 is darker than that, and so on.
+   */
+  @inlinable public static func systemGray2() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemGray2
+    }
+    return UIColor(red: 0.6823529411764706, green: 0.6823529411764706, blue: 0.6980392156862745, alpha: 1.0)
+  }
+  
+  @inlinable public static func systemGray3() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemGray3
+    }
+    return UIColor(red: 0.7803921568627451, green: 0.7803921568627451, blue: 0.8, alpha: 1.0)
+  }
+  
+  @inlinable public static func systemGray4() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemGray4
+    }
+    return UIColor(red: 0.8196078431372549, green: 0.8196078431372549, blue: 0.8392156862745098, alpha: 1.0)
+  }
+  
+  @inlinable public static func systemGray5() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemGray5
+    }
+    return UIColor(red: 0.8980392156862745, green: 0.8980392156862745, blue: 0.9176470588235294, alpha: 1.0)
+  }
+  
+  @inlinable public static func systemGray6() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemGray6
+    }
+    return UIColor(red: 0.9490196078431372, green: 0.9490196078431372, blue: 0.9686274509803922, alpha: 1.0)
+  }
+  
+  /* Foreground colors for static text and related elements.
+   */
+  @inlinable public static func label() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return label
+    }
+    return UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+  }
+  
+  @inlinable public static func secondaryLabel() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return secondaryLabel
+    }
+    return UIColor(red: 0.23529411764705882, green: 0.23529411764705882, blue: 0.2627450980392157, alpha: 0.6)
+  }
+  
+  @inlinable public static func tertiaryLabel() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return tertiaryLabel
+    }
+    return UIColor(red: 0.23529411764705882, green: 0.23529411764705882, blue: 0.2627450980392157, alpha: 0.3)
+  }
+  
+  @inlinable public static func quaternaryLabel() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return quaternaryLabel
+    }
+    return UIColor(red: 0.23529411764705882, green: 0.23529411764705882, blue: 0.2627450980392157, alpha: 0.18)
+  }
+  
+  /* Foreground color for standard system links.
+   */
+  @inlinable public static func link() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return link
+    }
+    return UIColor(red: 0.0, green: 0.47843137254901963, blue: 1.0, alpha: 1.0)
+  }
+  
+  /* Foreground color for placeholder text in controls or text fields or text views.
+   */
+  @inlinable public static func placeholderText() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return placeholderText
+    }
+    return UIColor(red: 0.23529411764705882, green: 0.23529411764705882, blue: 0.2627450980392157, alpha: 0.3)
+  }
+  
+  /* Foreground colors for separators (thin border or divider lines).
+   * `separatorColor` may be partially transparent, so it can go on top of any content.
+   * `opaqueSeparatorColor` is intended to look similar, but is guaranteed to be opaque, so it will
+   * completely cover anything behind it. Depending on the situation, you may need one or the other.
+   */
+  @inlinable public static func separator() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return separator
+    }
+    return UIColor(red: 0.23529411764705882, green: 0.23529411764705882, blue: 0.2627450980392157, alpha: 0.29)
+  }
+  
+  @inlinable public static func opaqueSeparator() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return opaqueSeparator
+    }
+    return UIColor(red: 0.7764705882352941, green: 0.7764705882352941, blue: 0.7843137254901961, alpha: 1.0)
+  }
+  
+  /* We provide two design systems (also known as "stacks") for structuring an iOS app's backgrounds.
+   *
+   * Each stack has three "levels" of background colors. The first color is intended to be the
+   * main background, farthest back. Secondary and tertiary colors are layered on top
+   * of the main background, when appropriate.
+   *
+   * Inside of a discrete piece of UI, choose a stack, then use colors from that stack.
+   * We do not recommend mixing and matching background colors between stacks.
+   * The foreground colors above are designed to work in both stacks.
+   *
+   * 1. systemBackground
+   *    Use this stack for views with standard table views, and designs which have a white
+   *    primary background in light mode.
+   */
+  @inlinable public static func systemBackground() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemBackground
+    }
+    return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+  }
+  
+  @inlinable public static func secondarySystemBackground() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return secondarySystemBackground
+    }
+    return UIColor(red: 0.9490196078431372, green: 0.9490196078431372, blue: 0.9686274509803922, alpha: 1.0)
+  }
+  
+  @inlinable public static func tertiarySystemBackground() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return tertiarySystemBackground
+    }
+    return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+  }
+  
+  /* 2. systemGroupedBackground
+   *    Use this stack for views with grouped content, such as grouped tables and
+   *    platter-based designs. These are like grouped table views, but you may use these
+   *    colors in places where a table view wouldn't make sense.
+   */
+  @inlinable public static func systemGroupedBackground() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemGroupedBackground
+    }
+    return UIColor(red: 0.9490196078431372, green: 0.9490196078431372, blue: 0.9686274509803922, alpha: 1.0)
+  }
+  
+  @inlinable public static func secondarySystemGroupedBackground() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return secondarySystemGroupedBackground
+    }
+    return UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+  }
+  
+  @inlinable public static func tertiarySystemGroupedBackground() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return tertiarySystemGroupedBackground
+    }
+    return UIColor(red: 0.9490196078431372, green: 0.9490196078431372, blue: 0.9686274509803922, alpha: 1.0)
+  }
+  
+  /* Fill colors for UI elements.
+   * These are meant to be used over the background colors, since their alpha component is less than 1.
+   *
+   * systemFillColor is appropriate for filling thin and small shapes.
+   * Example: The track of a slider.
+   */
+  @inlinable public static func systemFill() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return systemFill
+    }
+    return UIColor(red: 0.47058823529411764, green: 0.47058823529411764, blue: 0.5019607843137255, alpha: 0.2)
+  }
+  
+  /* secondarySystemFillColor is appropriate for filling medium-size shapes.
+   * Example: The background of a switch.
+   */
+  @inlinable public static func secondarySystemFill() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return secondarySystemFill
+    }
+    return UIColor(red: 0.47058823529411764, green: 0.47058823529411764, blue: 0.5019607843137255, alpha: 0.16)
+  }
+  
+  /* tertiarySystemFillColor is appropriate for filling large shapes.
+   * Examples: Input fields, search bars, buttons.
+   */
+  @inlinable public static func tertiarySystemFill() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return tertiarySystemFill
+    }
+    return UIColor(red: 0.4627450980392157, green: 0.4627450980392157, blue: 0.5019607843137255, alpha: 0.12)
+  }
+  
+  /* quaternarySystemFillColor is appropriate for filling large areas containing complex content.
+   * Example: Expanded table cells.
+   */
+  @inlinable public static func quaternarySystemFill() -> UIColor {
+    if #available(iOS 13.0, *) {
+      return quaternarySystemFill
+    }
+    return UIColor(red: 0.4549019607843137, green: 0.4549019607843137, blue: 0.5019607843137255, alpha: 0.08)
+  }
+  
+  #else
   /* Shades of gray. systemGray is the base gray color.
    */
   @inlinable public static var preferedSystemGray: UIColor {
@@ -392,5 +616,6 @@ extension UIColor {
     }
     return UIColor(red: 0.4549019607843137, green: 0.4549019607843137, blue: 0.5019607843137255, alpha: 0.08)
   }
+  #endif
 }
 #endif
