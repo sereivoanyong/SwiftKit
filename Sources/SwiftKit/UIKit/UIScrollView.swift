@@ -9,6 +9,16 @@ import UIKit
 
 extension UIScrollView {
   
+  final public func configureForNonScrolling() {
+    bounces = false
+    alwaysBounceHorizontal = false
+    alwaysBounceVertical = false
+    isPagingEnabled = false
+    isScrollEnabled = false
+    showsHorizontalScrollIndicator = false
+    showsVerticalScrollIndicator = false
+  }
+  
   /// Returns a snapshot of an entire content of the scroll view
   final public func contentSnapshot() -> UIImage? {
     UIGraphicsBeginImageContextWithOptions(contentSize, false, 0)
