@@ -9,6 +9,11 @@ import UIKit
 
 extension UIApplication {
   
+  /// The top most view controller of the app's key window
+  final public var keyTopMostViewController: UIViewController? {
+    return keyWindow?.rootViewController?.topMostViewController
+  }
+  
   public static var openSettingsURL: URL {
     return URL(string: openSettingsURLString)!
   }

@@ -49,6 +49,20 @@ extension UIViewController {
     return tapGestureRecognizer
   }
   
+  final public var topMostViewController: UIViewController? {
+    if let navigationController = self as? UINavigationController, let visibleViewController = navigationController.visibleViewController {
+      return visibleViewController.topMostViewController
+      
+    } else if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
+      return selectedViewController.topMostViewController
+      
+    } else if let presentedViewController = presentedViewController {
+      return presentedViewController.topMostViewController
+    }
+    
+    return self
+  }
+  
   open func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
     let navigationController = UINavigationController(rootViewController: self)
     configurationHandler?(navigationController)
