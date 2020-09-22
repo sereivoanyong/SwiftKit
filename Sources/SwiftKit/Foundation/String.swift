@@ -120,22 +120,16 @@ extension String {
     }
   }
   
-  /*
   @inlinable public var localized: String {
     return NSLocalizedString(self, tableName: nil, bundle: .main, value: "", comment: "")
   }
   
-  @inlinable public func localized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "") -> String {
+  @inlinable public func localized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String) -> String {
     return NSLocalizedString(self, tableName: tableName, bundle: bundle, value: value, comment: comment)
   }
   
   @inlinable public func formatLocalized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "", _ arguments: CVarArg...) -> String {
-    let format = NSLocalizedString(self, tableName: tableName, bundle: bundle, value: value, comment: comment)
-    return withVaList(arguments) { parameter in
-      NSString(format: format, locale: Locale.current, arguments: parameter)
-    } as String
+    return String(format: localized(tableName: tableName, bundle: bundle, value: value, comment: comment), arguments: arguments)
   }
-   */
 }
-
 #endif
