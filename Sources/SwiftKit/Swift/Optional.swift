@@ -34,6 +34,18 @@ extension Optional {
       bodyWhenNil()
     }
   }
+  
+  public mutating func append(_ newElement: Wrapped.Element, default: @autoclosure () -> Wrapped) where Wrapped: RangeReplaceableCollection {
+    var collection = self ?? `default`()
+    collection.append(newElement)
+    self = collection
+  }
+  
+  public mutating func insert(_ newElement: Wrapped.Element, at index: Int, default: @autoclosure () -> Wrapped) where Wrapped: RangeReplaceableCollection, Wrapped.Index == Int {
+    var collection = self ?? `default`()
+    collection.insert(newElement, at: index)
+    self = collection
+  }
 }
 
 extension Optional where Wrapped: Collection {
