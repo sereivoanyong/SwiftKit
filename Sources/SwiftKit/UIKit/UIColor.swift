@@ -33,6 +33,24 @@ extension UIColor {
     return (Int(red * 255), Int(green * 255), Int(blue * 255), Int(alpha * 100))
   }
   
+  final public func opaque(on opaqueColor: UIColor) -> UIColor? {
+    guard let source = components, source.alpha < 1 else {
+      return self
+    }
+    guard let target = opaqueColor.components, target.alpha == 1 else {
+      return nil
+    }
+    let opaque: (CGFloat, CGFloat, CGFloat) -> CGFloat = { from, to, alpha in
+      return from * alpha + to * (1 - alpha)
+    }
+    return UIColor(
+      red: opaque(source.red, target.red, source.alpha),
+      green: opaque(source.green, target.green, source.alpha),
+      blue: opaque(source.blue, target.blue, source.alpha),
+      alpha: 1
+    )
+  }
+  
   /// Creates a color object using the specified opacity and RGB component values
   /// - Parameters:
   ///   - red: The red value of the color object, specified as a value from 0 to 255
