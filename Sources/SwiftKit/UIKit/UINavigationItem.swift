@@ -41,8 +41,19 @@ extension UINavigationItem {
     set { setValue(newValue as NSNumber, forKey: "backgroundHidden") }
   }
   
+  @available(iOS, deprecated, renamed: "removeBackButtonTitle()")
   final public func removeBackBarButtonItemTitle() {
-    backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+    removeBackButtonTitle()
+  }
+  
+  final public func removeBackButtonTitle() {
+    if #available(iOS 14.0, *) {
+      backButtonDisplayMode = .minimal
+    } else if #available(iOS 11.0, *) {
+      backButtonTitle = ""
+    } else {
+      backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+    }
   }
   
   static private var shouldPopKey: Void?
