@@ -18,5 +18,10 @@ extension NumberFormatter {
   @inlinable public func string<T>(from number: T) -> String? where T: _ObjectiveCBridgeable, T._ObjectiveCType: NSNumber {
     return string(from: number._bridgeToObjectiveC())
   }
+  
+  @inlinable public func decimal(from string: String) -> Decimal? {
+    assert(generatesDecimalNumbers)
+    return number(from: string) as! NSDecimalNumber? as Decimal?
+  }
 }
 #endif
