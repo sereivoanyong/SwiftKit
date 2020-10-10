@@ -19,6 +19,16 @@ extension UIScrollView {
     showsVerticalScrollIndicator = false
   }
   
+  final public func scrollToBottom(animated: Bool = false) {
+    let bottomInset: CGFloat
+    if #available(iOS 11.0, *) {
+      bottomInset = adjustedContentInset.bottom
+    } else {
+      bottomInset = contentInset.bottom
+    }
+    setContentOffset(CGPoint(x: 0, y: contentSize.height - bounds.size.height + bottomInset), animated: animated)
+  }
+  
   /// Returns a snapshot of an entire content of the scroll view
   final public func contentSnapshot() -> UIImage? {
     UIGraphicsBeginImageContextWithOptions(contentSize, false, 0)
