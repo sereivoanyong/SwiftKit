@@ -9,7 +9,7 @@ import UIKit
 
 extension UIStackView {
   
-  @inlinable public convenience init(arrangedSubviews: [UIView] = [], axis: NSLayoutConstraint.Axis, distribution: Distribution, alignment: Alignment, spacing: CGFloat = 0) {
+  @inlinable public convenience init(arrangedSubviews: [UIView] = [], axis: NSLayoutConstraint.Axis, distribution: Distribution = .fill, alignment: Alignment = .fill, spacing: CGFloat = 0) {
     self.init(frame: .zero)
     self.axis = axis
     self.distribution = distribution
