@@ -53,12 +53,6 @@ extension UIView {
     }
   }
   
-  final public func addSubviews(_ views: UIView...) {
-    for view in views {
-      addSubview(view)
-    }
-  }
-  
   @discardableResult
   final public func addTapGestureRecognizerToEndEditing() -> UITapGestureRecognizer {
     isUserInteractionEnabled = true
