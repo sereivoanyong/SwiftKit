@@ -1,8 +1,27 @@
 //
-//  NSKeyValueObservation.swift
+//  NSObject.swift
 //
-//  Created by Sereivoan Yong on 1/25/20.
+//  Created by Sereivoan Yong on 1/24/20.
 //
+
+#if canImport(ObjectiveC)
+import ObjectiveC
+
+extension NSObjectProtocol where Self: NSObject {
+  
+  @inlinable public func valueIfResponds(forKey key: String) -> Any? {
+    if responds(to: Selector(key)) {
+      return value(forKey: key)
+    }
+    return nil
+  }
+  
+  @inlinable public func setValueIfResponds(_ value: Any?, forKey key: String) {
+    if responds(to: Selector(key)) {
+      setValue(value, forKey: key)
+    }
+  }
+}
 
 #if canImport(Foundation)
 import Foundation
@@ -26,4 +45,5 @@ extension NSObjectProtocol where Self: NSObject {
     return observation
   }
 }
+#endif
 #endif
