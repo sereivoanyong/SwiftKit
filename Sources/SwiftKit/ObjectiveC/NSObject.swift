@@ -46,4 +46,21 @@ extension NSObjectProtocol where Self: NSObject {
   }
 }
 #endif
+
+#if canImport(Swift)
+import Swift
+
+extension NSObjectProtocol {
+  
+  public func assigned(to object: inout Self?) -> Self {
+    object = self
+    return self
+  }
+  
+  public func assigned<Root>(to keyPath: ReferenceWritableKeyPath<Root, Self?>, on object: Root) -> Self {
+    object[keyPath: keyPath] = self
+    return self
+  }
+}
+#endif
 #endif
