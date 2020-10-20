@@ -25,12 +25,6 @@ extension UIStackView {
     }
   }
   
-  final public func addArrangedSubviews(_ views: UIView...) {
-    for view in views {
-      addArrangedSubview(view)
-    }
-  }
-  
   /*
    Removes all arranged subviews without removing them as subviews of the receiver.
    To remove the view as subviews, send it -removeFromSuperview as usual;
