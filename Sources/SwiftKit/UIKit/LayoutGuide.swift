@@ -9,7 +9,8 @@ import UIKit
 public typealias NSLayoutCenterConstraints = (x: NSLayoutConstraint, y: NSLayoutConstraint)
 public typealias NSLayoutXAxisConstraints = (left: NSLayoutConstraint, right: NSLayoutConstraint)
 public typealias NSLayoutYAxisConstraints = (top: NSLayoutConstraint, bottom: NSLayoutConstraint)
-public typealias NSLayoutConstraints = (top: NSLayoutConstraint, left: NSLayoutConstraint, bottom: NSLayoutConstraint, right: NSLayoutConstraint)
+public typealias NSLayoutConstraints = Edges<NSLayoutConstraint>
+public typealias NSDirectionalLayoutConstraints = DirectionalEdges<NSLayoutConstraint>
 
 public protocol LayoutGuide: AnyObject {
   
@@ -53,11 +54,21 @@ extension LayoutGuide {
   
   @discardableResult
   public func pinAnchors(inside container: LayoutGuide, topConstant: CGFloat = 0, leftConstant: CGFloat = 0, bottomConstant: CGFloat = 0, rightConstant: CGFloat = 0) -> NSLayoutConstraints {
-    return (
+    return .init(
       top: topAnchor.equalTo(container.topAnchor, constant: topConstant),
       left: leftAnchor.equalTo(container.leftAnchor, constant: leftConstant),
       bottom: container.bottomAnchor.equalTo(bottomAnchor, constant: bottomConstant),
       right: container.rightAnchor.equalTo(rightAnchor, constant: rightConstant)
+    )
+  }
+  
+  @discardableResult
+  public func pinDirectionalAnchors(inside container: LayoutGuide, topConstant: CGFloat = 0, leftConstant: CGFloat = 0, bottomConstant: CGFloat = 0, rightConstant: CGFloat = 0) -> NSDirectionalLayoutConstraints {
+    return .init(
+      top: topAnchor.equalTo(container.topAnchor, constant: topConstant),
+      leading: leftAnchor.equalTo(container.leftAnchor, constant: leftConstant),
+      bottom: container.bottomAnchor.equalTo(bottomAnchor, constant: bottomConstant),
+      trailing: container.rightAnchor.equalTo(rightAnchor, constant: rightConstant)
     )
   }
 }
