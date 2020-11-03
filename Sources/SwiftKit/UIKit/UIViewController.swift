@@ -63,6 +63,10 @@ extension UIViewController {
     return self
   }
   
+  final public func show(animated: Bool, completion: (() -> Void)?) {
+    UIApplication.shared.keyTopMostViewController?.present(self, animated: animated, completion: completion)
+  }
+  
   open func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
     let navigationController = UINavigationController(rootViewController: self)
     configurationHandler?(navigationController)
