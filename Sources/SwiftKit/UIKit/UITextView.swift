@@ -9,7 +9,7 @@ import UIKit
 
 extension UITextView {
   
-  @inlinable public convenience init(text: String? = nil, font: UIFont, textAlignment: NSTextAlignment = .natural, textColor: UIColor? = nil) {
+  @inlinable public convenience init(text: String? = nil, font: UIFont? = nil, textAlignment: NSTextAlignment = .natural, textColor: UIColor? = nil) {
     self.init(frame: .zero)
     self.font = font
     self.textAlignment = textAlignment
