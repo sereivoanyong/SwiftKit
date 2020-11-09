@@ -4,6 +4,8 @@
 //  Created by Sereivoan Yong on 10/29/17.
 //
 
+// See https://github.com/apple/swift/blob/main/stdlib/public/core/AnyHashable.swift
+
 @usableFromInline
 internal protocol _AnyEquatableBox {
   
@@ -18,7 +20,7 @@ internal protocol _AnyEquatableBox {
   func _isEqual(to box: _AnyEquatableBox) -> Bool?
 }
 
-internal struct _ConcreteAnyEquatableBox<Base: Equatable>: _AnyEquatableBox {
+internal struct _ConcreteEquatableBox<Base: Equatable>: _AnyEquatableBox {
   
   internal let _baseEquatable: Base
   
@@ -31,7 +33,7 @@ internal struct _ConcreteAnyEquatableBox<Base: Equatable>: _AnyEquatableBox {
   }
   
   internal func _unbox<T: Equatable>() -> T? {
-    return (self as _AnyEquatableBox as? _ConcreteAnyEquatableBox<T>)?._baseEquatable
+    return (self as _AnyEquatableBox as? _ConcreteEquatableBox<T>)?._baseEquatable
   }
   
   internal func _isEqual(to rhs: _AnyEquatableBox) -> Bool? {
@@ -60,7 +62,7 @@ public struct AnyEquatable {
   ///
   /// - Parameter base: An equatable value to wrap.
   public init<E: Equatable>(_ base: E) {
-    _box = _ConcreteAnyEquatableBox(base)
+    _box = _ConcreteEquatableBox(base)
   }
   
   /// The value wrapped by this instance.
