@@ -10,6 +10,12 @@ extension RangeReplaceableCollection {
     lhs.append(rhs)
   }
   
+  /// Returns a collection of the same type containing, in order, the first unique elements of the original collection that compare equally for the key path.
+  public func firstUnique<T: Hashable>(for keyPath: KeyPath<Element, T>) -> Self {
+    var unique = Set<T>()
+    return filter { unique.insert($0[keyPath: keyPath]).inserted }
+  }
+  
   public mutating func replaceAll<S>(with objects: S, keepsCapacity: Bool = false) where S: Sequence, S.Element == Element {
     removeAll(keepingCapacity: keepsCapacity)
     self += objects
