@@ -4,8 +4,8 @@
 //  Created by Sereivoan Yong on 8/22/20.
 //
 
-#if canImport(UIKit)
-import UIKit
+#if canImport(Foundation)
+import Foundation
 
 extension Collection where Element: NSAttributedString, Index == Int {
   
