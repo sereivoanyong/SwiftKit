@@ -20,24 +20,18 @@ extension RangeReplaceableCollection {
     removeAll(keepingCapacity: keepsCapacity)
     self += objects
   }
-}
-
-extension RangeReplaceableCollection where Element: Equatable {
   
   @discardableResult
-  public mutating func removeFirst(_ element: Element) -> Index? {
+  public mutating func removeFirst(_ element: Element) -> Index? where Element: Equatable {
     guard let index = firstIndex(of: element) else {
       return nil
     }
     remove(at: index)
     return index
   }
-}
-
-extension RangeReplaceableCollection where Index == Int {
   
   /// insert at last 0 is equivalant to `append` or `insert(_:at:count-1)`
-  @inlinable public mutating func insert(_ newElement: Element, atLast k: Index) {
+  @inlinable public mutating func insert(_ newElement: Element, atLast k: Index) where Index == Int {
     precondition(k <= 0)
     insert(newElement, at: count + k)
   }
