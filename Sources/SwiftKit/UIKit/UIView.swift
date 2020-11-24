@@ -53,6 +53,12 @@ extension UIView {
     }
   }
   
+  final public func removeSubviews() {
+    for subview in subviews {
+      subview.removeFromSuperview()
+    }
+  }
+  
   @discardableResult
   final public func addTapGestureRecognizerToEndEditing() -> UITapGestureRecognizer {
     isUserInteractionEnabled = true
