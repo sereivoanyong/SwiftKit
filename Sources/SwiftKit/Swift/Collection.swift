@@ -26,11 +26,12 @@ extension Collection {
     }
     return indices
   }
-}
-
-extension Collection where Element: Equatable {
   
-  public func randomElement<S>(excluding excludingElements: S) -> Element? where S: Collection, S.Element == Element {
+  public func indices(of element: Element) -> [Index] where Element: Equatable {
+    return indices(where: { $0 == element })
+  }
+  
+  public func randomElement<S>(excluding excludingElements: S) -> Element? where S: Collection, S.Element: Equatable, S.Element == Element {
     guard var targetElement = randomElement() else {
       return nil
     }
@@ -38,9 +39,5 @@ extension Collection where Element: Equatable {
       targetElement = randomElement()!
     }
     return targetElement
-  }
-  
-  public func indices(of element: Element) -> [Index] {
-    return indices(where: { $0 == element })
   }
 }
