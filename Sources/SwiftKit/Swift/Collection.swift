@@ -40,4 +40,17 @@ extension Collection {
     }
     return targetElement
   }
+  
+  public func grouping<Key>(by keyForValue: (Element) -> Key) -> [(Key, [Element])] where Key: Hashable {
+    var orders: [Key: Int] = [:]
+    var groups: [Key: [Element]] = [:]
+    for (index, value) in enumerated() {
+      let key = keyForValue(value)
+      if orders[key] == nil {
+        orders[key] = index
+      }
+      groups[key, default: []].append(value)
+    }
+    return groups.sorted(by: { orders[$0.key]! < orders[$1.key]! })
+  }
 }
