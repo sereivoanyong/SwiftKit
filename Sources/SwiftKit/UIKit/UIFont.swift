@@ -9,6 +9,10 @@ import UIKit
 
 extension UIFont {
   
+  final public var weight: Weight? {
+    return fontDescriptor.weight
+  }
+  
   final public func withWeight(_ weight: Weight) -> UIFont {
     return UIFont(descriptor: fontDescriptor.withWeight(weight), size: 0)
   }
