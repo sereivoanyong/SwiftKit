@@ -82,6 +82,11 @@ extension UINavigationController {
   }
   
   @discardableResult
+  final public func popToViewController(at index: Int, animated: Bool, completion: (() -> Void)? = nil) -> [UIViewController]? {
+    return popToViewController(viewControllers[index], animated: animated, completion: completion)
+  }
+  
+  @discardableResult
   final public func popToRootViewController(animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
     let viewControllers: [UIViewController]?
     if animated, let completion = completion {
