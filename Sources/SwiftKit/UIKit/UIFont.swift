@@ -9,6 +9,10 @@ import UIKit
 
 extension UIFont {
   
+  final public func withWeight(_ weight: Weight) -> UIFont {
+    return UIFont(descriptor: fontDescriptor.withWeight(weight), size: 0)
+  }
+  
   final public func lineHeight(numberOfLines: Int) -> CGFloat {
     return lineHeight * CGFloat(numberOfLines)
   }
