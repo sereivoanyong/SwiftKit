@@ -14,6 +14,16 @@ extension NSAttributedString {
     let nonPrintableString = String(utf16CodeUnits: &attchmentCharacter, count: 1) // This can be anything non-printable
     return NSAttributedString(string: nonPrintableString, attributes: [.kern: width._bridgeToObjectiveC()])
   }
+  
+  public static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSMutableAttributedString {
+    let result = NSMutableAttributedString(attributedString: lhs)
+    result.append(rhs)
+    return result
+  }
+  
+  public static func + (lhs: NSAttributedString, rhs: String) -> NSMutableAttributedString {
+    return lhs + NSAttributedString(string: rhs)
+  }
 }
 
 extension Collection where Element: NSAttributedString, Index == Int {

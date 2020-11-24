@@ -10,11 +10,11 @@ import Foundation
 extension NSMutableAttributedString {
   
   public static func += (lhs: NSMutableAttributedString, rhs: NSAttributedString) {
-    return lhs.append(rhs)
+    lhs.append(rhs)
   }
   
   public static func += (lhs: NSMutableAttributedString, rhs: String) {
-    return lhs.append(NSAttributedString(string: rhs))
+    lhs += NSAttributedString(string: rhs)
   }
 }
 #endif
