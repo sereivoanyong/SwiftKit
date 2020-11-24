@@ -60,14 +60,20 @@ extension UIView {
   }
   
   @discardableResult
-  final public func addTapGestureRecognizerToEndEditing() -> UITapGestureRecognizer {
+  final public func addTapGestureRecognizer(handler: @escaping (UITapGestureRecognizer) -> Void, configurationHandler: ((UITapGestureRecognizer) -> Void)? = nil) -> UITapGestureRecognizer {
     isUserInteractionEnabled = true
-    let tapGestureRecognizer = UITapGestureRecognizer { [unowned self] _ in
-      self.endEditing(true)
-    }
+    let tapGestureRecognizer = UITapGestureRecognizer(handler: handler)
     tapGestureRecognizer.cancelsTouchesInView = false
+    configurationHandler?(tapGestureRecognizer)
     addGestureRecognizer(tapGestureRecognizer)
     return tapGestureRecognizer
+  }
+  
+  @discardableResult
+  final public func addTapGestureRecognizerToEndEditing(_ force: Bool = true) -> UITapGestureRecognizer {
+    return addTapGestureRecognizer { [unowned self] _ in
+      self.endEditing(force)
+    }
   }
   
   /// Sets the priority with which a view resists being made larger or smaller than its intrinsic size
