@@ -13,11 +13,7 @@ extension UILabel {
     self.init(frame: .zero)
     self.font = font
     self.textAlignment = textAlignment
-    #if swift(>=5.3)
     self.textColor = textColor ?? .label()
-    #else
-    self.textColor = textColor ?? .preferredLabel
-    #endif
     self.numberOfLines = numberOfLines
     self.text = text
   }

@@ -4,6 +4,7 @@
 //  Created by Sereivoan Yong on 2/4/20.
 //
 
+#if canImport(Foundation)
 import Foundation
 
 extension HTTPURLResponse {
@@ -445,3 +446,4 @@ extension HTTPURLResponse.StatusCode: CustomStringConvertible {
     return localizedString
   }
 }
+#endif

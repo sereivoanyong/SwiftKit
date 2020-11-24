@@ -4,6 +4,7 @@
 //  Created by Sereivoan Yong on 12/8/17.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 public typealias NSLayoutCenterConstraints = (x: NSLayoutConstraint, y: NSLayoutConstraint)
@@ -75,3 +76,4 @@ extension LayoutGuide {
 
 extension UIView: LayoutGuide { }
 extension UILayoutGuide: LayoutGuide { }
+#endif

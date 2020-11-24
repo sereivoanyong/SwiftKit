@@ -4,6 +4,7 @@
 //  Created by Sereivoan Yong on 6/5/20.
 //
 
+#if canImport(Foundation)
 import Foundation
 
 extension Locale {
@@ -19,3 +20,4 @@ extension Locale {
     return String(flagScalars)
   }
 }
+#endif
