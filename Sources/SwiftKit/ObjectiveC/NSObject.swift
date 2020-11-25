@@ -7,19 +7,77 @@
 #if canImport(ObjectiveC)
 import ObjectiveC
 
-extension NSObjectProtocol where Self: NSObject {
+extension NSObjectProtocol {
+  
+  public func assigned(to object: inout Self?) -> Self {
+    object = self
+    return self
+  }
+  
+  public func assigned<Root>(to keyPath: ReferenceWritableKeyPath<Root, Self?>, on object: Root) -> Self {
+    object[keyPath: keyPath] = self
+    return self
+  }
   
   @inlinable public func valueIfResponds(forKey key: String) -> Any? {
     if responds(to: Selector(key)) {
-      return value(forKey: key)
+      return (self as! NSObject).value(forKey: key)
     }
     return nil
   }
   
   @inlinable public func setValueIfResponds(_ value: Any?, forKey key: String) {
     if responds(to: Selector(key)) {
-      setValue(value, forKey: key)
+      (self as! NSObject).setValue(value, forKey: key)
     }
+  }
+  
+  @discardableResult
+  @inlinable public func performIfResponds(_ selector: Selector) -> Unmanaged<AnyObject>? {
+    if responds(to: selector) {
+      return perform(selector)
+    }
+    return nil
+  }
+  
+  @discardableResult
+  @inlinable public func performIfResponds(_ selector: Selector, with object: Any?) -> Unmanaged<AnyObject>? {
+    if responds(to: selector) {
+      return perform(selector, with: object)
+    }
+    return nil
+  }
+  
+  @discardableResult
+  @inlinable public func configure(_ handler: (Self) -> Void) -> Self {
+    handler(self)
+    return self
+  }
+  
+  public func first(where predicate: (Self) throws -> Bool, next: (Self) throws -> Self?) rethrows -> Self? {
+    var currentTarget: Self? = self
+    while let target = currentTarget {
+      if try predicate(target) {
+        return target
+      }
+      currentTarget = try next(target)
+    }
+    return nil
+  }
+  
+  public func first<T>(ofType type: T.Type, next: (Self) throws -> Self?) rethrows -> T? {
+    return try first(ofType: type, where: { _ in true }, next: next)
+  }
+  
+  public func first<T>(ofType type: T.Type, where predicate: (T) throws -> Bool, next: (Self) throws -> Self?) rethrows -> T? {
+    var currentTarget: Self? = self
+    while let target = currentTarget {
+      if let castedTarget = target as? T, try predicate(castedTarget) {
+        return castedTarget
+      }
+      currentTarget = try next(target)
+    }
+    return nil
   }
 }
 
@@ -43,23 +101,6 @@ extension NSObjectProtocol where Self: NSObject {
     let observation = observe(keyPath, options: options, changeHandler: changeHandler)
     observations[keyPath] = observation
     return observation
-  }
-}
-#endif
-
-#if canImport(Swift)
-import Swift
-
-extension NSObjectProtocol {
-  
-  public func assigned(to object: inout Self?) -> Self {
-    object = self
-    return self
-  }
-  
-  public func assigned<Root>(to keyPath: ReferenceWritableKeyPath<Root, Self?>, on object: Root) -> Self {
-    object[keyPath: keyPath] = self
-    return self
   }
 }
 #endif

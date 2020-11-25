@@ -1,5 +1,5 @@
 //
-//  ObjectiveC.swift
+//  runtime.swift
 //
 //  Created by Sereivoan Yong on 10/29/17.
 //
@@ -78,57 +78,6 @@ extension NSObjectProtocol {
   
   @inlinable public func removeAssociatedObjects() {
     objc_removeAssociatedObjects(self)
-  }
-}
-
-extension NSObjectProtocol {
-  
-  @discardableResult
-  @inlinable public func configure(_ handler: (Self) -> Void) -> Self {
-    handler(self)
-    return self
-  }
-  
-  @discardableResult
-  @inlinable public func performIfResponds(_ selector: Selector) -> Unmanaged<AnyObject>? {
-    if responds(to: selector) {
-      return perform(selector)
-    }
-    return nil
-  }
-  
-  @discardableResult
-  @inlinable public func performIfResponds(_ selector: Selector, with object: Any?) -> Unmanaged<AnyObject>? {
-    if responds(to: selector) {
-      return perform(selector, with: object)
-    }
-    return nil
-  }
-  
-  public func first(where predicate: (Self) throws -> Bool, next: (Self) throws -> Self?) rethrows -> Self? {
-    var currentTarget: Self? = self
-    while let target = currentTarget {
-      if try predicate(target) {
-        return target
-      }
-      currentTarget = try next(target)
-    }
-    return nil
-  }
-  
-  public func first<T>(ofType type: T.Type, next: (Self) throws -> Self?) rethrows -> T? {
-    return try first(ofType: type, where: { _ in true }, next: next)
-  }
-  
-  public func first<T>(ofType type: T.Type, where predicate: (T) throws -> Bool, next: (Self) throws -> Self?) rethrows -> T? {
-    var currentTarget: Self? = self
-    while let target = currentTarget {
-      if let castedTarget = target as? T, try predicate(castedTarget) {
-        return castedTarget
-      }
-      currentTarget = try next(target)
-    }
-    return nil
   }
 }
 #endif
