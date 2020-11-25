@@ -14,6 +14,10 @@ extension Collection {
     return indices.contains(index) ? self[index] : nil
   }
   
+  public subscript<S: Sequence>(indexes indexes: S) -> [Element] where S.Element == Index {
+    return indexes.map { self[$0] }
+  }
+  
   public func indices(where predicate: (Element) throws -> Bool) rethrows -> [Index] {
     var indices: [Index] = []
     indices.reserveCapacity(count)
