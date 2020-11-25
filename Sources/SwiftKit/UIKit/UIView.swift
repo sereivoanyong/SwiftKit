@@ -81,6 +81,12 @@ extension UIView {
     setContentHuggingPriority(priority, for: axis)
     setContentCompressionResistancePriority(priority, for: axis)
   }
+  
+  /// Sets the priority with which a view resists being made larger or smaller than its intrinsic size
+  final public func setContentResistancePriority(_ priority: UILayoutPriority) {
+    setContentResistancePriority(priority, for: .horizontal)
+    setContentResistancePriority(priority, for: .vertical)
+  }
 }
 
 extension UIView.AutoresizingMask {
