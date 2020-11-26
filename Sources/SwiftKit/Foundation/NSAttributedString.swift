@@ -15,13 +15,13 @@ extension NSAttributedString {
     return NSAttributedString(string: nonPrintableString, attributes: [.kern: width._bridgeToObjectiveC()])
   }
   
-  public static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSMutableAttributedString {
+  @inlinable public static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSMutableAttributedString {
     let result = NSMutableAttributedString(attributedString: lhs)
     result.append(rhs)
     return result
   }
   
-  public static func + (lhs: NSAttributedString, rhs: String) -> NSMutableAttributedString {
+  @inlinable public static func + (lhs: NSAttributedString, rhs: String) -> NSMutableAttributedString {
     return lhs + NSAttributedString(string: rhs)
   }
 }

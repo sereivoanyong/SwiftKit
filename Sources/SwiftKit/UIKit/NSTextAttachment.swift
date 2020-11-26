@@ -17,6 +17,10 @@ extension NSTextAttachment {
 
 extension NSAttributedString {
   
+  @inlinable public static func + (lhs: NSAttributedString, rhs: NSTextAttachment) -> NSMutableAttributedString {
+    return lhs + NSAttributedString(attachment: rhs)
+  }
+  
   public static func attachment(_ attachment: NSTextAttachment) -> NSAttributedString {
     return NSAttributedString(attachment: attachment)
   }
