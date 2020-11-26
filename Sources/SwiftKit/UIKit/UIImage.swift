@@ -10,6 +10,7 @@ import UIKit
 public protocol UIImageInitializable {
   
   init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void)
+  init(light: @autoclosure () -> Self, dark: @autoclosure () -> Self)
 }
 
 extension UIImageInitializable where Self: UIImage {
@@ -21,6 +22,38 @@ extension UIImageInitializable where Self: UIImage {
     // This is the whole purpose of the UIImageInitializable
     self = UIGraphicsGetImageFromCurrentImageContext() as! Self
     UIGraphicsEndImageContext()
+  }
+  
+  // https://gist.github.com/timonus/8b4feb47eccb6dde47ca6320d8fc6b11#gistcomment-3176210
+  public init(light: @autoclosure () -> Self, dark: @autoclosure () -> Self) {
+    if #available(iOS 13.0, *) {
+      let scaleTraitCollection = UITraitCollection.current
+      
+      let lightUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .light)
+      let darkUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+      
+      let lightScaledTraitCollection = UITraitCollection(traitsFrom: [scaleTraitCollection, lightUnscaledTraitCollection])
+      let darkScaledTraitCollection = UITraitCollection(traitsFrom: [scaleTraitCollection, darkUnscaledTraitCollection])
+      
+      var image: Self!
+      lightScaledTraitCollection.performAsCurrent {
+        image = light()
+        if let configuration = image.configuration {
+          image = image.withConfiguration(configuration.withTraitCollection(lightUnscaledTraitCollection)) as? Self
+        }
+      }
+      var darkImage: Self!
+      darkScaledTraitCollection.performAsCurrent {
+        darkImage = dark()
+        if let configuration = darkImage.configuration {
+          darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkUnscaledTraitCollection)) as? Self
+        }
+      }
+      image.imageAsset!.register(darkImage, with: darkScaledTraitCollection)
+      self = image
+    } else {
+      self = light()
+    }
   }
 }
 
