@@ -21,16 +21,12 @@ extension NSAttributedString {
     return lhs + NSAttributedString(attachment: rhs)
   }
   
-  public static func attachment(_ attachment: NSTextAttachment) -> NSAttributedString {
-    return NSAttributedString(attachment: attachment)
-  }
-  
   public static func attachment(data: Data?, uti: String?) -> NSAttributedString {
-    return attachment(NSTextAttachment(data: data, ofType: uti))
+    return NSAttributedString(attachment: NSTextAttachment(data: data, ofType: uti))
   }
   
   public static func attachment(image: UIImage?) -> NSAttributedString {
-    return attachment(NSTextAttachment(image: image))
+    return NSAttributedString(attachment: NSTextAttachment(image: image))
   }
 }
 #endif
