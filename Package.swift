@@ -7,9 +7,11 @@ let package = Package(
     .iOS(.v9)
   ],
   products: [
-    .library(name: "SwiftKit", targets: ["SwiftKit"])
+    .library(name: "SwiftKit", targets: ["SwiftKit"]),
+    .library(name: "PropertyWrapperKit", targets: ["SwiftKit", "PropertyWrapperKit"])
   ],
   targets: [
-    .target(name: "SwiftKit")
+    .target(name: "SwiftKit"),
+    .target(name: "PropertyWrapperKit")
   ]
 )
