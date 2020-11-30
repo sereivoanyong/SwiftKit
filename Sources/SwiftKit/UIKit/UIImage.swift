@@ -7,13 +7,13 @@
 #if canImport(UIKit)
 import UIKit
 
-public protocol UIImageInitializable {
+public protocol UIImageProtocol {
   
   init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void)
   init(light: @autoclosure () -> Self, dark: @autoclosure () -> Self)
 }
 
-extension UIImageInitializable where Self: UIImage {
+extension UIImageProtocol where Self: UIImage {
   
   @inlinable public init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void) {
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
@@ -57,7 +57,7 @@ extension UIImageInitializable where Self: UIImage {
   }
 }
 
-extension UIImage: UIImageInitializable { }
+extension UIImage: UIImageProtocol { }
 
 extension UIImage {
   
