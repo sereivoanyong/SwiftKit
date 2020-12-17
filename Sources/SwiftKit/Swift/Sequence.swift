@@ -19,7 +19,24 @@ extension Sequence {
   @inlinable public func map<T>(_ keyPath: KeyPath<Element, T>) -> [T] {
     return map { $0[keyPath: keyPath] }
   }
-  
+
+  /// Returns a Boolean value indicating whether the sequence contains an element that satisfies the given predicate or a descendant that does.
+  public func contains<S>(where predicate: (Element) throws -> Bool, descendantsProvider: ((Element) -> S?)?) rethrows -> Bool where S: Sequence, S.Element == Element {
+    if try contains(where: predicate) {
+      return true
+    }
+    guard let descendantsProvider = descendantsProvider else {
+      return false
+    }
+    for element in self {
+      if let descendants = descendantsProvider(element), try descendants.contains(where: predicate, descendantsProvider: descendantsProvider) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /// Returns the number of elements of the sequence that satisfy the given `predicate`.
   public func count(where predicate: (Element) throws -> Bool) rethrows -> Int {
     var count = 0
     for element in self where try predicate(element) {
@@ -27,59 +44,58 @@ extension Sequence {
     }
     return count
   }
-  
-  public func count<S>(where predicate: (Element) throws -> Bool, next: (Element) throws -> S) rethrows -> Int
-    where S: Sequence, S.Element == Element {
-      var count = 0
-      for element in self {
-        if try predicate(element) {
-          count += 1
-        }
-        count += try next(element).count(where: predicate, next: next)
+
+  /// Returns the number of elements of the sequence that satisfy the given `predicate` and their descendants that do.
+  public func count<S>(where predicate: (Element) throws -> Bool, descendantsProvider: ((Element) -> S?)?) rethrows -> Int where S: Sequence, S.Element == Element {
+    guard let descendantsProvider = descendantsProvider else {
+      return try count(where: predicate)
+    }
+    var count = 0
+    for element in self {
+      if try predicate(element) {
+        count += 1
       }
-      return count
-  }
-  
-  public func contains<S>(where predicate: (Element) throws -> Bool, next: (Element) throws -> S) rethrows -> Bool
-    where S: Sequence, S.Element == Element {
-      for element in self {
-        if try predicate(element) {
-          return true
-        }
-        if try next(element).contains(where: predicate, next: next) {
-          return true
-        }
+      if let descendants = descendantsProvider(element) {
+        count += try descendants.count(where: predicate, descendantsProvider: descendantsProvider)
       }
-      return false
+    }
+    return count
   }
-  
-  public func first<T, S>(ofType type: T.Type, next: (Element) throws -> S) rethrows -> T?
-    where S: Sequence, S.Element == Element {
-      return try first(ofType: T.self, where: { _ in true }, next: next)
-  }
-  
-  public func first<T, S>(ofType type: T.Type, where predicate: (T) throws -> Bool, next: (Element) throws -> S) rethrows -> T?
-    where S: Sequence, S.Element == Element {
-      for element in self {
-        if let target = element as? T, try predicate(target) {
-          return target
-        } else if let nextTarget = try next(element).first(ofType: T.self, where: predicate, next: next) {
-          return nextTarget
-        }
+
+  /// Returns the first element of the `type` of the sequence that satisfies the given `predicate`.
+  ///
+  ///     let view = UIView()
+  ///     if let textField = first(of: UITextField.self, where: { $0.hasText }) {
+  ///         print("The first non-empty text field is \(textField).")
+  ///     }
+  public func first<T>(of type: T.Type, where predicate: ((T) throws -> Bool)? = nil) rethrows -> T? {
+    for element in self {
+      if let match = element as? T, try predicate?(match) ?? true {
+        return match
       }
+    }
+    return nil
+  }
+
+  /// Returns the first element of the `type` of the sequence that satisfies the given `predicate` or first descendant that does.
+  ///
+  ///     let view = UIView()
+  ///     if let textField = first(of: UITextField.self, where: { $0.hasText }, descendantsProvider: { $0.subviews }) {
+  ///         print("The first non-empty descendant text field is \(textField).")
+  ///     }
+  public func first<T, S>(of type: T.Type, where predicate: ((T) throws -> Bool)? = nil, descendantsProvider: ((Element) -> S?)?) rethrows -> T? where S: Sequence, S.Element == Element {
+    if let first = try first(of: type, where: predicate) {
+      return first
+    }
+    guard let descendantsProvider = descendantsProvider else {
       return nil
-  }
-  
-  public func first<S>(where predicate: (Element) throws -> Bool, next: (Element) throws -> S) rethrows -> Element?
-    where S: Sequence, S.Element == Element {
-      for element in self {
-        if try predicate(element) {
-          return element
-        } else if let nextTarget = try next(element).first(where: predicate, next: next) {
-          return nextTarget
-        }
+    }
+    for element in self {
+      if let descendants = descendantsProvider(element), let descendantMatch = try descendants.first(of: T.self, where: predicate, descendantsProvider: descendantsProvider) {
+        return descendantMatch
       }
-      return nil
+    }
+    return nil
   }
   
   public func dictionary<Key, Value>(_ transform: (Element) throws -> (Key, Value)?) rethrows -> [Key: Value] where Key: Hashable {
