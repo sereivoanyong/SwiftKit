@@ -7,58 +7,47 @@
 #if canImport(UIKit)
 import UIKit
 
-final private class Target<T> {
-  
-  let handler: (T) -> Void
-  
-  init(handler: @escaping (T) -> Void) {
-    self.handler = handler
-  }
-  
-  @objc func handle(_ object: NSObject) {
-    handler(object as! T)
-  }
-}
-
 public protocol UIGestureRecognizerProtocol: NSObjectProtocol {
   
   init(target: Any?, action: Selector?)
+  func addTarget(_ target: Any, action: Selector)
+  func removeTarget(_ target: Any?, action: Selector?)
 }
 
-private var kTargetsKey: Void?
+private var kActionsKey: Void?
 extension UIGestureRecognizerProtocol {
   
-  fileprivate var targets: [Target<Self>] {
-    get { return associatedValue(forKey: &kTargetsKey, default: []) }
-    set { setAssociatedValue(newValue, forKey: &kTargetsKey) }
-  }
-}
-
-extension UIGestureRecognizerProtocol where Self: UIGestureRecognizer {
-  
-  public init(handler: @escaping (Self) -> Void) {
-    let target = Target<Self>(handler: handler)
-    self.init(target: target, action: #selector(Target<Self>.handle(_:)))
-    targets.append(target)
+  private var actions: [Action<Self>.Identifier: Action<Self>] {
+    get { return associatedValue(forKey: &kActionsKey, default: [:]) }
+    set { setAssociatedValue(newValue, forKey: &kActionsKey) }
   }
   
-  /// Adds action handler to a gesture-recognizer object.
+  public init(identifier: Action<Self>.Identifier = UUID(), handler: @escaping (Self) -> Void) {
+    let target = Action<Self>(identifier: identifier, handler: handler)
+    self.init(target: target, action: #selector(Action<Self>.invoke(_:)))
+    actions[target.identifier] = target
+  }
+  
+  /// Adds action handler to a gesture-recognizer object. If the same identifier is found, the handler will replaced instead of being added.
   /// - Parameter handler: The handler to be called by the action message.
   /// - Returns: The token used to remove handler
-  @discardableResult public func addHandler(_ handler: @escaping (Self) -> Void) -> AnyObject {
-    let actionedTarget = Target<Self>(handler: handler)
-    targets.append(actionedTarget)
-    addTarget(actionedTarget, action: #selector(Target<Self>.handle(_:)))
-    return actionedTarget
+  public func addAction(identifier: Action<Self>.Identifier = UUID(), handler: @escaping (Self) -> Void) {
+    if let action = actions[identifier] {
+      action.handler = .sender(handler)
+    } else {
+      let action = Action<Self>(identifier: identifier, handler: handler)
+      addTarget(action, action: #selector(Action<Self>.invoke(_:)))
+      actions[action.identifier] = action
+    }
   }
   
   /// Removes action handler using specified token.
   /// - Parameter token: The token that is returned by calling `addHandler(_:)`
   /// - Returns: A boolean value indicating whether the handler is found and removed using specified `token`.
   @discardableResult
-  public func removeHandler(_ token: AnyObject) -> Bool {
-    for actionedTarget in targets where actionedTarget === token {
-      removeTarget(actionedTarget, action: #selector(Target<Self>.handle(_:)))
+  public func removeAction(identifier: Action<Self>.Identifier) -> Bool {
+    if let action = actions.removeValue(forKey: identifier) {
+      removeTarget(action, action: #selector(Action<Self>.invoke(_:)))
       return true
     }
     return false
