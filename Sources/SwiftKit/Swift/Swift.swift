@@ -53,3 +53,19 @@ public func deinitLog(_ object: Any) {
   }
   return nil
 }
+
+/// Returns the first value for the key path on the value that satisfies the given predicate.
+///
+///     let view = UIView()
+///     if let firstRedSuperview = first(\.superview, on: view, where: { $0.backgroundColor == .systemRed }) {
+///         print("The first red superview is \(firstRedSuperview).")
+///     }
+@inlinable public func first<Value>(_ keyPath: KeyPath<Value, Value?>, on value: Value, where predicate: ((Value) -> Bool)? = nil) -> Value? {
+  if let value = value[keyPath: keyPath] {
+    if predicate?(value) ?? true {
+      return value
+    }
+    return first(keyPath, on: value, where: predicate)
+  }
+  return nil
+}

@@ -53,17 +53,6 @@ extension NSObjectProtocol {
     handler(self)
     return self
   }
-  
-  public func first(where predicate: (Self) throws -> Bool, next: (Self) throws -> Self?) rethrows -> Self? {
-    var currentTarget: Self? = self
-    while let target = currentTarget {
-      if try predicate(target) {
-        return target
-      }
-      currentTarget = try next(target)
-    }
-    return nil
-  }
 }
 
 #if canImport(Foundation)
