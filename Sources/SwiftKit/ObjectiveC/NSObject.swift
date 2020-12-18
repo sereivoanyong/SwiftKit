@@ -64,21 +64,6 @@ extension NSObjectProtocol {
     }
     return nil
   }
-  
-  public func first<T>(ofType type: T.Type, next: (Self) throws -> Self?) rethrows -> T? {
-    return try first(ofType: type, where: { _ in true }, next: next)
-  }
-  
-  public func first<T>(ofType type: T.Type, where predicate: (T) throws -> Bool, next: (Self) throws -> Self?) rethrows -> T? {
-    var currentTarget: Self? = self
-    while let target = currentTarget {
-      if let castedTarget = target as? T, try predicate(castedTarget) {
-        return castedTarget
-      }
-      currentTarget = try next(target)
-    }
-    return nil
-  }
 }
 
 #if canImport(Foundation)

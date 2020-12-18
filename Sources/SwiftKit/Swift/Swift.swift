@@ -37,3 +37,19 @@ public func deinitLog(_ object: Any) {
   modify(&mutatingValue)
   return mutatingValue
 }
+
+/// Returns the first value for the key path of the type on the value that satisfies the given predicate.
+///
+///     let view = UIView()
+///     if let firstSuperScrollview = first(\.superview, of: UIScrollView.self, on: view) {
+///         print("The first super scroll view is \(firstSuperScrollview).")
+///     }
+@inlinable public func first<Value, T>(_ keyPath: KeyPath<Value, Value?>, of type: T.Type, on value: Value, where predicate: ((T) -> Bool)? = nil) -> T? {
+  if let value = value[keyPath: keyPath] {
+    if let value = value as? T, predicate?(value) ?? true {
+      return value
+    }
+    return first(keyPath, of: type, on: value, where: predicate)
+  }
+  return nil
+}
