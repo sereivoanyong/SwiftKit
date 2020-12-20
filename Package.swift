@@ -8,10 +8,10 @@ let package = Package(
   ],
   products: [
     .library(name: "SwiftKit", targets: ["SwiftKit"]),
-    .library(name: "PropertyWrapperKit", targets: ["SwiftKit", "PropertyWrapperKit"])
+    .library(name: "PropertyWrapperKit", targets: ["PropertyWrapperKit"])
   ],
   targets: [
     .target(name: "SwiftKit"),
-    .target(name: "PropertyWrapperKit")
+    .target(name: "PropertyWrapperKit", dependencies: ["SwiftKit"])
   ]
 )
