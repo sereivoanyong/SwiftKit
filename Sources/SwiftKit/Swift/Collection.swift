@@ -17,6 +17,10 @@ extension Collection {
   public subscript<S: Sequence>(indexes indexes: S) -> [Element] where S.Element == Index {
     return indexes.map { self[$0] }
   }
+
+  @inlinable public func firstIndex<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Index? where T: Equatable {
+    return firstIndex(where: { $0[keyPath: keyPath] == value })
+  }
   
   public func indices(where predicate: (Element) throws -> Bool) rethrows -> [Index] {
     var indices: [Index] = []
