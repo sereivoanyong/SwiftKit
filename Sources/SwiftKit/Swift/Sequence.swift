@@ -5,17 +5,21 @@
 //
 
 extension Sequence {
-  
+
+  @inlinable public func filter<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> [Element] where T: Equatable {
+    return filter({ $0[keyPath: keyPath] == value })
+  }
+
+  @inlinable public func first<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Element? where T: Equatable {
+    return first(where: { $0[keyPath: keyPath] == value })
+  }
+
   /// Returns an array containing, in order, the first unique elements of the sequence that compare equally for the key path.
   public func firstUnique<T: Hashable>(for keyPath: KeyPath<Element, T>) -> [Element] {
     var unique = Set<T>()
     return filter { unique.insert($0[keyPath: keyPath]).inserted }
   }
-  
-  @inlinable public func first<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Element? where T: Equatable {
-    return first(where: { $0[keyPath: keyPath] == value })
-  }
-  
+
   @inlinable public func map<T>(_ keyPath: KeyPath<Element, T>) -> [T] {
     return map { $0[keyPath: keyPath] }
   }
