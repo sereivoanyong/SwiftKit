@@ -4,44 +4,58 @@
 //  Created by Sereivoan Yong on 12/1/20.
 //
 
-import Foundation
+import UIKit
 
-final public class Action<Sender: NSObjectProtocol> {
-  
-  public typealias Identifier = UUID
-  
-  enum Handler {
-    
-    case action((Action<Sender>) -> Void)
-    case sender((Sender) -> Void)
-  }
-  
-  public let identifier: Identifier
-  var handler: Handler
-  
-  /// Available only after `handler` is called.
-  public private(set) var sender: Sender?
-  
-  public init(identifier: Identifier = UUID(), handler: @escaping (Action<Sender>) -> Void) {
-    self.identifier = identifier
-    self.handler = .action(handler)
-  }
-  
-  // For gesture recognizers only
-  init(identifier: Identifier = UUID(), handler: @escaping (Sender) -> Void) {
-    self.identifier = identifier
-    self.handler = .sender(handler)
-  }
-  
-  @objc func invoke(_ sender: NSObjectProtocol) {
-    assert(type(of: sender) == Sender.self)
-    let sender = sender as! Sender
-    self.sender = sender
-    switch handler {
-    case .action(let handler):
-      handler(self)
-    case .sender(let handler):
-      handler(sender)
+@objc open class Action: NSObject {
+
+  /// A type that represents an action identifier.
+  public struct Identifier: Hashable, RawRepresentable {
+
+    public let rawValue: String
+
+    public init(_ rawValue: String) {
+      self.rawValue = rawValue
     }
+
+    public init(rawValue: String) {
+      self.rawValue = rawValue
+    }
+  }
+
+  /// The action's title.
+  public let title: String?
+
+  /// The action's image.
+  public let image: UIImage?
+
+  /// The unique identifier for the action.
+  public let identifier: Identifier
+
+  /// The object responsible for the action handler.
+  public private(set) var sender: Any?
+
+  let handler: (Action) -> Void
+
+  public init(title: String? = nil, image: UIImage? = nil, identifier: Identifier? = nil, handler: @escaping (Action) -> Void) {
+    self.title = title
+    self.image = image
+    self.identifier = identifier ?? Identifier(UUID().uuidString)
+    self.handler = handler
+  }
+
+  @objc func invoke(_ sender: Any) {
+    self.sender = sender
+    handler(self)
+    self.sender = nil
+  }
+}
+
+final class GenericAction<Sender>: Action {
+
+  let genericHandler: (Sender) -> Void
+
+  init(identifier: Identifier? = nil, genericHandler: @escaping (Sender) -> Void) {
+    self.genericHandler = genericHandler
+    super.init(identifier: identifier, handler: { action in genericHandler(action.sender as! Sender) })
   }
 }

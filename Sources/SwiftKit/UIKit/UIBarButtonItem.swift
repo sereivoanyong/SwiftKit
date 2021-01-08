@@ -54,32 +54,24 @@ extension UIBarButtonItem {
     self.handler = handler
   }
 
-  private static var actionKey: Void?
-  final public var handler: ((UIBarButtonItem) -> Void)? {
-    get {
-      if let action = associatedObject(forKey: &Self.actionKey) as Action<UIBarButtonItem>?, case .sender(let handler) = action.handler {
-        return handler
-      }
-      return nil
-    }
+  private static var _primaryActionKey: Void?
+  @objc open var _primaryAction: Action? {
+    get { associatedObject(forKey: &Self._primaryActionKey) }
     set {
-      if let newValue = newValue {
-        if let action = associatedObject(forKey: &Self.actionKey) as Action<UIBarButtonItem>? {
-          action.handler = .sender(newValue)
-        } else {
-          let action = Action<UIBarButtonItem>(handler: newValue)
-          setTarget(action, action: #selector(Action<UIBarButtonItem>.invoke(_:)))
-          setAssociatedObject(action, forKey: &Self.actionKey)
-        }
-      } else {
-        if let action = associatedObject(forKey: &Self.actionKey) as Action<UIBarButtonItem>? {
-          if self.target === action && self.action == #selector(Action<UIBarButtonItem>.invoke(_:)) {
-            setTarget(nil, action: nil)
-          }
-        }
-        setAssociatedObject(nil as Action<UIBarButtonItem>?, forKey: &Self.actionKey)
+      let oldValue = _primaryAction
+      guard newValue !== oldValue else {
+        return
       }
+      setTarget(newValue, action: #selector(Action.invoke(_:)))
+      title = newValue?.title
+      image = newValue?.image
+      setAssociatedObject(newValue, forKey: &Self._primaryActionKey)
     }
+  }
+
+  final public var handler: ((UIBarButtonItem) -> Void)? {
+    get { return (_primaryAction as? GenericAction<UIBarButtonItem>)?.genericHandler }
+    set { _primaryAction = newValue.map { GenericAction<UIBarButtonItem>(genericHandler: $0) } }
   }
 }
 #endif

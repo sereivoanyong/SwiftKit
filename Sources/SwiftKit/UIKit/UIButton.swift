@@ -63,5 +63,13 @@ extension UIButton {
     button.setTitle(title, for: .normal)
     return button
   }
+
+  open override var _primaryAction: Action? {
+    didSet {
+      let action = _primaryAction
+      setTitle(action?.title, for: .normal)
+      setImage(action?.image, for: .normal)
+    }
+  }
 }
 #endif
