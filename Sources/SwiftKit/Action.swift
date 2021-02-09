@@ -54,8 +54,8 @@ final class GenericAction<Sender>: Action {
 
   let genericHandler: (Sender) -> Void
 
-  init(identifier: Identifier? = nil, genericHandler: @escaping (Sender) -> Void) {
+  init(title: String? = nil, image: UIImage? = nil, identifier: Identifier? = nil, genericHandler: @escaping (Sender) -> Void) {
     self.genericHandler = genericHandler
-    super.init(identifier: identifier, handler: { action in genericHandler(action.sender as! Sender) })
+    super.init(title: title, image: image, identifier: identifier, handler: { action in genericHandler(action.sender as! Sender) })
   }
 }

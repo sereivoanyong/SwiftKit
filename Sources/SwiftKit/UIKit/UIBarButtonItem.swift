@@ -71,7 +71,7 @@ extension UIBarButtonItem {
 
   final public var handler: ((UIBarButtonItem) -> Void)? {
     get { return (_primaryAction as? GenericAction<UIBarButtonItem>)?.genericHandler }
-    set { _primaryAction = newValue.map { GenericAction<UIBarButtonItem>(genericHandler: $0) } }
+    set { _primaryAction = newValue.map { GenericAction<UIBarButtonItem>(title: title, image: image, genericHandler: $0) } }
   }
 }
 #endif
