@@ -52,7 +52,11 @@ extension UIFont {
   }
   
   @inlinable public func addingFallback(to fallbackFont: UIFont) -> UIFont {
-    return UIFont(descriptor: fontDescriptor.addingAttributes([.cascadeList: [fallbackFont.fontDescriptor]]), size: 0)
+    return addingFallbackFont(name: fallbackFont.fontName)
+  }
+
+  @inlinable public func addingFallbackFont(name: String) -> UIFont {
+    return UIFont(descriptor: fontDescriptor.addingAttributes([.cascadeList: [UIFontDescriptor(fontAttributes: [.name: name])]]), size: 0)
   }
   
   public func data() -> Data? {
