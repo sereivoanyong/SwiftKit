@@ -9,8 +9,8 @@ import Foundation
 
 extension UserDefaults {
   
-  final public subscript(key: String) -> Any? {
-    @inlinable get { return object(forKey: key) }
+  final public subscript(key: String) -> PropertyListObject? {
+    @inlinable get { return object(forKey: key) as! PropertyListObject? }
     @inlinable set { set(newValue, forKey: key) }
   }
 }

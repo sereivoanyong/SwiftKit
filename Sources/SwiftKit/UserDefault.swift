@@ -8,46 +8,64 @@
 import Foundation
 
 /*
- struct UserPreferences {
+ enum UserPreferences {
    
-   @UserDefault(key: "IsFirstOpen", defaultValue: true)
+   @UserDefault(key: "IsFirstOpen", default: true)
    var isFirstOpen: Bool
  }
  */
 
-@propertyWrapper public struct UserDefault<Value> {
-  
-  private let userDefaults: UserDefaults
-  private let key: String
-  private let defaultValue: () -> Value
-  
-  public init(userDefaults: UserDefaults = .standard, key: String, defaultValue: @autoclosure @escaping () -> Value) {
-    self.userDefaults = userDefaults
-    self.key = key
-    self.defaultValue = defaultValue
+@propertyWrapper public struct UserDefault<Object> {
+
+  private let get: () -> Object
+  private let set: (Object) -> Void
+
+  @available(*, deprecated, renamed: "init(userDefaults:key:default:)")
+  public init(userDefaults: UserDefaults = .standard, key: String, defaultValue: @autoclosure @escaping () -> Object) {
+    get = { userDefaults.object(forKey: key) as? Object ?? defaultValue() }
+    set = { newObject in userDefaults.set(newObject, forKey: key) }
+  }
+
+  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object) where Object: PropertyListObject {
+    get = { userDefaults.object(forKey: key) as? Object ?? defaultObject() }
+    set = { newObject in userDefaults.set(newObject, forKey: key) }
+  }
+
+  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object) where Object: RawRepresentable, Object.RawValue: PropertyListObject {
+    get = { (userDefaults.object(forKey: key) as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? defaultObject() }
+    set = { newObject in userDefaults.set(newObject.rawValue, forKey: key) }
   }
   
-  public var wrappedValue: Value {
-    get { userDefaults.value(forKey: key) as? Value ?? defaultValue() }
-    set { userDefaults.set(newValue, forKey: key) }
+  public var wrappedValue: Object {
+    get { get() }
+    set { set(newValue) }
   }
 }
 
-@propertyWrapper public struct OptionalUserDefault<Value> {
+@propertyWrapper public struct OptionalUserDefault<Object> {
   
-  private let userDefaults: UserDefaults
-  private let key: String
-  private let defaultValue: () -> Value?
-  
-  public init(userDefaults: UserDefaults = .standard, key: String, defaultValue: @autoclosure @escaping () -> Value? = nil) {
-    self.userDefaults = userDefaults
-    self.key = key
-    self.defaultValue = defaultValue
+  private let get: () -> Object?
+  private let set: (Object?) -> Void
+
+  @available(*, deprecated, renamed: "init(userDefaults:key:default:)")
+  public init(userDefaults: UserDefaults = .standard, key: String, defaultValue: @autoclosure @escaping () -> Object? = nil) {
+    get = { userDefaults.object(forKey: key) as? Object ?? defaultValue() }
+    set = { newObject in userDefaults.set(newObject, forKey: key) }
   }
-  
-  public var wrappedValue: Value? {
-    get { userDefaults.value(forKey: key) as? Value ?? defaultValue() }
-    set { userDefaults.set(newValue, forKey: key) }
+
+  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object?) where Object: PropertyListObject {
+    get = { userDefaults.object(forKey: key) as? Object ?? defaultObject() }
+    set = { newObject in userDefaults.set(newObject, forKey: key) }
+  }
+
+  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object?) where Object: RawRepresentable, Object.RawValue: PropertyListObject {
+    get = { (userDefaults.object(forKey: key) as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? defaultObject() }
+    set = { newObject in userDefaults.set(newObject?.rawValue, forKey: key) }
+  }
+
+  public var wrappedValue: Object? {
+    get { get() }
+    set { set(newValue) }
   }
 }
 #endif
