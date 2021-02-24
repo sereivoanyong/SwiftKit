@@ -126,7 +126,11 @@ extension UITableView {
   @inlinable final public func register<View>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) where View: UITableViewHeaderFooterView {
     register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
   }
-  
+
+  @inlinable final public func registerNib<View>(_ viewClass: View.Type, identifier: String = View.nibName) where View: UITableViewHeaderFooterView & InstantiatableFromNib {
+    register(viewClass.nib(), forHeaderFooterViewReuseIdentifier: identifier)
+  }
+
   @inlinable final public func unregister<View>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) where View: UITableViewHeaderFooterView {
     register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
   }
@@ -140,7 +144,11 @@ extension UITableView {
   @inlinable final public func register<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) where Cell: UITableViewCell {
     register(cellClass, forCellReuseIdentifier: identifier)
   }
-  
+
+  @inlinable final public func registerNib<Cell>(_ cellClass: Cell.Type, identifier: String = Cell.nibName) where Cell: UITableViewCell & InstantiatableFromNib {
+    register(cellClass.nib(), forCellReuseIdentifier: identifier)
+  }
+
   @inlinable final public func unregister<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) where Cell: UITableViewCell {
     register(nil as AnyClass?, forCellReuseIdentifier: identifier)
   }

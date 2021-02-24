@@ -57,7 +57,11 @@ extension UICollectionView {
   @inlinable final public func register<View>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String) where View: UICollectionReusableView {
     register(viewClass, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
   }
-  
+
+  @inlinable final public func registerNib<View>(_ viewClass: View.Type, identifier: String = View.nibName, ofKind kind: String) where View: UICollectionReusableView & InstantiatableFromNib {
+    register(viewClass.nib(), forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
+  }
+
   @inlinable final public func unregister<View>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String) where View: UICollectionReusableView {
     register(nil as AnyClass?, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
   }
@@ -71,7 +75,11 @@ extension UICollectionView {
   @inlinable final public func register<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) where Cell: UICollectionViewCell {
     register(cellClass, forCellWithReuseIdentifier: identifier)
   }
-  
+
+  @inlinable final public func registerNib<Cell>(_ cellClass: Cell.Type, identifier: String = Cell.nibName) where Cell: UICollectionViewCell & InstantiatableFromNib {
+    register(cellClass.nib(), forCellWithReuseIdentifier: identifier)
+  }
+
   @inlinable final public func unregister<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) where Cell: UICollectionViewCell {
     register(nil as AnyClass?, forCellWithReuseIdentifier: identifier)
   }
