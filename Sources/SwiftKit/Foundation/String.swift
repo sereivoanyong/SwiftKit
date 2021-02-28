@@ -124,7 +124,7 @@ extension String {
     return NSLocalizedString(self, tableName: nil, bundle: .main, value: "", comment: "")
   }
   
-  @inlinable public func localized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String) -> String {
+  @inlinable public func localized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "") -> String {
     return NSLocalizedString(self, tableName: tableName, bundle: bundle, value: value, comment: comment)
   }
   

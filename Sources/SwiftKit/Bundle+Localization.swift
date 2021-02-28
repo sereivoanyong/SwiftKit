@@ -8,7 +8,7 @@ import Foundation
 
 extension Locale {
   
-  public fileprivate(set) static var selected = Locale(identifier: Bundle.selectedLocalization) {
+  public fileprivate(set) static var selected = Locale(identifier: Bundle.main.selectedLocalization) {
     didSet {
       changeHandler?(selected)
     }
@@ -20,44 +20,68 @@ extension Bundle {
   
   public static let selectedLocalizationDidChangeNotification = Notification.Name("BundleSelectedLocalizationDidChangeNotification")
   
-  public static var selectedLocalization: String = {
-    if let selectedLocalization = UserDefaults.standard.string(forKey: "SelectedLocalization"), main.preferredLocalizations.first == selectedLocalization {
-      return selectedLocalization
+  public var selectedLocalization: String! {
+    get {
+      guard let bundleIdentifier = bundleIdentifier else {
+        preconditionFailure()
+      }
+      if let selectedLocalization = UserDefaults.standard.string(forKey: "\(bundleIdentifier).SelectedLocalization"), preferredLocalizations.first == selectedLocalization {
+        return selectedLocalization
+      }
+      for localization in preferredLocalizations {
+        UserDefaults.standard.appleLanguages = [localization]
+        UserDefaults.standard.set(localization, forKey: "\(bundleIdentifier).SelectedLocalization")
+        return localization
+      }
+      return nil
     }
-    for preferredLocalization in main.preferredLocalizations {
-      UserDefaults.standard.set([preferredLocalization], forKey: "AppleLanguages")
-      UserDefaults.standard.set(preferredLocalization, forKey: "SelectedLocalization")
-      return preferredLocalization
-    }
-    fatalError()
-  }() {
-    didSet {
-      assert(main.localizations.contains(selectedLocalization))
-      guard let path = main.path(forResource: selectedLocalization, ofType: "lproj"), let bundle = Bundle(path: path) else {
-        selected = main
-        NotificationCenter.default.post(name: Self.selectedLocalizationDidChangeNotification, object: main)
+    set(newLocalization) {
+      guard let bundleIdentifier = bundleIdentifier else {
+        preconditionFailure()
+      }
+      assert(localizations.contains(newLocalization))
+      guard let path = path(forResource: newLocalization, ofType: "lproj"), let bundle = Bundle(path: path) else {
+        selectedLocalizationBundle = nil
+        NotificationCenter.default.post(name: Self.selectedLocalizationDidChangeNotification, object: self)
         return
       }
-      selected = bundle
-      Locale.selected = Locale(identifier: Bundle.selectedLocalization)
-      UserDefaults.standard.set([selectedLocalization], forKey: "AppleLanguages")
-      UserDefaults.standard.set(selectedLocalization, forKey: "SelectedLocalization")
-      NotificationCenter.default.post(name: Self.selectedLocalizationDidChangeNotification, object: main)
+      selectedLocalizationBundle = bundle
+      if self == .main {
+        Locale.selected = Locale(identifier: selectedLocalization)
+      }
+      UserDefaults.standard.appleLanguages = [selectedLocalization]
+      UserDefaults.standard.set(selectedLocalization, forKey: "\(bundleIdentifier).SelectedLocalization")
+      NotificationCenter.default.post(name: Self.selectedLocalizationDidChangeNotification, object: self)
     }
   }
-  
-  private static var selected: Bundle = main.path(forResource: selectedLocalization, ofType: "lproj").flatMap(Bundle.init(path:)) ?? main
+
+  private static var selectedLocalizationBundleKey: Void?
+  private var selectedLocalizationBundle: Bundle? {
+    get {
+      if let bundle = associatedObject(forKey: &Self.selectedLocalizationBundleKey) as Bundle? {
+        return bundle
+      }
+      if let bundle = path(forResource: selectedLocalization, ofType: "lproj").flatMap(Bundle.init(path:)) {
+        setAssociatedObject(bundle, forKey: &Self.selectedLocalizationBundleKey)
+        return bundle
+      }
+      return nil
+    }
+    set {
+      setAssociatedObject(newValue, forKey: &Self.selectedLocalizationBundleKey)
+    }
+  }
   
   public static func swizzleForLocalization() {
     class_exchangeInstanceMethodImplementations(self, #selector(localizedString(forKey:value:table:)), #selector(_localizedString(forKey:value:table:)))
   }
   
   @objc private func _localizedString(forKey key: String, value: String?, table tableName: String?) -> String {
-    if self == .main {
-      return Self.selected.localizedString(forKey: key, value: _localizedString(forKey: key, value: value, table: tableName), table: tableName)
+    if let selectedLocalizationBundle = selectedLocalizationBundle {
+      return selectedLocalizationBundle.localizedString(forKey: key, value: _localizedString(forKey: key, value: value, table: tableName), table: tableName)
     }
     if let bundleIdentifier = bundleIdentifier, bundleIdentifier.hasSuffix("UIKitCore") {
-      return Self.selected.localizedString(forKey: key, value: _localizedString(forKey: key, value: value, table: tableName), table: tableName)
+      return Self.main.localizedString(forKey: key, value: _localizedString(forKey: key, value: value, table: tableName), table: tableName)
     }
     return _localizedString(forKey: key, value: value, table: tableName)
   }
