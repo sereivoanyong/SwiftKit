@@ -79,7 +79,7 @@ extension UIColor {
    - parameter hex3: Three-digit hexadecimal value.
    - parameter alpha: 0.0 - 1.0.
    */
-  public convenience init(hex3: UInt16, alpha: CGFloat) {
+  public convenience init(hex3: UInt16, alpha: CGFloat = 1) {
     let divisor = CGFloat(15)
     let red     = CGFloat((hex3 & 0xF00) >> 8) / divisor
     let green   = CGFloat((hex3 & 0x0F0) >> 4) / divisor
@@ -107,7 +107,7 @@ extension UIColor {
    
    - parameter hex6: Six-digit hexadecimal value.
    */
-  public convenience init(hex6: UInt32, alpha: CGFloat) {
+  public convenience init(hex6: UInt32, alpha: CGFloat = 1) {
     let divisor = CGFloat(255)
     let red     = CGFloat((hex6 & 0xFF0000) >> 16) / divisor
     let green   = CGFloat((hex6 & 0x00FF00) >>  8) / divisor
@@ -135,24 +135,29 @@ extension UIColor {
    - parameter rgba: String value.
    */
   public convenience init?(hexString: String) {
-    var hexString = hexString
+    let scanner = Scanner(string: hexString)
+    var count = hexString.count
     if hexString.hasPrefix("#") {
-      hexString.removeFirst()
+      count -= 1
+      if #available(iOS 13.0, *) {
+        scanner.currentIndex = hexString.index(hexString.startIndex, offsetBy: 1)
+      } else {
+        scanner.scanLocation = 1
+      }
     }
-    var hexValue: UInt32 = 0
-    guard Scanner(string: hexString).scanHexInt32(&hexValue) else {
+    var hexValue: UInt64 = 0
+    guard scanner.scanHexInt64(&hexValue) else {
       return nil
     }
-    
-    switch hexString.count {
+    switch count {
     case 3:
-      self.init(hex3: UInt16(hexValue), alpha: 1)
+      self.init(hex3: UInt16(hexValue))
     case 4:
       self.init(hex4: UInt16(hexValue))
     case 6:
-      self.init(hex6: hexValue, alpha: 1)
+      self.init(hex6: UInt32(hexValue))
     case 8:
-      self.init(hex8: hexValue)
+      self.init(hex8: UInt32(hexValue))
     default:
       return nil
     }
@@ -164,19 +169,22 @@ extension UIColor {
    - parameter includeAlpha: Whether the alpha should be included.
    */
   public func hexString(_ includesAlpha: Bool = true) -> String?  {
-    var red: CGFloat = 0
-    var green: CGFloat = 0
-    var blue: CGFloat = 0
-    var alpha: CGFloat = 0
-    switch cgColor.numberOfComponents {
+    guard let components = cgColor.components else {
+      return nil
+    }
+    let red, green, blue, alpha: CGFloat
+    switch components.count {
     case 2:
-      var white: CGFloat = 0
-      getWhite(&white, alpha: &alpha)
+      let white = components[0]
       red = white
       green = white
       blue = white
+      alpha = components[1]
     case 4:
-      getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+      red = components[0]
+      green = components[1]
+      blue = components[2]
+      alpha = components[3]
     default:
       return nil
     }
