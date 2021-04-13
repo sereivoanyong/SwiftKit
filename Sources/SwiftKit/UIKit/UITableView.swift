@@ -120,45 +120,86 @@ extension UITableView {
       }
     }
   }
-  
-  // HeaderView/FootersView
-  
-  @inlinable final public func register<View>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) where View: UITableViewHeaderFooterView {
-    register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
-  }
 
-  @inlinable final public func registerNib<View>(_ viewClass: View.Type, identifier: String = View.nibName) where View: UITableViewHeaderFooterView & InstantiatableFromNib {
-    register(viewClass.nib(), forHeaderFooterViewReuseIdentifier: identifier)
-  }
+  // Register
 
-  @inlinable final public func unregister<View>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) where View: UITableViewHeaderFooterView {
-    register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
-  }
-  
-  @inlinable final public func dequeue<View>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) -> View where View: UITableViewHeaderFooterView {
-    return unsafeDowncast(dequeueReusableHeaderFooterView(withIdentifier: identifier).unsafelyUnwrapped, to: View.self)
-  }
-  
-  // Cell
-  
-  @inlinable final public func register<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) where Cell: UITableViewCell {
+  @inlinable
+  final public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
     register(cellClass, forCellReuseIdentifier: identifier)
   }
 
-  @inlinable final public func registerNib<Cell>(_ cellClass: Cell.Type, identifier: String = Cell.nibName) where Cell: UITableViewCell & InstantiatableFromNib {
-    register(cellClass.nib(), forCellReuseIdentifier: identifier)
+  @inlinable
+  final public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: Reusable {
+    register(cellClass, forCellReuseIdentifier: identifier)
   }
 
-  @inlinable final public func unregister<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) where Cell: UITableViewCell {
+  @inlinable
+  final public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: NibReusable {
+    register(cellClass.nib, forCellReuseIdentifier: identifier)
+  }
+
+  @inlinable
+  final public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
+    register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
+  }
+
+  @inlinable
+  final public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) where View: Reusable {
+    register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
+  }
+
+  @inlinable
+  final public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) where View: NibReusable {
+    register(viewClass.nib, forHeaderFooterViewReuseIdentifier: identifier)
+  }
+
+  // Unregister
+
+  @inlinable
+  final public func unregister<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
     register(nil as AnyClass?, forCellReuseIdentifier: identifier)
   }
-  
-  @inlinable final public func dequeue<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell where Cell: UITableViewCell {
-    return unsafeDowncast(dequeueReusableCell(withIdentifier: identifier, for: indexPath), to: Cell.self)
+
+  @inlinable
+  final public func unregister<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: Reusable {
+    register(nil as AnyClass?, forCellReuseIdentifier: identifier)
   }
-  
-  @inlinable final public func dequeue<Cell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), style: UITableViewCell.CellStyle = .default) -> Cell where Cell: UITableViewCell {
+
+  @inlinable
+  final public func unregister<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
+    register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
+  }
+
+  @inlinable
+  final public func unregister<View>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) where View: Reusable {
+    register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
+  }
+
+  // Dequeue
+
+  @inlinable
+  final public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, style: UITableViewCell.CellStyle = .default, identifier: String = String(describing: Cell.self)) -> Cell {
     return dequeueReusableCell(withIdentifier: identifier) as! Cell? ?? Cell(style: style, reuseIdentifier: identifier)
+  }
+
+  @inlinable
+  final public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell {
+    return dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! Cell
+  }
+
+  @inlinable
+  final public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell where Cell: Reusable {
+    return dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! Cell
+  }
+
+  @inlinable
+  final public func dequeue<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) -> View {
+    return dequeueReusableHeaderFooterView(withIdentifier: identifier) as! View
+  }
+
+  @inlinable
+  final public func dequeue<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) -> View where View: Reusable {
+    return dequeueReusableHeaderFooterView(withIdentifier: identifier) as! View
   }
 }
 #endif
