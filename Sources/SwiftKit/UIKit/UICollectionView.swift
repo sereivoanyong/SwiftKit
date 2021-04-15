@@ -151,11 +151,12 @@ extension UICollectionView {
   }
 
   @objc private func _layoutSubviews() {
+    _layoutSubviews()
+    
     if invalidatesCollectionViewLayoutOnBoundsChange && bounds != boundsWhenCollectionViewLayoutInvalidated {
       boundsWhenCollectionViewLayoutInvalidated = bounds
       collectionViewLayout.invalidateLayout()
     }
-    _layoutSubviews()
   }
 }
 #endif
