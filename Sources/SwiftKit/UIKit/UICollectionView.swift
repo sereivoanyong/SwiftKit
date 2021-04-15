@@ -132,7 +132,7 @@ extension UICollectionView {
 
   private static let swizzlingHandler: Void = {
     let klass = UICollectionView.self
-    class_exchangeInstanceMethodImplementations(klass, #selector(layoutSubviews), #selector(_layoutSubviews))
+    class_exchangeInstanceMethodImplementations(klass, #selector(layoutSubviews), #selector(_sk_cv_layoutSubviews))
   }()
 
   private static var invalidatesCollectionViewLayoutOnBoundsChangeKey: Void?
@@ -150,8 +150,8 @@ extension UICollectionView {
     set { setAssociatedValue(newValue, forKey: &Self.boundsWhenCollectionViewLayoutInvalidatedKey) }
   }
 
-  @objc private func _layoutSubviews() {
-    _layoutSubviews()
+  @objc private func _sk_cv_layoutSubviews() {
+    _sk_cv_layoutSubviews()
     
     if invalidatesCollectionViewLayoutOnBoundsChange && bounds != boundsWhenCollectionViewLayoutInvalidated {
       boundsWhenCollectionViewLayoutInvalidated = bounds

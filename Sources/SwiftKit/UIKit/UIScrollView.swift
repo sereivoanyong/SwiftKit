@@ -145,9 +145,9 @@ extension UIScrollView {
 
   private static let swizzlingHandler: Void = {
     let klass = UIScrollView.self
-    class_exchangeInstanceMethodImplementations(klass, #selector(layoutSubviews), #selector(_layoutSubviews))
-    class_exchangeInstanceMethodImplementations(klass, #selector(getter: intrinsicContentSize), #selector(_intrinsicContentSize))
-    class_exchangeInstanceMethodImplementations(klass, #selector(setter: contentSize), #selector(_setContentSize(_:)))
+    class_exchangeInstanceMethodImplementations(klass, #selector(layoutSubviews), #selector(_sk_sv_layoutSubviews))
+    class_exchangeInstanceMethodImplementations(klass, #selector(getter: intrinsicContentSize), #selector(_sk_sv_intrinsicContentSize))
+    class_exchangeInstanceMethodImplementations(klass, #selector(setter: contentSize), #selector(_sk_sv_setContentSize(_:)))
   }()
 
   private static var usesContentSizeAsIntrinsicKey: Void?
@@ -158,31 +158,31 @@ extension UIScrollView {
     set { _ = Self.swizzlingHandler; setAssociatedValue(newValue, forKey: &Self.usesContentSizeAsIntrinsicKey) }
   }
 
-  @objc private func _layoutSubviews() {
-    _layoutSubviews()
+  @objc private func _sk_sv_layoutSubviews() {
+    _sk_sv_layoutSubviews()
 
     if usesContentSizeAsIntrinsic && bounds.size != intrinsicContentSize {
       invalidateIntrinsicContentSize()
     }
   }
 
-  @objc private func _intrinsicContentSize() -> CGSize {
+  @objc private func _sk_sv_intrinsicContentSize() -> CGSize {
     if usesContentSizeAsIntrinsic {
       return contentSize
     }
-    return _intrinsicContentSize()
+    return _sk_sv_intrinsicContentSize()
   }
 
-  @objc private func _setContentSize(_ newContentSize: CGSize) {
+  @objc private func _sk_sv_setContentSize(_ newContentSize: CGSize) {
     if usesContentSizeAsIntrinsic {
       let oldContentSize = contentSize
-      _setContentSize(newContentSize)
+      _sk_sv_setContentSize(newContentSize)
       if newContentSize != oldContentSize {
         invalidateIntrinsicContentSize()
       }
       return
     }
-    _setContentSize(newContentSize)
+    _sk_sv_setContentSize(newContentSize)
   }
 }
 #endif
