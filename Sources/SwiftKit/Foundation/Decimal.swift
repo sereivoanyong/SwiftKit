@@ -16,7 +16,7 @@ extension Decimal {
     NSDecimalCompact(&self)
   }
   
-  /// Returns the compacts decimal structure for efficiency.
+  /// Returns the compacted decimal structure for efficiency.
   ///
   /// Formats number so that calculations using it will take up as little memory as possible. All the `NSDecimal`... arithmetic functions expect compact `Decimal` arguments.
   public func compacted() -> Decimal {
@@ -25,24 +25,24 @@ extension Decimal {
     return result
   }
   
-  /// Rounds off the decimal value
+  /// Rounds off the decimal value.
   ///
   /// - Parameters:
   ///   - scale: specifies the number of digits result can have after its decimal point.
-  ///   - mode: specifies the way that number is rounded off. There are four possible values for `mode`: `.down`, `.up`, `.plain`, and `.bankers`.
-  public mutating func round(scale: Int, mode: RoundingMode) {
+  ///   - roundingMode: specifies the way that number is rounded off. There are 4 possible values for `roundingMode`: `.down`, `.up`, `.plain`, and `.bankers`.
+  public mutating func round(_ scale: Int = 0, _ roundingMode: RoundingMode = .plain) {
     var decimal = self
-    NSDecimalRound(&self, &decimal, scale, mode)
+    NSDecimalRound(&self, &decimal, scale, roundingMode)
   }
   
-  /// Returns the rounded-off decimal value
+  /// Returns the rounded-off decimal value.
   ///
   /// - Parameters:
   ///   - scale: specifies the number of digits result can have after its decimal point.
-  ///   - mode: specifies the way that number is rounded off. There are four possible values for `mode`: `.down`, `.up`, `.plain`, and `.bankers`.
-  public func rounded(scale: Int, mode: RoundingMode) -> Decimal {
+  ///   - roundingMode: specifies the way that number is rounded off. There are 4 possible values for `roundingMode`: `.down`, `.up`, `.plain`, and `.bankers`.
+  public func rounded(_ scale: Int = 0, _ roundingMode: RoundingMode = .plain) -> Decimal {
     var result = self
-    result.round(scale: scale, mode: mode)
+    result.round(scale, roundingMode)
     return result
   }
 }
