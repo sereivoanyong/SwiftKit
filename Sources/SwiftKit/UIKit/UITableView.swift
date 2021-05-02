@@ -65,6 +65,16 @@ extension UITableView {
   final public func hasIndexPath(_ indexPath: IndexPath) -> Bool {
     return 0..<numberOfSections ~= indexPath.section && 0..<numberOfRows(inSection: indexPath.section) ~= indexPath.row
   }
+
+  final public func indexPathForCellContainingView(_ view: UIView) -> IndexPath? {
+    if let cell = view as? UITableViewCell {
+      return indexPath(for: cell)
+    }
+    if let superview = view.superview {
+      return indexPathForCellContainingView(superview)
+    }
+    return nil
+  }
   
   final public func disableEstimatedHeightIfUsed() {
     if #available(iOS 11.0, *) {
