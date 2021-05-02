@@ -66,6 +66,11 @@ extension UIViewController {
   final public func show(animated: Bool, completion: (() -> Void)?) {
     UIApplication.shared.keyTopMostViewController?.present(self, animated: animated, completion: completion)
   }
+
+  @inlinable
+  final public func showDetail(_ detailViewController: UIViewController, sender: Any?) {
+    showDetailViewController(detailViewController, sender: sender)
+  }
   
   open func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
     let navigationController = UINavigationController(rootViewController: self)
