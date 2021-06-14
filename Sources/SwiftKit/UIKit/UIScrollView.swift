@@ -140,5 +140,49 @@ extension UIScrollView {
       contentLayoutGuide.topAnchor.constraint(lessThanOrEqualTo: accessoryView.bottomAnchor, constant: insets.bottom),
     ])
   }
+
+  // Swizzle for functionalities
+
+  private static let swizzlingHandler: Void = {
+    let klass = UIScrollView.self
+    class_exchangeInstanceMethodImplementations(klass, #selector(layoutSubviews), #selector(_sk_sv_layoutSubviews))
+    class_exchangeInstanceMethodImplementations(klass, #selector(getter: intrinsicContentSize), #selector(_sk_sv_intrinsicContentSize))
+    class_exchangeInstanceMethodImplementations(klass, #selector(setter: contentSize), #selector(_sk_sv_setContentSize(_:)))
+  }()
+
+  private static var usesContentSizeAsIntrinsicKey: Void?
+
+  /// A `Bool` value that determines whether the scroll view uses its `contentSize` for `intrinsicContentSize`.
+  final public var usesContentSizeAsIntrinsic: Bool {
+    get { associatedValue(forKey: &Self.usesContentSizeAsIntrinsicKey) ?? false }
+    set { _ = Self.swizzlingHandler; setAssociatedValue(newValue, forKey: &Self.usesContentSizeAsIntrinsicKey) }
+  }
+
+  @objc private func _sk_sv_layoutSubviews() {
+    _sk_sv_layoutSubviews()
+
+    if usesContentSizeAsIntrinsic && bounds.size != intrinsicContentSize {
+      invalidateIntrinsicContentSize()
+    }
+  }
+
+  @objc private func _sk_sv_intrinsicContentSize() -> CGSize {
+    if usesContentSizeAsIntrinsic {
+      return contentSize
+    }
+    return _sk_sv_intrinsicContentSize()
+  }
+
+  @objc private func _sk_sv_setContentSize(_ newContentSize: CGSize) {
+    if usesContentSizeAsIntrinsic {
+      let oldContentSize = contentSize
+      _sk_sv_setContentSize(newContentSize)
+      if newContentSize != oldContentSize {
+        invalidateIntrinsicContentSize()
+      }
+      return
+    }
+    _sk_sv_setContentSize(newContentSize)
+  }
 }
 #endif
