@@ -69,6 +69,10 @@ extension UIBarButtonItem {
       if let newValue = newValue {
         target = newValue
         action = #selector(SenderAction<UIBarButtonItem>.invoke(_:))
+      } else {
+        if target is SenderAction<UIBarButtonItem> {
+          action = nil
+        }
       }
       setAssociatedObject(newValue, forKey: &Self.senderActionKey)
     }
