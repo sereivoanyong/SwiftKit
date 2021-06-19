@@ -9,17 +9,9 @@ import UIKit
 
 extension UIBarButtonItem {
   
-  @inlinable public convenience init(systemItem: SystemItem, target: AnyObject? = nil, action: Selector? = nil) {
+  @inlinable
+  public convenience init(systemItem: SystemItem, target: AnyObject? = nil, action: Selector? = nil) {
     self.init(barButtonSystemItem: systemItem, target: target, action: action)
-  }
-  
-  @inlinable public convenience init(title: String? = nil, image: UIImage? = nil, style: Style = .plain, target: AnyObject? = nil, action: Selector? = nil) {
-    self.init()
-    self.title = title
-    self.image = image
-    self.style = style
-    self.target = target
-    self.action = action
   }
   
   public static func fixedSpace(_ width: CGFloat) -> Self {
@@ -36,21 +28,21 @@ extension UIBarButtonItem {
     get { return value(forKey: "view") as? UIView }
     set { setValue(newValue, forKey: "view") }
   }
-  
-  final public func setTarget(_ target: AnyObject?, action: Selector?) {
-    self.target = target
-    self.action = action
-  }
 
   // MARK: Action Support
 
-  public convenience init(systemItem: SystemItem, handler: ((UIBarButtonItem) -> Void)? = nil) {
-    self.init(systemItem: systemItem, target: nil, action: nil)
+  public convenience init(image: UIImage?, style: Style, handler: ((UIBarButtonItem) -> Void)?) {
+    self.init(image: image, style: style, target: nil, action: nil)
     self.handler = handler
   }
 
-  public convenience init(title: String? = nil, image: UIImage? = nil, style: Style = .plain, handler: ((UIBarButtonItem) -> Void)? = nil) {
-    self.init(title: title, image: image, style: style, target: nil, action: nil)
+  public convenience init(title: String?, style: Style, handler: ((UIBarButtonItem) -> Void)?) {
+    self.init(title: title, style: style, target: nil, action: nil)
+    self.handler = handler
+  }
+
+  public convenience init(systemItem: SystemItem, handler: ((UIBarButtonItem) -> Void)?) {
+    self.init(systemItem: systemItem, target: nil, action: nil)
     self.handler = handler
   }
 
@@ -62,7 +54,8 @@ extension UIBarButtonItem {
       guard newValue !== oldValue else {
         return
       }
-      setTarget(newValue, action: #selector(Action.invoke(_:)))
+      target = newValue
+      action = #selector(Action.invoke(_:))
       title = newValue?.title
       image = newValue?.image
       setAssociatedObject(newValue, forKey: &Self._primaryActionKey)

@@ -6,7 +6,7 @@
 
 import UIKit
 
-@objc open class Action: NSObject {
+extension Action {
 
   /// A type that represents an action identifier.
   public struct Identifier: Hashable, RawRepresentable {
@@ -21,6 +21,9 @@ import UIKit
       self.rawValue = rawValue
     }
   }
+}
+
+@objc open class Action: NSObject {
 
   /// The action's title.
   public let title: String?
