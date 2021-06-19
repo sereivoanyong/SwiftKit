@@ -43,19 +43,9 @@ import UIKit
     self.handler = handler
   }
 
-  @objc func invoke(_ sender: Any) {
+  @objc open func invoke(_ sender: Any) {
     self.sender = sender
     handler(self)
     self.sender = nil
-  }
-}
-
-final class GenericAction<Sender>: Action {
-
-  let genericHandler: (Sender) -> Void
-
-  init(title: String? = nil, image: UIImage? = nil, identifier: Identifier? = nil, genericHandler: @escaping (Sender) -> Void) {
-    self.genericHandler = genericHandler
-    super.init(title: title, image: image, identifier: identifier, handler: { action in genericHandler(action.sender as! Sender) })
   }
 }

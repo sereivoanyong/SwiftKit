@@ -69,9 +69,31 @@ extension UIBarButtonItem {
     }
   }
 
+  private static var senderActionKey: Void?
+  final public var senderAction: SenderAction<UIBarButtonItem>? {
+    get { associatedObject(forKey: &Self.senderActionKey) }
+    set {
+      if let newValue = newValue {
+        target = newValue
+        action = #selector(SenderAction<UIBarButtonItem>.invoke(_:))
+      }
+      setAssociatedObject(newValue, forKey: &Self.senderActionKey)
+    }
+  }
+
   final public var handler: ((UIBarButtonItem) -> Void)? {
-    get { return (_primaryAction as? GenericAction<UIBarButtonItem>)?.genericHandler }
-    set { _primaryAction = newValue.map { GenericAction<UIBarButtonItem>(title: title, image: image, genericHandler: $0) } }
+    get { senderAction?.handler }
+    set {
+      if let newValue = newValue {
+        if let senderAction = senderAction {
+          senderAction.handler = newValue
+        } else {
+          senderAction = SenderAction<UIBarButtonItem>(handler: newValue)
+        }
+      } else {
+        senderAction = nil
+      }
+    }
   }
 }
 #endif
