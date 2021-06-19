@@ -50,18 +50,27 @@ extension UIButton {
     }
   }
   
-  @inlinable public convenience init(type: ButtonType, target: AnyObject?, action: Selector?) {
+  @inlinable
+  public convenience init(type: ButtonType = .custom, image: UIImage? = nil, title: String? = nil, target: AnyObject? = nil, action: Selector? = nil) {
     self.init(type: type)
-    if let action = action {
+    setImage(image, for: .normal)
+    setTitle(title, for: .normal)
+    if let target = target, let action = action {
       addTarget(target, action: action, for: .touchUpInside)
     }
   }
-  
+
+  @available(*, deprecated, message: "Use `init(type:image:title:target:action)` instead.")
   public static func system(image: UIImage? = nil, title: String? = nil, target: AnyObject? = nil, action: Selector? = nil) -> UIButton {
     let button = UIButton(type: .system, target: target, action: action)
     button.setImage(image, for: .normal)
     button.setTitle(title, for: .normal)
     return button
+  }
+
+  public convenience init(type: ButtonType, primaryAction: Action?) {
+    self.init(type: type)
+    bc.primaryAction = primaryAction
   }
 
   override func bc_setPrimaryAction(_ primaryAction: Action?) {
