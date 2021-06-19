@@ -15,13 +15,12 @@ final public class SenderAction<Sender: NSObjectProtocol> {
   public let identifier: Identifier
   public var handler: Handler
 
-  // For gesture recognizers only
-  init(identifier: Identifier? = nil, handler: @escaping (Sender) -> Void) {
+  public init(identifier: Identifier? = nil, handler: @escaping (Sender) -> Void) {
     self.identifier = identifier ?? UUID()
     self.handler = handler
   }
 
-  @objc func invoke(_ sender: NSObjectProtocol) {
+  @objc public func invoke(_ sender: NSObjectProtocol) {
     assert(type(of: sender) == Sender.self)
     handler(sender as! Sender)
   }

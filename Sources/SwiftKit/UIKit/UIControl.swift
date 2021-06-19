@@ -9,22 +9,10 @@ import UIKit
 
 extension UIControl {
 
-  private static var _primaryActionKey: Void?
-  @objc open var _primaryAction: Action? {
-    get { associatedObject(forKey: &Self._primaryActionKey) }
-    set {
-      let oldValue = _primaryAction
-      guard newValue !== oldValue else {
-        return
-      }
-      if let oldValue = oldValue {
-        removeTarget(oldValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
-      }
-      if let newValue = newValue {
-        addTarget(newValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
-      }
-      setAssociatedObject(newValue, forKey: &Self._primaryActionKey)
-    }
+  @available(*, deprecated, message: "Use `bc.primaryAction` instead.")
+  final public var _primaryAction: Action? {
+    get { bc.primaryAction }
+    set { bc.primaryAction = newValue }
   }
   
   private struct Key: Hashable {
@@ -57,7 +45,7 @@ extension UIControl {
         removeTarget(action, action: #selector(Action.invoke(_:)), for: key.events)
       }
     }
-    
+
     let key = Key(identifier: action.identifier, events: events)
     // Ignore if attempting to add the same action and the same events
     if currentActions[key] == nil {
@@ -83,5 +71,39 @@ extension UIControl {
       removeTarget(action, action: #selector(Action.invoke(_:)), for: events)
     }
   }
+
+  @objc(bc_initWithFrame:primaryAction:)
+  public convenience init(frame: CGRect, primaryAction: Action?) {
+    self.init(frame: frame)
+    bc.primaryAction = primaryAction
+  }
+
+  @objc func bc_setPrimaryAction(_ primaryAction: Action?) {
+
+  }
 }
+
+private var primaryActionKey: Void?
+extension BackwardCompatibility where Base: UIControl {
+
+  public var primaryAction: Action? {
+    get { base.associatedObject(forKey: &primaryActionKey) }
+    nonmutating set {
+      let oldValue = primaryAction
+      guard newValue !== oldValue else {
+        return
+      }
+      if let oldValue = oldValue {
+        base.removeTarget(oldValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
+      }
+      if let newValue = newValue {
+        base.addTarget(newValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
+      }
+      base.setAssociatedObject(newValue, forKey: &primaryActionKey)
+      base.bc_setPrimaryAction(newValue)
+    }
+  }
+}
+
+extension UIControl: BackwardCompatible { }
 #endif

@@ -50,7 +50,7 @@ extension UIButton {
     }
   }
   
-  @inlinable public convenience init(type: ButtonType, target: AnyObject? = nil, action: Selector? = nil) {
+  @inlinable public convenience init(type: ButtonType, target: AnyObject?, action: Selector?) {
     self.init(type: type)
     if let action = action {
       addTarget(target, action: action, for: .touchUpInside)
@@ -64,12 +64,9 @@ extension UIButton {
     return button
   }
 
-  open override var _primaryAction: Action? {
-    didSet {
-      let action = _primaryAction
-      setTitle(action?.title, for: .normal)
-      setImage(action?.image, for: .normal)
-    }
+  override func bc_setPrimaryAction(_ primaryAction: Action?) {
+    setTitle(primaryAction?.title, for: .normal)
+    setImage(primaryAction?.image, for: .normal)
   }
 }
 #endif

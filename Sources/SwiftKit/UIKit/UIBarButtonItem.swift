@@ -10,7 +10,7 @@ import UIKit
 extension UIBarButtonItem {
   
   @inlinable
-  public convenience init(systemItem: SystemItem, target: AnyObject? = nil, action: Selector? = nil) {
+  public convenience init(systemItem: SystemItem, target: AnyObject?, action: Selector?) {
     self.init(barButtonSystemItem: systemItem, target: target, action: action)
   }
   
@@ -25,71 +25,49 @@ extension UIBarButtonItem {
   }
   
   final public var view: UIView? {
-    get { return value(forKey: "view") as? UIView }
+    get { value(forKey: "view") as? UIView }
     set { setValue(newValue, forKey: "view") }
   }
 
   // MARK: Action Support
 
-  public convenience init(image: UIImage?, style: Style, handler: ((UIBarButtonItem) -> Void)?) {
+  public convenience init(image: UIImage?, style: Style, primaryAction: Action?) {
     self.init(image: image, style: style, target: nil, action: nil)
-    self.handler = handler
+    bc.primaryAction = primaryAction
   }
 
-  public convenience init(title: String?, style: Style, handler: ((UIBarButtonItem) -> Void)?) {
+  public convenience init(title: String?, style: Style, primaryAction: Action?) {
     self.init(title: title, style: style, target: nil, action: nil)
-    self.handler = handler
+    bc.primaryAction = primaryAction
   }
 
-  public convenience init(systemItem: SystemItem, handler: ((UIBarButtonItem) -> Void)?) {
+  public convenience init(systemItem: SystemItem, primaryAction: Action?) {
     self.init(systemItem: systemItem, target: nil, action: nil)
-    self.handler = handler
+    bc.primaryAction = primaryAction
   }
 
-  private static var _primaryActionKey: Void?
-  @objc open var _primaryAction: Action? {
-    get { associatedObject(forKey: &Self._primaryActionKey) }
-    set {
-      let oldValue = _primaryAction
+  @available(*, deprecated, message: "Use `bc.primaryAction` instead.")
+  final public var _primaryAction: Action? {
+    get { bc.primaryAction }
+    set { bc.primaryAction = newValue }
+  }
+}
+
+private var primaryActionKey: Void?
+extension BackwardCompatibility where Base: UIBarButtonItem {
+
+  public var primaryAction: Action? {
+    get { base.associatedObject(forKey: &primaryActionKey) }
+    nonmutating set {
+      let oldValue = primaryAction
       guard newValue !== oldValue else {
         return
       }
-      target = newValue
-      action = #selector(Action.invoke(_:))
-      title = newValue?.title
-      image = newValue?.image
-      setAssociatedObject(newValue, forKey: &Self._primaryActionKey)
-    }
-  }
-
-  private static var senderActionKey: Void?
-  final public var senderAction: SenderAction<UIBarButtonItem>? {
-    get { associatedObject(forKey: &Self.senderActionKey) }
-    set {
-      if let newValue = newValue {
-        target = newValue
-        action = #selector(SenderAction<UIBarButtonItem>.invoke(_:))
-      } else {
-        if target is SenderAction<UIBarButtonItem> {
-          action = nil
-        }
-      }
-      setAssociatedObject(newValue, forKey: &Self.senderActionKey)
-    }
-  }
-
-  final public var handler: ((UIBarButtonItem) -> Void)? {
-    get { senderAction?.handler }
-    set {
-      if let newValue = newValue {
-        if let senderAction = senderAction {
-          senderAction.handler = newValue
-        } else {
-          senderAction = SenderAction<UIBarButtonItem>(handler: newValue)
-        }
-      } else {
-        senderAction = nil
-      }
+      base.target = newValue
+      base.action = #selector(Action.invoke(_:))
+      base.title = newValue?.title
+      base.image = newValue?.image
+      base.setAssociatedObject(newValue, forKey: &primaryActionKey)
     }
   }
 }
