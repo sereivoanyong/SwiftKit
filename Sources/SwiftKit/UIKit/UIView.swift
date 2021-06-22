@@ -87,16 +87,6 @@ extension UIView {
     setContentResistancePriority(priority, for: .horizontal)
     setContentResistancePriority(priority, for: .vertical)
   }
-
-  final public func addStackLayoutGuide(_ views: [UIView], axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, spacing: CGFloat = 0, insets: UIEdgeInsets = .zero) -> UILayoutGuide {
-    addSubviews(views)
-
-    let layoutGuide = UILayoutGuide()
-    addLayoutGuide(layoutGuide)
-
-    layoutGuide.stack(views, axis: axis, distribution: distribution, alignment: alignment, spacing: spacing, insets: insets)
-    return layoutGuide
-  }
 }
 
 extension UIView.AutoresizingMask {

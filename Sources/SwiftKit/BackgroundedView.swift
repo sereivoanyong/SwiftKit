@@ -28,7 +28,12 @@ extension BackgroundedView where Self: UIView {
           newValue.autoresizingMask = .flexibleSize
           insertSubview(newValue, at: 0)
         } else {
-          newValue.pinAnchors(inside: self)
+          NSLayoutConstraint.activate([
+            newValue.topAnchor.constraint(equalTo: topAnchor),
+            newValue.leadingAnchor.constraint(equalTo: leadingAnchor),
+            bottomAnchor.constraint(equalTo: newValue.bottomAnchor),
+            trailingAnchor.constraint(equalTo: newValue.trailingAnchor)
+          ])
         }
       }
       setAssociatedObject(newValue, forKey: &kBackgroundViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)

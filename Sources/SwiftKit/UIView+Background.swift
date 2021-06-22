@@ -29,7 +29,12 @@ extension UIView {
       insertTo(self)
     } else {
       insertTo(self)
-      backgroundView.pinAnchors(inside: self)
+      NSLayoutConstraint.activate([
+        backgroundView.topAnchor.constraint(equalTo: topAnchor),
+        backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+        bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor),
+        trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor)
+      ])
     }
   }
   

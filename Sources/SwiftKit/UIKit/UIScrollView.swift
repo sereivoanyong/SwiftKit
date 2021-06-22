@@ -69,9 +69,13 @@ extension UIScrollView {
       for (index, view) in views.enumerated() {
         view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(view)
-        
-        view.pinVerticalAnchors(inside: alignmentLayoutGuide, topConstant: insets.top, bottomConstant: insets.bottom)
-        view.leftAnchor.equalTo(lastRightAnchor, constant: index > 0 ? spacing.value(at: index - 1) : insets.left)
+
+        NSLayoutConstraint.activate([
+          view.topAnchor.constraint(equalTo: alignmentLayoutGuide.topAnchor, constant: insets.top),
+          alignmentLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: insets.bottom),
+
+          view.leftAnchor.constraint(equalTo: lastRightAnchor, constant: index > 0 ? spacing.value(at: index - 1) : insets.left)
+        ])
         lastRightAnchor = view.rightAnchor
       }
       contentLayoutGuide.rightAnchor.equalTo(views.last!.rightAnchor, constant: insets.right)
@@ -82,9 +86,13 @@ extension UIScrollView {
       for (index, view) in views.enumerated() {
         view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(view)
-        
-        view.pinHorizontalAnchors(inside: alignmentLayoutGuide, leftConstant: insets.left, rightConstant: insets.right)
-        view.topAnchor.equalTo(lastBottomAnchor, constant: index > 0 ? spacing.value(at: index - 1) : insets.top)
+
+        NSLayoutConstraint.activate([
+          view.leftAnchor.constraint(equalTo: alignmentLayoutGuide.leftAnchor, constant: insets.left),
+          alignmentLayoutGuide.rightAnchor.constraint(equalTo: view.rightAnchor, constant: insets.right),
+
+          view.topAnchor.constraint(equalTo: lastBottomAnchor, constant: index > 0 ? spacing.value(at: index - 1) : insets.top)
+        ])
         lastBottomAnchor = view.bottomAnchor
       }
       contentLayoutGuide.bottomAnchor.equalTo(views.last!.bottomAnchor, constant: insets.bottom)

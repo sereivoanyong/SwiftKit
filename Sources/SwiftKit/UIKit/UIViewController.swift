@@ -88,9 +88,12 @@ extension UIViewController {
       return associatedObject(forKey: &UIViewController.safeAreaLayoutGuide, default: {
         let layoutGuide = UILayoutGuide()
         view.addLayoutGuide(layoutGuide)
-        layoutGuide.pinHorizontalAnchors(inside: view)
-        layoutGuide.topAnchor.equalTo(topLayoutGuide.bottomAnchor)
-        bottomLayoutGuide.topAnchor.equalTo(layoutGuide.bottomAnchor)
+        NSLayoutConstraint.activate([
+          layoutGuide.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
+          layoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+          bottomLayoutGuide.topAnchor.constraint(equalTo: layoutGuide.bottomAnchor),
+          view.trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor),
+        ])
         return layoutGuide
       }())
     }
