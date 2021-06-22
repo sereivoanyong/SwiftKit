@@ -8,6 +8,20 @@
 import ObjectiveC
 
 extension NSObjectProtocol {
+
+  @discardableResult
+  @inlinable
+  public func with<Value>(_ keyPath: ReferenceWritableKeyPath<Self, Value>, _ value: Value) -> Self {
+    self[keyPath: keyPath] = value
+    return self
+  }
+
+  @discardableResult
+  @inlinable
+  public func configure(_ handler: (Self) -> Void) -> Self {
+    handler(self)
+    return self
+  }
   
   public func assigned(to object: inout Self?) -> Self {
     object = self
@@ -46,12 +60,6 @@ extension NSObjectProtocol {
       return perform(selector, with: object)
     }
     return nil
-  }
-  
-  @discardableResult
-  @inlinable public func configure(_ handler: (Self) -> Void) -> Self {
-    handler(self)
-    return self
   }
 }
 

@@ -72,6 +72,32 @@ extension LayoutGuide {
       trailing: container.rightAnchor.equalTo(rightAnchor, constant: rightConstant)
     )
   }
+
+  public func stack(_ views: [LayoutGuide], axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, spacing: CGFloat = 0, insets: UIEdgeInsets = .zero) {
+    switch axis {
+    case .horizontal:
+      var constraints: [NSLayoutConstraint] = []
+
+      precondition(distribution == .fillProportionally)
+      var lastLayout: (anchor: NSLayoutXAxisAnchor, spacing: CGFloat) = (leftAnchor, insets.left)
+      for view in views {
+        constraints += view.leftAnchor.constraint(equalTo: lastLayout.anchor, constant: lastLayout.spacing)
+        lastLayout = (view.rightAnchor, spacing)
+      }
+      constraints += rightAnchor.constraint(equalTo: lastLayout.anchor, constant: insets.right)
+
+      precondition(alignment == .fill)
+      for view in views {
+        constraints += view.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
+        constraints += bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: insets.bottom)
+      }
+
+      NSLayoutConstraint.activate(constraints)
+
+    default:
+      fatalError()
+    }
+  }
 }
 
 extension UIView: LayoutGuide { }
