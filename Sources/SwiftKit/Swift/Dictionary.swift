@@ -5,6 +5,11 @@
 //
 
 extension Dictionary {
+
+  @inlinable
+  public init<S>(grouping values: S, by keyPath: KeyPath<S.Element, Key>) where S: Sequence, Value == [S.Element] {
+    self.init(grouping: values, by: { $0[keyPath: keyPath] })
+  }
   
   public func mapKeys<K>(to type: K.Type) -> [K: Value] where K: RawRepresentable, K.RawValue == Key {
     var dictionary: [K: Value] = [:]
