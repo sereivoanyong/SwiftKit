@@ -20,8 +20,19 @@ extension Sequence {
     return filter { unique.insert($0[keyPath: keyPath]).inserted }
   }
 
-  @inlinable public func map<T>(_ keyPath: KeyPath<Element, T>) -> [T] {
-    return map { $0[keyPath: keyPath] }
+  @inlinable
+  public func map<T>(_ keyPath: KeyPath<Element, T>) -> [T] {
+    map { $0[keyPath: keyPath] }
+  }
+
+  @inlinable
+  public func flatMap<SegmentOfResult>(_ keyPath: KeyPath<Element, SegmentOfResult>) -> [SegmentOfResult.Element] where SegmentOfResult: Sequence {
+    flatMap { $0[keyPath: keyPath] }
+  }
+
+  @inlinable
+  public func compactMap<ElementOfResult>(_ keyPath: KeyPath<Element, ElementOfResult?>) -> [ElementOfResult] {
+    compactMap { $0[keyPath: keyPath] }
   }
 
   /// Returns a Boolean value indicating whether the sequence contains an element that satisfies the given predicate or a descendant that does.
