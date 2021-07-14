@@ -143,4 +143,8 @@ extension Sequence {
   public var contiguousArray: ContiguousArray<Element> {
     return ContiguousArray<Element>(self)
   }
+
+  public func sum() -> Element where Element: AdditiveArithmetic {
+    reduce(.zero, +)
+  }
 }
