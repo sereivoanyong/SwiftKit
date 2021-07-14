@@ -8,7 +8,12 @@
 import Foundation
 
 extension Decimal {
-  
+
+  @inlinable
+  public var doubleValue: Double {
+    (self as NSDecimalNumber).doubleValue
+  }
+
   /// Compacts the decimal structure for efficiency.
   ///
   /// Formats number so that calculations using it will take up as little memory as possible. All the `NSDecimal`... arithmetic functions expect compact `Decimal` arguments.
