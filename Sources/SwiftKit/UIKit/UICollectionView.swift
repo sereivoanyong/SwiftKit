@@ -11,7 +11,8 @@ extension UICollectionView {
   
   public typealias CellProvider<Item> = (UICollectionView, IndexPath, Item) -> UICollectionViewCell?
   
-  @inlinable public convenience init(collectionViewLayout: UICollectionViewLayout) {
+  @inlinable
+  public convenience init(collectionViewLayout: UICollectionViewLayout) {
     self.init(frame: .zero, collectionViewLayout: collectionViewLayout)
   }
   
@@ -110,22 +111,22 @@ extension UICollectionView {
 
   @inlinable
   final public func dequeue<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell {
-    return dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+    dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
   }
 
   @inlinable
   final public func dequeue<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell where Cell: Reusable {
-    return dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+    dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
   }
 
   @inlinable
   final public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String, for indexPath: IndexPath) -> View {
-    return dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
+    dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
   }
 
   @inlinable
   final public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String, for indexPath: IndexPath) -> View where View: Reusable {
-    return dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
+    dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
   }
 }
 #endif
