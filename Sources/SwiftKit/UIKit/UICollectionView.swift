@@ -127,36 +127,5 @@ extension UICollectionView {
   final public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String, for indexPath: IndexPath) -> View where View: Reusable {
     return dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
   }
-
-  // Swizzle for functionalities
-
-  private static let swizzlingHandler: Void = {
-    let klass = UICollectionView.self
-    class_exchangeInstanceMethodImplementations(klass, #selector(layoutSubviews), #selector(_sk_cv_layoutSubviews))
-  }()
-
-  private static var invalidatesCollectionViewLayoutOnBoundsChangeKey: Void?
-
-  /// A `Bool` value that determines whether the collection view invalidates the layout on bounds change.
-  final public var invalidatesCollectionViewLayoutOnBoundsChange: Bool {
-    get { associatedValue(forKey: &Self.invalidatesCollectionViewLayoutOnBoundsChangeKey) ?? false }
-    set { _ = Self.swizzlingHandler; setAssociatedValue(newValue, forKey: &Self.invalidatesCollectionViewLayoutOnBoundsChangeKey) }
-  }
-
-  private static var boundsWhenCollectionViewLayoutInvalidatedKey: Void?
-
-  final private var boundsWhenCollectionViewLayoutInvalidated: CGRect? {
-    get { associatedValue(forKey: &Self.boundsWhenCollectionViewLayoutInvalidatedKey) }
-    set { setAssociatedValue(newValue, forKey: &Self.boundsWhenCollectionViewLayoutInvalidatedKey) }
-  }
-
-  @objc private func _sk_cv_layoutSubviews() {
-    _sk_cv_layoutSubviews()
-    
-    if invalidatesCollectionViewLayoutOnBoundsChange && bounds != boundsWhenCollectionViewLayoutInvalidated {
-      boundsWhenCollectionViewLayoutInvalidated = bounds
-      collectionViewLayout.invalidateLayout()
-    }
-  }
 }
 #endif
