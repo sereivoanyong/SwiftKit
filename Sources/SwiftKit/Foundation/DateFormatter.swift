@@ -33,10 +33,13 @@ extension DateFormatter {
       return nil
     }
   }
-  
+
   public static func iso8601(withFractionalSeconds: Bool) -> DateFormatter {
-    let dateFormat = withFractionalSeconds ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX" : "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-    return DateFormatter(dateFormat: dateFormat, locale: Locale(identifier: "en_US_POSIX"), timeZone: TimeZone(secondsFromGMT: 0), calendar: Calendar(identifier: .iso8601))
+    iso8601(dateFormat: withFractionalSeconds ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX" : "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+  }
+
+  public static func iso8601(dateFormat: String) -> DateFormatter {
+    DateFormatter(dateFormat: dateFormat, locale: .enUSPOSIX, timeZone: .utc, calendar: Calendar(identifier: .iso8601))
   }
 }
 #endif
