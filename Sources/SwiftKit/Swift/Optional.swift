@@ -48,6 +48,27 @@ extension Optional {
   }
 }
 
+extension Optional where Wrapped: AdditiveArithmetic {
+
+  public var isNilOrZero: Bool {
+    switch self {
+    case .none:
+      return true
+    case .some(let number):
+      return number == .zero
+    }
+  }
+
+  public var nonZero: Wrapped? {
+    switch self {
+    case .none:
+      return .none
+    case .some(let number):
+      return number == .zero ? .none : .some(number)
+    }
+  }
+}
+
 extension Optional where Wrapped: Collection {
   
   public var isNilOrEmpty: Bool {
