@@ -11,61 +11,101 @@ import Foundation
  enum UserPreferences {
    
    @UserDefault(key: "IsFirstOpen", default: true)
-   var isFirstOpen: Bool
+   static var isFirstOpen: Bool
  }
  */
 
-@propertyWrapper public struct UserDefault<Object> {
+@propertyWrapper
+public struct UserDefault<Object> {
 
   private let get: () -> Object
   private let set: (Object) -> Void
 
-  @available(*, deprecated, renamed: "init(userDefaults:key:default:)")
-  public init(userDefaults: UserDefaults = .standard, key: String, defaultValue: @autoclosure @escaping () -> Object) {
-    get = { userDefaults.object(forKey: key) as? Object ?? defaultValue() }
-    set = { newObject in userDefaults.set(newObject, forKey: key) }
-  }
-
-  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object) where Object: PropertyListObject {
-    get = { userDefaults.object(forKey: key) as? Object ?? defaultObject() }
-    set = { newObject in userDefaults.set(newObject, forKey: key) }
-  }
-
-  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object) where Object: RawRepresentable, Object.RawValue: PropertyListObject {
-    get = { (userDefaults.object(forKey: key) as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? defaultObject() }
-    set = { newObject in userDefaults.set(newObject.rawValue, forKey: key) }
-  }
-  
   public var wrappedValue: Object {
     get { get() }
     set { set(newValue) }
   }
-}
 
-@propertyWrapper public struct OptionalUserDefault<Object> {
-  
-  private let get: () -> Object?
-  private let set: (Object?) -> Void
-
-  @available(*, deprecated, renamed: "init(userDefaults:key:default:)")
-  public init(userDefaults: UserDefaults = .standard, key: String, defaultValue: @autoclosure @escaping () -> Object? = nil) {
-    get = { userDefaults.object(forKey: key) as? Object ?? defaultValue() }
-    set = { newObject in userDefaults.set(newObject, forKey: key) }
+  public init(
+    defaults: UserDefaults = .standard,
+    key: String,
+    default: Object
+  ) where Object: PropertyListObject {
+    get = {
+      defaults.object(forKey: key) as? Object ?? `default`
+    }
+    set = {
+      newObject in defaults.set(newObject, forKey: key)
+    }
   }
 
-  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object?) where Object: PropertyListObject {
-    get = { userDefaults.object(forKey: key) as? Object ?? defaultObject() }
-    set = { newObject in userDefaults.set(newObject, forKey: key) }
+  public init(
+    defaults: UserDefaults = .standard,
+    key: String,
+    default: Object
+  ) where Object: RawRepresentable, Object.RawValue: PropertyListObject {
+    get = {
+      (defaults.object(forKey: key) as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? `default`
+    }
+    set = {
+      newObject in defaults.set(newObject.rawValue, forKey: key)
+    }
   }
 
-  public init(userDefaults: UserDefaults = .standard, key: String, default defaultObject: @autoclosure @escaping () -> Object?) where Object: RawRepresentable, Object.RawValue: PropertyListObject {
-    get = { (userDefaults.object(forKey: key) as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? defaultObject() }
-    set = { newObject in userDefaults.set(newObject?.rawValue, forKey: key) }
+  public init<Wrapped>(
+    defaults: UserDefaults = .standard,
+    key: String,
+    default: Object = nil
+  ) where Object == Wrapped?, Wrapped: PropertyListObject {
+    get = {
+      defaults.object(forKey: key) as? Wrapped ?? `default`
+    }
+    set = {
+      newObject in defaults.set(newObject, forKey: key)
+    }
   }
 
-  public var wrappedValue: Object? {
-    get { get() }
-    set { set(newValue) }
+  public init<Wrapped>(
+    defaults: UserDefaults = .standard,
+    key: String,
+    default: Object = nil
+  ) where Object == Wrapped?, Wrapped: RawRepresentable, Wrapped.RawValue: PropertyListObject {
+    get = {
+      (defaults.object(forKey: key) as? Wrapped.RawValue).flatMap(Wrapped.init(rawValue:)) ?? `default`
+    }
+    set = {
+      newObject in defaults.set(newObject?.rawValue, forKey: key)
+    }
+  }
+
+  public init<Wrapped>(
+    defaults: UserDefaults = .standard,
+    key: String,
+    decoder: JSONDecoder = .init(),
+    encoder: JSONEncoder = .init(),
+    default: Object = nil
+  ) where Object == Wrapped?, Wrapped: Codable {
+    get = {
+      defaults.data(forKey: key).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default`
+    }
+    set = { newObject in
+      defaults.set(newObject.flatMap { try? encoder.encode($0) }, forKey: key)
+    }
+  }
+
+  public init<Wrapped>(
+    defaults: UserDefaults = .standard,
+    key: String,
+    decoder: PropertyListDecoder = .init(),
+    encoder: PropertyListEncoder = .init(),
+    default: Object = nil
+  ) where Object == Wrapped?, Wrapped: Codable {
+    get = {
+      defaults.data(forKey: key).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default`
+    }
+    set = { newObject in
+      defaults.set(newObject.flatMap { try? encoder.encode($0) }, forKey: key)
+    }
   }
 }
 #endif
