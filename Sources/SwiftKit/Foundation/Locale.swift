@@ -8,6 +8,8 @@
 import Foundation
 
 extension Locale {
+
+  public static let enUSPOSIX: Locale = Locale(identifier: "en_US_POSIX")
   
   @available(*, deprecated, renamed: "emojiFlag(forRegionCode:)")
   public static func flagEmoji(forRegionCode regionCode: String) -> String {
