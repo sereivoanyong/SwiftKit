@@ -43,61 +43,66 @@ extension UINavigationController {
   }
   
   final public func pushViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
-    if animated, let completion = completion {
-      CATransaction.begin()
-      CATransaction.setCompletionBlock(completion)
-      pushViewController(viewController, animated: animated)
-      CATransaction.commit()
-    } else {
-      pushViewController(viewController, animated: animated)
+    pushViewController(viewController, animated: animated)
+    if let completion = completion {
+      if animated, let coordinator = transitionCoordinator {
+        coordinator.animate(alongsideTransition: nil) { _ in
+          completion()
+        }
+      } else {
+        completion()
+      }
     }
   }
-  
+
   @discardableResult
   final public func popViewController(animated: Bool, completion: (() -> Void)?) -> UIViewController? {
-    let viewController: UIViewController?
-    if animated, let completion = completion {
-      CATransaction.begin()
-      CATransaction.setCompletionBlock(completion)
-      viewController = popViewController(animated: animated)
-      CATransaction.commit()
-    } else {
-      viewController = popViewController(animated: animated)
+    let poppedViewController = popViewController(animated: animated)
+    if let completion = completion {
+      if animated, let coordinator = transitionCoordinator {
+        coordinator.animate(alongsideTransition: nil) { _ in
+          completion()
+        }
+      } else {
+        completion()
+      }
     }
-    return viewController
+    return poppedViewController
   }
   
   @discardableResult
   final public func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
-    let viewControllers: [UIViewController]?
-    if animated, let completion = completion {
-      CATransaction.begin()
-      CATransaction.setCompletionBlock(completion)
-      viewControllers = popToViewController(viewController, animated: animated)
-      CATransaction.commit()
-    } else {
-      viewControllers = popToViewController(viewController, animated: animated)
+    let poppedViewControllers = popToViewController(viewController, animated: animated)
+    if let completion = completion {
+      if animated, let coordinator = transitionCoordinator {
+        coordinator.animate(alongsideTransition: nil) { _ in
+          completion()
+        }
+      } else {
+        completion()
+      }
     }
-    return viewControllers
+    return poppedViewControllers
   }
   
   @discardableResult
   final public func popToViewController(at index: Int, animated: Bool, completion: (() -> Void)? = nil) -> [UIViewController]? {
-    return popToViewController(viewControllers[index], animated: animated, completion: completion)
+    popToViewController(viewControllers[index], animated: animated, completion: completion)
   }
   
   @discardableResult
   final public func popToRootViewController(animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
-    let viewControllers: [UIViewController]?
-    if animated, let completion = completion {
-      CATransaction.begin()
-      CATransaction.setCompletionBlock(completion)
-      viewControllers = popToRootViewController(animated: animated)
-      CATransaction.commit()
-    } else {
-      viewControllers = popToRootViewController(animated: animated)
+    let poppedViewControllers = popToRootViewController(animated: animated)
+    if let completion = completion {
+      if animated, let coordinator = transitionCoordinator {
+        coordinator.animate(alongsideTransition: nil) { _ in
+          completion()
+        }
+      } else {
+        completion()
+      }
     }
-    return viewControllers
+    return poppedViewControllers
   }
   
   final public func setTopViewController(_ topViewController: UIViewController, animated: Bool) {
