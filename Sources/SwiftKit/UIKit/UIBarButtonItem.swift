@@ -13,15 +13,17 @@ extension UIBarButtonItem {
   public convenience init(systemItem: SystemItem, target: AnyObject?, action: Selector?) {
     self.init(barButtonSystemItem: systemItem, target: target, action: action)
   }
-  
+
+  @available(iOS, obsoleted: 14.0)
   public static func fixedSpace(_ width: CGFloat) -> Self {
     let barButtonItem = Self(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
     barButtonItem.width = width
     return barButtonItem
   }
-  
+
+  @available(iOS, obsoleted: 14.0)
   public static func flexibleSpace() -> Self {
-    return Self(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    Self(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
   }
   
   final public var view: UIView? {
