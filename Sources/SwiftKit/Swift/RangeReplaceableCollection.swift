@@ -29,9 +29,15 @@ extension RangeReplaceableCollection {
     remove(at: index)
     return index
   }
+
+  @inlinable
+  public mutating func removeAll(_ element: Element) where Element: Equatable {
+    removeAll(where: { $0 == element })
+  }
   
   /// insert at last 0 is equivalant to `append` or `insert(_:at:count-1)`
-  @inlinable public mutating func insert(_ newElement: Element, atLast k: Index) where Index == Int {
+  @inlinable
+  public mutating func insert(_ newElement: Element, atLast k: Index) where Index == Int {
     precondition(k <= 0)
     insert(newElement, at: count + k)
   }
