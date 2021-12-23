@@ -8,18 +8,21 @@
 import Foundation
 
 extension NumberFormatter {
-  
-  @inlinable public convenience init(numberStyle: Style, locale: Locale? = nil) {
+
+  @inlinable
+  public convenience init(numberStyle: Style, locale: Locale? = nil) {
     self.init()
     self.numberStyle = numberStyle
     self.locale = locale
   }
-  
-  @inlinable public func string<T>(from number: T) -> String? where T: _ObjectiveCBridgeable, T._ObjectiveCType: NSNumber {
-    return string(from: number._bridgeToObjectiveC())
+
+  @inlinable
+  final public func string<T: _ObjectiveCBridgeable>(from number: T) -> String? where T._ObjectiveCType: NSNumber {
+    string(from: number._bridgeToObjectiveC())
   }
-  
-  @inlinable public func decimal(from string: String) -> Decimal? {
+
+  @inlinable
+  final public func decimal(from string: String) -> Decimal? {
     assert(generatesDecimalNumbers)
     return number(from: string) as! NSDecimalNumber? as Decimal?
   }
