@@ -8,8 +8,9 @@
 import Foundation
 
 extension DateFormatter {
-  
-  @inlinable public convenience init(dateStyle: Style, timeStyle: Style, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil) {
+
+  @inlinable
+  public convenience init(dateStyle: Style, timeStyle: Style, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil) {
     self.init()
     self.dateStyle = dateStyle
     self.timeStyle = timeStyle
@@ -17,16 +18,18 @@ extension DateFormatter {
     self.timeZone = timeZone
     self.calendar = calendar
   }
-  
-  @inlinable public convenience init(dateFormat: String, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil) {
+
+  @inlinable
+  public convenience init(dateFormat: String, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil) {
     self.init()
     self.dateFormat = dateFormat
     self.locale = locale
     self.timeZone = timeZone
     self.calendar = calendar
   }
-  
-  @inlinable public convenience init?(localizedDateFormatFromTemplate template: String, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil) {
+
+  @inlinable
+  public convenience init?(localizedDateFormatFromTemplate template: String, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil) {
     if let localizedDateFormat = Self.dateFormat(fromTemplate: template, options: 0, locale: locale) {
       self.init(dateFormat: localizedDateFormat, locale: locale, timeZone: timeZone, calendar: calendar)
     } else {
