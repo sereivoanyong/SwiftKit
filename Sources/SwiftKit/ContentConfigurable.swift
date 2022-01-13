@@ -1,27 +1,27 @@
 //
-//  ObjectConfigurable.swift
+//  ContentConfigurable.swift
 //
 //  Created by Sereivoan Yong on 2/26/20.
 //
 
-public protocol ObjectConfigurable {
+public protocol ContentConfigurable {
   
-  associatedtype Object
+  associatedtype Content
   
-  func configure(_ object: Object)
+  func configure(_ content: Content)
 }
 
 #if canImport(UIKit)
 import UIKit
 
-extension ObjectConfigurable where Self: UITableViewCell {
+extension ContentConfigurable where Self: UITableViewCell {
   
-  public static var provider: UITableView.CellProvider<Object> {
+  public static var provider: UITableView.CellProvider<Content> {
     return provider(identifier: String(describing: self))
   }
   
   // `identifier: String = String(describing: self)` would just incorrectly returns "(Function)" instead of class name (Swift protocol's bug?).
-  public static func provider(identifier: String) -> UITableView.CellProvider<Object> {
+  public static func provider(identifier: String) -> UITableView.CellProvider<Content> {
     return { tableView, indexPath, object in
       let cell = tableView.dequeue(self, identifier: identifier, for: indexPath)
       cell.configure(object)
@@ -30,13 +30,13 @@ extension ObjectConfigurable where Self: UITableViewCell {
   }
 }
 
-extension ObjectConfigurable where Self: UICollectionViewCell {
+extension ContentConfigurable where Self: UICollectionViewCell {
   
-  public static var provider: UICollectionView.CellProvider<Object> {
+  public static var provider: UICollectionView.CellProvider<Content> {
     return provider(identifier: String(describing: self))
   }
   
-  public static func provider(identifier: String) -> UICollectionView.CellProvider<Object> {
+  public static func provider(identifier: String) -> UICollectionView.CellProvider<Content> {
     return { collectionView, indexPath, object in
       let cell = collectionView.dequeue(self, identifier: identifier, for: indexPath)
       cell.configure(object)
