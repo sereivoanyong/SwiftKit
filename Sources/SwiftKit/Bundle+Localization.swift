@@ -40,10 +40,10 @@ extension Bundle {
       let newLocalization = newLocalization ?? preferredLocalizations.first!
       UserDefaults.standard.appleLanguages = [newLocalization]
       UserDefaults.standard.set(newLocalization, forKey: Self.selectedLocalizationUserDefaultsKey)
+      selectedLocalizationBundle = nil
       if self == .main {
         Locale.selected = Locale(identifier: newLocalization)
       }
-      selectedLocalizationBundle = nil
       NotificationCenter.default.post(name: Self.selectedLocalizationDidChangeNotification, object: self)
     }
   }
