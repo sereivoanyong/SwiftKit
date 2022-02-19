@@ -23,7 +23,7 @@ public struct UserDefault<Object> {
   private let set: (Object) -> Void
 
   public var wrappedValue: Object {
-    get { get() }
+    get { return get() }
     nonmutating set { set(newValue) }
   }
 
@@ -32,12 +32,8 @@ public struct UserDefault<Object> {
     key: String,
     default: Object
   ) where Object: PropertyListObject {
-    get = {
-      defaults.object(forKey: key) as? Object ?? `default`
-    }
-    set = {
-      newObject in defaults.set(newObject, forKey: key)
-    }
+    get = { return defaults[key] as? Object ?? `default` }
+    set = { defaults[key] = $0 }
   }
 
   public init(
@@ -45,12 +41,8 @@ public struct UserDefault<Object> {
     key: String,
     default: Object
   ) where Object: RawRepresentable, Object.RawValue: PropertyListObject {
-    get = {
-      (defaults.object(forKey: key) as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? `default`
-    }
-    set = {
-      newObject in defaults.set(newObject.rawValue, forKey: key)
-    }
+    get = { return (defaults[key] as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? `default` }
+    set = { defaults[key] = $0.rawValue }
   }
 
   public init<Wrapped>(
@@ -58,12 +50,8 @@ public struct UserDefault<Object> {
     key: String,
     default: Object = nil
   ) where Object == Wrapped?, Wrapped: PropertyListObject {
-    get = {
-      defaults.object(forKey: key) as? Wrapped ?? `default`
-    }
-    set = {
-      newObject in defaults.set(newObject, forKey: key)
-    }
+    get = { return defaults[key] as? Wrapped ?? `default` }
+    set = { defaults[key] = $0 }
   }
 
   public init<Wrapped>(
@@ -71,12 +59,8 @@ public struct UserDefault<Object> {
     key: String,
     default: Object = nil
   ) where Object == Wrapped?, Wrapped: RawRepresentable, Wrapped.RawValue: PropertyListObject {
-    get = {
-      (defaults.object(forKey: key) as? Wrapped.RawValue).flatMap(Wrapped.init(rawValue:)) ?? `default`
-    }
-    set = {
-      newObject in defaults.set(newObject?.rawValue, forKey: key)
-    }
+    get = { return (defaults[key] as? Wrapped.RawValue).flatMap(Wrapped.init(rawValue:)) ?? `default` }
+    set = { defaults[key] = $0?.rawValue }
   }
 
   public init<Wrapped>(
@@ -86,12 +70,8 @@ public struct UserDefault<Object> {
     encoder: JSONEncoder = .init(),
     default: Object = nil
   ) where Object == Wrapped?, Wrapped: Codable {
-    get = {
-      defaults.data(forKey: key).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default`
-    }
-    set = { newObject in
-      defaults.set(newObject.flatMap { try? encoder.encode($0) }, forKey: key)
-    }
+    get = { return (defaults[key] as? Data).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default` }
+    set = { defaults[key] = $0.flatMap { try? encoder.encode($0) } }
   }
 
   public init<Wrapped>(
@@ -101,12 +81,8 @@ public struct UserDefault<Object> {
     encoder: PropertyListEncoder = .init(),
     default: Object = nil
   ) where Object == Wrapped?, Wrapped: Codable {
-    get = {
-      defaults.data(forKey: key).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default`
-    }
-    set = { newObject in
-      defaults.set(newObject.flatMap { try? encoder.encode($0) }, forKey: key)
-    }
+    get = { return (defaults[key] as? Data).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default` }
+    set = { defaults[key] = $0.flatMap { try? encoder.encode($0) } }
   }
 }
 #endif
