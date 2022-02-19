@@ -7,15 +7,15 @@
 #if canImport(UIKit)
 import UIKit
 
+@_marker
 public protocol UIImageProtocol {
-  
-  init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void)
-  init(light: @autoclosure () -> Self, dark: @autoclosure () -> Self)
+
 }
 
 extension UIImageProtocol where Self: UIImage {
   
-  @inlinable public init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void) {
+  @inlinable
+  public init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void) {
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
     let context = UIGraphicsGetCurrentContext()!
     actions(context)

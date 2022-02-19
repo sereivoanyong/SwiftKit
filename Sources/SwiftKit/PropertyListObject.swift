@@ -6,6 +6,7 @@
 
 import Foundation
 
+@_marker
 public protocol PropertyListObject { }
 
 extension String: PropertyListObject { }
