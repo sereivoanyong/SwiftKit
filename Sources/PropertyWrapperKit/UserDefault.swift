@@ -24,7 +24,7 @@ public struct UserDefault<Object> {
 
   public var wrappedValue: Object {
     get { get() }
-    set { set(newValue) }
+    nonmutating set { set(newValue) }
   }
 
   public init(
