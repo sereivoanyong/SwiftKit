@@ -17,7 +17,7 @@ extension Bundle {
       string += " " + shortVersionString
     }
     if let versionString = infoDictionary["CFBundleVersion"] as? String {
-      string += " " + versionString
+      string += " (" + versionString + ")"
     }
     return string
   }
