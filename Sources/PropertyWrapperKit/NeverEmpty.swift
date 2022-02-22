@@ -4,7 +4,8 @@
 //  Created by Sereivoan Yong on 11/29/20.
 //
 
-@propertyWrapper public struct NeverEmpty<Collection: Swift.Collection> {
+@propertyWrapper
+public struct NeverEmpty<Collection: Swift.Collection> {
   
   private var _value: Collection?
   

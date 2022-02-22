@@ -4,7 +4,8 @@
 //  Created by Sereivoan Yong on 11/30/20.
 //
 
-@propertyWrapper public enum Lazy<Value> {
+@propertyWrapper
+public enum Lazy<Value> {
   
   case uninitialized(() -> Value)
   case initialized(Value)

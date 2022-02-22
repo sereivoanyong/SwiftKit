@@ -6,7 +6,8 @@
 
 import SwiftKit
 
-@propertyWrapper public struct NeverBlank: Equatable {
+@propertyWrapper
+public struct NeverBlank: Equatable {
   
   private var _value: String?
   

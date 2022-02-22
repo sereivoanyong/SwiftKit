@@ -1,6 +1,5 @@
 //
 //  Proxy.swift
-//  Proxy
 //
 //  Created by Sereivoan Yong on 7/16/21.
 //

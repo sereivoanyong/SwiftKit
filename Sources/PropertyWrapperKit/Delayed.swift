@@ -1,12 +1,13 @@
 //
-//  Delay.swift
+//  Delayed.swift
 //
 //  Created by Sereivoan Yong on 2/9/22.
 //
 
 import Foundation
 
-@propertyWrapper public struct DelayedMutable<Value> {
+@propertyWrapper
+public struct DelayedMutable<Value> {
 
   private var _value: Value?
 
@@ -31,7 +32,8 @@ import Foundation
   }
 }
 
-@propertyWrapper public struct DelayedImmutable<Value> {
+@propertyWrapper
+public struct DelayedImmutable<Value> {
 
   private var _value: Value? = nil
 

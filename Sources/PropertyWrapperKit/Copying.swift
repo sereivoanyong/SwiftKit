@@ -6,7 +6,8 @@
 
 import Foundation
 
-@propertyWrapper public struct Copying<Value: NSCopying> {
+@propertyWrapper
+public struct Copying<Value: NSCopying> {
   
   private var _value: Value
   

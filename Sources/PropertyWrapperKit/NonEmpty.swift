@@ -6,7 +6,8 @@
 
 /// This wrapper treats empty collection as nil which makes empty and nil collections equal and have the same hashValue.
 /// Empty & nil states are preserved.
-@propertyWrapper public struct NonEmpty<Collection: Swift.Collection> {
+@propertyWrapper
+public struct NonEmpty<Collection: Swift.Collection> {
   
   public var wrappedValue: Collection?
   
