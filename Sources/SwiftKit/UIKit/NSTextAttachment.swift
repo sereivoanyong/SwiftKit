@@ -13,6 +13,13 @@ extension NSTextAttachment {
     self.init()
     self.image = image
   }
+
+  // https://stackoverflow.com/a/69119772/11235826
+  public static func fixedSpace(_ width: CGFloat) -> NSTextAttachment {
+    let attachment = NSTextAttachment()
+    attachment.bounds.size.width = width
+    return attachment
+  }
 }
 
 extension NSAttributedString {
