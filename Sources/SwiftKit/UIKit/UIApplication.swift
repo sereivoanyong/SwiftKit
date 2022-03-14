@@ -18,6 +18,10 @@ extension UIApplication {
     URL(string: openSettingsURLString)!
   }
 
+  public static func appURL(id: String) -> URL {
+    return URL(string: "https://apps.apple.com/app/id\(id)")!
+  }
+
   @available(iOS 10.0, *)
   @available(iOSApplicationExtension, unavailable)
   @discardableResult
