@@ -9,14 +9,14 @@ import Foundation
 extension Bundle {
 
   final public func displayNameWithShortVersionAndVersion() -> String? {
-    guard let infoDictionary = infoDictionary, let displayName = infoDictionary["CFBundleDisplayName"] as? String ?? infoDictionary["CFBundleName"] as? String else {
+    guard let infoDictionary = infoDictionary, let displayName = infoDictionary["CFBundleDisplayName"] as? String ?? infoDictionary[kCFBundleNameKey as String] as? String else {
       return nil
     }
     var string = displayName
     if let shortVersionString = infoDictionary["CFBundleShortVersionString"] as? String {
       string += " " + shortVersionString
     }
-    if let versionString = infoDictionary["CFBundleVersion"] as? String {
+    if let versionString = infoDictionary[kCFBundleVersionKey as String] as? String {
       string += " (" + versionString + ")"
     }
     return string
