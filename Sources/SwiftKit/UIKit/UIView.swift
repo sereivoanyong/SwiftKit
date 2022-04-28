@@ -8,6 +8,18 @@
 import UIKit
 
 extension UIView {
+
+  final public var owningViewController: UIViewController? {
+    if let next = next {
+      if let viewController = next as? UIViewController {
+        return viewController
+      }
+      if let view = next as? UIView {
+        return view.owningViewController
+      }
+    }
+    return nil
+  }
   
   final public func viewToResepectLayoutMargins() -> UIView {
     if preservesSuperviewLayoutMargins, let superview = superview {
