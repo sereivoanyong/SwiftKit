@@ -13,8 +13,7 @@ public protocol UIImageProtocol {
 }
 
 extension UIImageProtocol where Self: UIImage {
-  
-  @inlinable
+
   public init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void) {
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
     let context = UIGraphicsGetCurrentContext()!
@@ -22,6 +21,25 @@ extension UIImageProtocol where Self: UIImage {
     // This is the whole purpose of the UIImageInitializable
     self = UIGraphicsGetImageFromCurrentImageContext() as! Self
     UIGraphicsEndImageContext()
+  }
+
+  @available(iOS 13.0, *)
+  public init(dynamicProvider: (UITraitCollection) -> UIImage) {
+    let scaleTraitCollection = UITraitCollection.current
+
+    let lightUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .light)
+    let darkUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+
+    var lightImage = dynamicProvider(lightUnscaledTraitCollection)
+    if let configuration = lightImage.configuration {
+      lightImage = lightImage.withConfiguration(configuration.withTraitCollection(lightUnscaledTraitCollection))
+    }
+    var darkImage = dynamicProvider(darkUnscaledTraitCollection)
+    if let configuration = darkImage.configuration {
+      darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkUnscaledTraitCollection))
+    }
+    lightImage.imageAsset!.register(darkImage, with: UITraitCollection(traitsFrom: [scaleTraitCollection, darkUnscaledTraitCollection]))
+    self = lightImage as! Self
   }
   
   // https://gist.github.com/timonus/8b4feb47eccb6dde47ca6320d8fc6b11#gistcomment-3176210
