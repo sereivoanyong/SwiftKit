@@ -41,6 +41,18 @@ extension UIImageProtocol where Self: UIImage {
     lightImage.imageAsset!.register(darkImage, with: UITraitCollection(traitsFrom: [scaleTraitCollection, darkUnscaledTraitCollection]))
     self = lightImage as! Self
   }
+
+  @available(iOS 13.0, *)
+  public init(size: CGSize, opaque: Bool, scale: CGFloat, dynamicActions: (UITraitCollection, CGContext) -> Void) {
+    self.init { traitCollection in
+      UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
+      let context = UIGraphicsGetCurrentContext()!
+      dynamicActions(traitCollection, context)
+      let image = UIGraphicsGetImageFromCurrentImageContext()!
+      UIGraphicsEndImageContext()
+      return image
+    }
+  }
   
   // https://gist.github.com/timonus/8b4feb47eccb6dde47ca6320d8fc6b11#gistcomment-3176210
   public init(light: @autoclosure () -> Self, dark: @autoclosure () -> Self) {
