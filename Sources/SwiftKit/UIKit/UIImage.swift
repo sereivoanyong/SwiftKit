@@ -12,7 +12,7 @@ public protocol UIImageProtocol {
 
 }
 
-extension UIImageProtocol where Self: UIImage {
+extension UIImageProtocol {
 
   public init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void) {
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
@@ -43,9 +43,9 @@ extension UIImageProtocol where Self: UIImage {
   }
 
   @available(iOS 13.0, *)
-  public init(size: CGSize, opaque: Bool, scale: CGFloat, dynamicActions: (UITraitCollection, CGContext) -> Void) {
+  public init(size: CGSize, opaque: Bool, scale: CGFloat?, dynamicActions: (UITraitCollection, CGContext) -> Void) {
     self.init { traitCollection in
-      UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
+      UIGraphicsBeginImageContextWithOptions(size, opaque, scale ?? traitCollection.displayScale)
       let context = UIGraphicsGetCurrentContext()!
       dynamicActions(traitCollection, context)
       let image = UIGraphicsGetImageFromCurrentImageContext()!
@@ -55,7 +55,7 @@ extension UIImageProtocol where Self: UIImage {
   }
   
   // https://gist.github.com/timonus/8b4feb47eccb6dde47ca6320d8fc6b11#gistcomment-3176210
-  public init(light: @autoclosure () -> Self, dark: @autoclosure () -> Self) {
+  public init(light: @autoclosure () -> UIImage, dark: @autoclosure () -> UIImage) {
     if #available(iOS 13.0, *) {
       let scaleTraitCollection = UITraitCollection.current
       
@@ -65,24 +65,24 @@ extension UIImageProtocol where Self: UIImage {
       let lightScaledTraitCollection = UITraitCollection(traitsFrom: [scaleTraitCollection, lightUnscaledTraitCollection])
       let darkScaledTraitCollection = UITraitCollection(traitsFrom: [scaleTraitCollection, darkUnscaledTraitCollection])
       
-      var image: Self!
+      var image: UIImage!
       lightScaledTraitCollection.performAsCurrent {
         image = light()
         if let configuration = image.configuration {
-          image = image.withConfiguration(configuration.withTraitCollection(lightUnscaledTraitCollection)) as? Self
+          image = image.withConfiguration(configuration.withTraitCollection(lightUnscaledTraitCollection))
         }
       }
-      var darkImage: Self!
+      var darkImage: UIImage!
       darkScaledTraitCollection.performAsCurrent {
         darkImage = dark()
         if let configuration = darkImage.configuration {
-          darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkUnscaledTraitCollection)) as? Self
+          darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkUnscaledTraitCollection))
         }
       }
       image.imageAsset!.register(darkImage, with: darkScaledTraitCollection)
-      self = image
+      self = image as! Self
     } else {
-      self = light()
+      self = light() as! Self
     }
   }
 }
