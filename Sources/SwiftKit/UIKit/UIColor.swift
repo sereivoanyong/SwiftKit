@@ -50,6 +50,15 @@ extension UIColor {
       alpha: 1
     )
   }
+
+  @available(iOS 13.0, *)
+  final public func dynamicReversed() -> UIColor {
+    let anyColor = resolvedColor(with: UITraitCollection(userInterfaceStyle: .unspecified))
+    let darkColor = resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+    return UIColor { traitCollection in
+      return traitCollection.userInterfaceStyle != .dark ? darkColor : anyColor
+    }
+  }
   
   /// Creates a color object using the specified opacity and RGB component values
   /// - Parameters:
