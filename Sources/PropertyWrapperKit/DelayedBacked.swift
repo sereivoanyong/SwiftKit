@@ -9,7 +9,7 @@ import Foundation
 @propertyWrapper
 public struct DelayedBacked<Value, Wrapped> {
 
-  private var value: Value!
+  public var value: Value!
 
   public init() {
   }
