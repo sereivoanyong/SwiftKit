@@ -141,7 +141,8 @@ extension UIViewController {
   }
   
   // MARK: - Others
-  
+
+  @available(*, deprecated)
   final public func present(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?, in queue: DispatchQueue) {
     queue.async { [unowned self] in
       self.present(viewController, animated: animated, completion: completion)
