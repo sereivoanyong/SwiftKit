@@ -27,4 +27,12 @@ extension NumberFormatter {
     return number(from: string) as! NSDecimalNumber? as Decimal?
   }
 }
+
+extension _ObjectiveCBridgeable where _ObjectiveCType: NSNumber {
+
+  @inlinable
+  public func formatted(by formatter: NumberFormatter) -> String? {
+    return formatter.string(from: self)
+  }
+}
 #endif

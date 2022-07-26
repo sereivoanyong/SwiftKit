@@ -38,11 +38,19 @@ extension DateFormatter {
   }
 
   public static func iso8601(withFractionalSeconds: Bool) -> DateFormatter {
-    iso8601(dateFormat: withFractionalSeconds ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX" : "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
+    return iso8601(dateFormat: withFractionalSeconds ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX" : "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
   }
 
   public static func iso8601(dateFormat: String) -> DateFormatter {
-    DateFormatter(dateFormat: dateFormat, locale: .enUSPOSIX, timeZone: .utc, calendar: Calendar(identifier: .iso8601))
+    return DateFormatter(dateFormat: dateFormat, locale: .enUSPOSIX, timeZone: .utc, calendar: Calendar(identifier: .iso8601))
+  }
+}
+
+extension Date {
+
+  @inlinable
+  public func formatted(by formatter: DateFormatter) -> String {
+    return formatter.string(from: self)
   }
 }
 #endif
