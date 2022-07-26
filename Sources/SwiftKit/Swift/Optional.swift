@@ -62,9 +62,9 @@ extension Optional where Wrapped: AdditiveArithmetic {
   public var nonZero: Wrapped? {
     switch self {
     case .none:
-      return .none
+      return nil
     case .some(let number):
-      return number == .zero ? .none : .some(number)
+      return number == .zero ? nil : number
     }
   }
 }
@@ -84,9 +84,34 @@ extension Optional where Wrapped: Collection {
   public var nonEmpty: Wrapped? {
     switch self {
     case .none:
-      return .none
+      return nil
     case .some(let collection):
-      return collection.isEmpty ? .none : .some(collection)
+      return collection.isEmpty ? nil : collection
     }
   }
 }
+
+#if canImport(UIKit)
+import UIKit
+
+extension Optional where Wrapped == UIColor {
+
+  public var isNilOrClear: Bool {
+    switch self {
+    case .none:
+      return true
+    case .some(let wrapped):
+      return wrapped == .clear
+    }
+  }
+
+  public var nonClear: UIColor? {
+    switch self {
+    case .none:
+      return nil
+    case .some(let wrapped):
+      return wrapped == .clear ? nil : wrapped
+    }
+  }
+}
+#endif
