@@ -57,10 +57,6 @@ extension UIAlertController {
     return textField
   }
 
-  final public func show(on viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
-    viewController.present(self, animated: animated, completion: completion)
-  }
-
   // MARK: Presentation on Window
 
   private static let swizzlerForWindowPresentation: Void = {
@@ -82,7 +78,7 @@ extension UIAlertController {
 
   /// - See: https://stackoverflow.com/a/30941356/11235826
   @available(iOS 13.0, *)
-  final public func show(on scene: UIScene? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
+  final public func show(on scene: UIScene? = nil, animated: Bool, completion: (() -> Void)? = nil) {
     guard let windowScene = scene as? UIWindowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene else {
       print("Scene is not provided and application has no connected scenes.")
       return

@@ -63,6 +63,10 @@ extension UIViewController {
     return self
   }
 
+  final public func show(on viewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+    viewController.present(self, animated: animated, completion: completion)
+  }
+
   @available(iOSApplicationExtension, unavailable)
   final public func show(animated: Bool, completion: (() -> Void)?) {
     UIApplication.shared.keyTopMostViewController?.present(self, animated: animated, completion: completion)
