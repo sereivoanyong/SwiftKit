@@ -91,6 +91,28 @@ extension Optional where Wrapped: Collection {
   }
 }
 
+extension Optional where Wrapped: StringProtocol {
+
+  public var isNilOrBlank: Bool {
+    switch self {
+    case .none:
+      return true
+    case .some(let string):
+      return string.isBlank
+    }
+  }
+
+  /// Returns nil if the collection is nil or empty.
+  public var nonBlank: Wrapped? {
+    switch self {
+    case .none:
+      return nil
+    case .some(let string):
+      return string.isBlank ? nil : string
+    }
+  }
+}
+
 #if canImport(UIKit)
 import UIKit
 
@@ -109,8 +131,8 @@ extension Optional where Wrapped == UIColor {
     switch self {
     case .none:
       return nil
-    case .some(let wrapped):
-      return wrapped == .clear ? nil : wrapped
+    case .some(let color):
+      return color == .clear ? nil : color
     }
   }
 }
