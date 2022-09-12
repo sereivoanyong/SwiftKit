@@ -73,7 +73,7 @@ extension UIViewController {
     showDetailViewController(detailViewController, sender: sender)
   }
   
-  open func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
+  final public func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
     let navigationController = UINavigationController(rootViewController: self)
     configurationHandler?(navigationController)
     return navigationController
