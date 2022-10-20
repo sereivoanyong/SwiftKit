@@ -1,21 +1,78 @@
 //
 //  Edges.swift
 //
-//  Created by Sereivoan Yong on 5/29/21.
+//  Created by Sereivoan Yong on 10/20/22.
 //
 
 #if os(iOS) && canImport(Foundation)
 
 import Foundation
 
-public struct Edges<XAxisItem, YAxisItem>: EdgesProtocol {
+public protocol EdgesProtocol: XAxisEdgesProtocol, YAxisEdgesProtocol {
 
-  public var top: YAxisItem
-  public var left: XAxisItem
-  public var bottom: YAxisItem
-  public var right: XAxisItem
+  init(top: Item, left: Item, bottom: Item, right: Item)
+}
 
-  public init(top: YAxisItem, left: XAxisItem, bottom: YAxisItem, right: XAxisItem) {
+extension EdgesProtocol {
+
+  public init(_ item: Item) {
+    self.init(top: item, left: item, bottom: item, right: item)
+  }
+
+  /// `let insets = Edges<NSLayoutConstraint>(...).map { $0.constant }`
+  public func map<T>(_ transform: (Item) -> T) -> Edges<T> {
+    return .init(top: transform(top), left: transform(left), bottom: transform(bottom), right: transform(right))
+  }
+
+  public mutating func set<T>(_ edges: Edges<T>, at keyPath: WritableKeyPath<Item, T>) {
+    top[keyPath: keyPath] = edges.top
+    left[keyPath: keyPath] = edges.left
+    bottom[keyPath: keyPath] = edges.bottom
+    right[keyPath: keyPath] = edges.right
+  }
+
+  public mutating func update<T>(_ newEdges: Edges<T>, set: (inout Item, T) -> Void) {
+    set(&top, newEdges.top)
+    set(&left, newEdges.left)
+    set(&bottom, newEdges.bottom)
+    set(&right, newEdges.right)
+  }
+
+  public var all: [Item] {
+    return [top, left, bottom, right]
+  }
+}
+
+extension EdgesProtocol where Item: AdditiveArithmetic {
+
+  public static var zero: Self {
+    return .init(top: .zero, left: .zero, bottom: .zero, right: .zero)
+  }
+
+  public static func + (lhs: Self, rhs: Self) -> Self {
+    return .init(top: lhs.top + rhs.top, left: lhs.left + rhs.left, bottom: lhs.bottom + rhs.bottom, right: lhs.right + rhs.right)
+  }
+
+  public static func - (lhs: Self, rhs: Self) -> Self {
+    return .init(top: lhs.top - rhs.top, left: lhs.left - rhs.left, bottom: lhs.bottom - rhs.bottom, right: lhs.right - rhs.right)
+  }
+}
+
+extension EdgesProtocol where Item: Numeric {
+
+  public static func * (lhs: Self, rhs: Item) -> Self {
+    return .init(top: lhs.top * rhs, left: lhs.left * rhs, bottom: lhs.bottom * rhs, right: lhs.right * rhs)
+  }
+}
+
+public struct Edges<Item>: EdgesProtocol {
+
+  public var top: Item
+  public var left: Item
+  public var bottom: Item
+  public var right: Item
+
+  public init(top: Item, left: Item, bottom: Item, right: Item) {
     self.top = top
     self.left = left
     self.bottom = bottom
@@ -23,24 +80,21 @@ public struct Edges<XAxisItem, YAxisItem>: EdgesProtocol {
   }
 }
 
-extension Edges: Equatable where XAxisItem: Equatable, YAxisItem: Equatable { }
-extension Edges: Hashable where XAxisItem: Hashable, YAxisItem: Hashable { }
-extension Edges: Decodable where XAxisItem: Decodable, YAxisItem: Decodable { }
-extension Edges: Encodable where XAxisItem: Encodable, YAxisItem: Encodable { }
-extension Edges: AdditiveArithmetic where XAxisItem: AdditiveArithmetic, YAxisItem: AdditiveArithmetic { }
+extension Edges: Equatable where Item: Equatable { }
+
+extension Edges: Hashable where Item: Hashable { }
+
+extension Edges: Decodable where Item: Decodable { }
+
+extension Edges: Encodable where Item: Encodable { }
+
+extension Edges: AdditiveArithmetic where Item: AdditiveArithmetic { }
 
 #if canImport(UIKit)
 
 import UIKit
 
 extension UIEdgeInsets: EdgesProtocol {}
-
-extension UIEdgeInsets {
-
-  init(inset: CGFloat) {
-    self.init(inset)
-  }
-}
 
 #endif
 

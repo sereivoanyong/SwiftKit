@@ -10,63 +10,69 @@ import Foundation
 
 public protocol DirectionalEdgesProtocol: DirectionalXAxisEdgesProtocol, YAxisEdgesProtocol {
 
-  init(top: YAxisItem, leading: DirectionalXAxisItem, bottom: YAxisItem, trailing: DirectionalXAxisItem)
+  init(top: Item, leading: Item, bottom: Item, trailing: Item)
 }
 
 extension DirectionalEdgesProtocol {
 
-  init<DirectionalXAxisEdges: DirectionalXAxisEdgesProtocol, YAxisEdges: YAxisEdgesProtocol>(
-    horizontal: DirectionalXAxisEdges, vertical: YAxisEdges
-  ) where DirectionalXAxisEdges.DirectionalXAxisItem == DirectionalXAxisItem, YAxisEdges.YAxisItem == YAxisItem {
-    self.init(top: vertical.top, leading: horizontal.leading, bottom: vertical.bottom, trailing: horizontal.trailing)
+  public init(_ item: Item) {
+    self.init(top: item, leading: item, bottom: item, trailing: item)
   }
 
   /// `let insets = DirectionalEdges<NSLayoutConstraint>(...).map { $0.constant }`
-  public func map<Item, T>(_ transform: (Item) -> T) -> DirectionalEdges<T, T> where Item == DirectionalXAxisItem, Item == YAxisItem {
+  public func map<T>(_ transform: (Item) -> T) -> DirectionalEdges<T> {
     .init(top: transform(top), leading: transform(leading), bottom: transform(bottom), trailing: transform(trailing))
   }
 
-  public mutating func set<Item, T>(_ edges: DirectionalEdges<T, T>, at keyPath: WritableKeyPath<Item, T>) where Item == DirectionalXAxisItem, Item == YAxisItem {
+  public mutating func set<T>(_ edges: DirectionalEdges<T>, at keyPath: WritableKeyPath<Item, T>) {
     top[keyPath: keyPath] = edges.top
     leading[keyPath: keyPath] = edges.leading
     bottom[keyPath: keyPath] = edges.bottom
     trailing[keyPath: keyPath] = edges.trailing
   }
 
-  public mutating func update<Item, T>(_ newEdges: DirectionalEdges<T, T>, set: (inout Item, T) -> Void) where Item == DirectionalXAxisItem, Item == YAxisItem {
+  public mutating func update<T>(_ newEdges: DirectionalEdges<T>, set: (inout Item, T) -> Void) {
     set(&top, newEdges.top)
     set(&leading, newEdges.leading)
     set(&bottom, newEdges.bottom)
     set(&trailing, newEdges.trailing)
   }
+
+  public var all: [Item] {
+    return [top, leading, bottom, trailing]
+  }
 }
 
-extension DirectionalEdgesProtocol where DirectionalXAxisItem: AdditiveArithmetic, YAxisItem: AdditiveArithmetic {
+extension DirectionalEdgesProtocol where Item: AdditiveArithmetic {
 
-  @inlinable
   public static var zero: Self {
-    .init(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
+    return .init(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
   }
 
-  @inlinable
   public static func + (lhs: Self, rhs: Self) -> Self {
-    .init(top: lhs.top + rhs.top, leading: lhs.leading + rhs.leading, bottom: lhs.bottom + rhs.bottom, trailing: lhs.trailing + rhs.trailing)
+    return .init(top: lhs.top + rhs.top, leading: lhs.leading + rhs.leading, bottom: lhs.bottom + rhs.bottom, trailing: lhs.trailing + rhs.trailing)
   }
 
-  @inlinable
   public static func - (lhs: Self, rhs: Self) -> Self {
-    .init(top: lhs.top - rhs.top, leading: lhs.leading - rhs.leading, bottom: lhs.bottom - rhs.bottom, trailing: lhs.trailing - rhs.trailing)
+    return .init(top: lhs.top - rhs.top, leading: lhs.leading - rhs.leading, bottom: lhs.bottom - rhs.bottom, trailing: lhs.trailing - rhs.trailing)
   }
 }
 
-public struct DirectionalEdges<DirectionalXAxisItem, YAxisItem>: DirectionalEdgesProtocol {
+extension DirectionalEdgesProtocol where Item: Numeric {
 
-  public var top: YAxisItem
-  public var leading: DirectionalXAxisItem
-  public var bottom: YAxisItem
-  public var trailing: DirectionalXAxisItem
+  public static func * (lhs: Self, rhs: Item) -> Self {
+    return .init(top: lhs.top * rhs, leading: lhs.leading * rhs, bottom: lhs.bottom * rhs, trailing: lhs.trailing * rhs)
+  }
+}
 
-  public init(top: YAxisItem, leading: DirectionalXAxisItem, bottom: YAxisItem, trailing: DirectionalXAxisItem) {
+public struct DirectionalEdges<Item>: DirectionalEdgesProtocol {
+
+  public var top: Item
+  public var leading: Item
+  public var bottom: Item
+  public var trailing: Item
+
+  public init(top: Item, leading: Item, bottom: Item, trailing: Item) {
     self.top = top
     self.leading = leading
     self.bottom = bottom
@@ -74,18 +80,22 @@ public struct DirectionalEdges<DirectionalXAxisItem, YAxisItem>: DirectionalEdge
   }
 }
 
-extension DirectionalEdges where DirectionalXAxisItem == YAxisItem {
+extension DirectionalEdges: Equatable where Item: Equatable { }
 
-  @inlinable
-  public var all: [DirectionalXAxisItem] {
-    [top, leading, bottom, trailing]
-  }
-}
+extension DirectionalEdges: Hashable where Item: Hashable { }
 
-extension DirectionalEdges: Equatable where DirectionalXAxisItem: Equatable, YAxisItem: Equatable { }
-extension DirectionalEdges: Hashable where DirectionalXAxisItem: Hashable, YAxisItem: Hashable { }
-extension DirectionalEdges: Decodable where DirectionalXAxisItem: Decodable, YAxisItem: Decodable { }
-extension DirectionalEdges: Encodable where DirectionalXAxisItem: Encodable, YAxisItem: Encodable { }
-extension DirectionalEdges: AdditiveArithmetic where DirectionalXAxisItem: AdditiveArithmetic, YAxisItem: AdditiveArithmetic { }
+extension DirectionalEdges: Decodable where Item: Decodable { }
+
+extension DirectionalEdges: Encodable where Item: Encodable { }
+
+extension DirectionalEdges: AdditiveArithmetic where Item: AdditiveArithmetic { }
+
+#if canImport(UIKit)
+
+import UIKit
+
+extension NSDirectionalEdgeInsets: DirectionalEdgesProtocol {}
+
+#endif
 
 #endif
