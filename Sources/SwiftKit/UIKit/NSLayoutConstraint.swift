@@ -14,22 +14,16 @@ extension NSLayoutConstraint {
   }
 }
 
-extension Array where Element == NSLayoutConstraint {
+extension Sequence where Element == NSLayoutConstraint {
 
   @inlinable
   public func activate() {
-    NSLayoutConstraint.activate(self)
-  }
-
-  @discardableResult
-  public func activated() -> [NSLayoutConstraint] {
-    NSLayoutConstraint.activate(self)
-    return self
+    NSLayoutConstraint.activate(self as? [NSLayoutConstraint] ?? [NSLayoutConstraint](self))
   }
 
   @inlinable
   public func deactivate() {
-    NSLayoutConstraint.deactivate(self)
+    NSLayoutConstraint.deactivate(self as? [NSLayoutConstraint] ?? [NSLayoutConstraint](self))
   }
 }
 #endif
