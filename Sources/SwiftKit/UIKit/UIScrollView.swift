@@ -136,7 +136,7 @@ extension UIScrollView {
     setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     addSubview(accessoryView)
     
-    contentInset.top = preferredHeight + insets.vertical
+    contentInset.top = preferredHeight + insets.top + insets.bottom
     scrollIndicatorInsets.top = contentInset.top
     
     let alignmentLayoutGuide = alignmentLayoutGuide ?? frameLayoutGuide

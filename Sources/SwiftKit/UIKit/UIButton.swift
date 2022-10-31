@@ -15,7 +15,7 @@ extension UIButton {
       setBackgroundImage(nil, for: state)
       return
     }
-    var backgroundImage = UIImage(color: color, size: CGSize(dimension: cornerRadius * 2), cornerRadius: cornerRadius).resizableImage(withCapInsets: UIEdgeInsets(cornerRadius))
+    var backgroundImage = UIImage(color: color, size: CGSize(dimension: cornerRadius * 2), cornerRadius: cornerRadius).resizableImage(withCapInsets: UIEdgeInsets(top: cornerRadius, left: cornerRadius, bottom: cornerRadius, right: cornerRadius))
     if let renderingMode = renderingMode {
       backgroundImage = backgroundImage.withRenderingMode(renderingMode)
     }
