@@ -147,5 +147,25 @@ public struct UserDefault<T> {
       defaults[key] = newValue.flatMap { try? encoder.encode($0) }
     }
   }
+
+  public init<Wrapped: NSObject & NSCoding>(
+    defaults: UserDefaults = .standard,
+    key: String,
+    default: T = nil,
+    requiringSecureCoding: Bool
+  ) where T == Wrapped? {
+    self.defaults = defaults
+    self.key = key
+    self.get = { defaults, key, set in
+      if let data = defaults[key] as? Data, let object = try? NSKeyedUnarchiver.unarchivedObject(ofClass: Wrapped.self, from: data) {
+        return object
+      }
+      set(defaults, key, `default`)
+      return `default`
+    }
+    self.set = { defaults, key, newObject in
+      defaults[key] = newObject.flatMap { try? NSKeyedArchiver.archivedData(withRootObject: $0, requiringSecureCoding: requiringSecureCoding) }
+    }
+  }
 }
 #endif
