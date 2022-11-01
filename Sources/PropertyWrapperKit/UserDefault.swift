@@ -17,72 +17,135 @@ import SwiftKit
  */
 
 @propertyWrapper
-public struct UserDefault<Object> {
+public struct UserDefault<T> {
 
-  private let get: () -> Object
-  private let set: (Object) -> Void
+  public let defaults: UserDefaults
+  public let key: String
 
-  public var wrappedValue: Object {
-    get { return get() }
-    nonmutating set { set(newValue) }
+  private let get: (UserDefaults, String, (UserDefaults, String, T) -> Void) -> T
+  private let set: (UserDefaults, String, T) -> Void
+
+  public var wrappedValue: T {
+    get { return get(defaults, key, set) }
+    nonmutating set { set(defaults, key, newValue) }
   }
 
   public init(
     defaults: UserDefaults = .standard,
     key: String,
-    default: Object
-  ) where Object: PropertyListObject {
-    get = { return defaults[key] as? Object ?? `default` }
-    set = { defaults[key] = $0 }
+    default: T
+  ) where T: PropertyListObject {
+    self.defaults = defaults
+    self.key = key
+    self.get = { defaults, key, set in
+      if let value = defaults[key] as? T {
+        return value
+      }
+      set(defaults, key, `default`)
+      return `default`
+    }
+    self.set = { defaults, key, newValue in
+      defaults[key] = newValue
+    }
   }
 
   public init(
     defaults: UserDefaults = .standard,
     key: String,
-    default: Object
-  ) where Object: RawRepresentable, Object.RawValue: PropertyListObject {
-    get = { return (defaults[key] as? Object.RawValue).flatMap(Object.init(rawValue:)) ?? `default` }
-    set = { defaults[key] = $0.rawValue }
+    default: T
+  ) where T: RawRepresentable, T.RawValue: PropertyListObject {
+    self.defaults = defaults
+    self.key = key
+    self.get = { defaults, key, set in
+      if let rawValue = defaults[key] as? T.RawValue, let value = T(rawValue: rawValue) {
+        return value
+      }
+      set(defaults, key, `default`)
+      return `default`
+    }
+    self.set = { defaults, key, newValue in
+      defaults[key] = newValue.rawValue
+    }
   }
 
-  public init<Wrapped>(
+  public init<Wrapped: PropertyListObject>(
     defaults: UserDefaults = .standard,
     key: String,
-    default: Object = nil
-  ) where Object == Wrapped?, Wrapped: PropertyListObject {
-    get = { return defaults[key] as? Wrapped ?? `default` }
-    set = { defaults[key] = $0 }
+    default: T = nil
+  ) where T == Wrapped? {
+    self.defaults = defaults
+    self.key = key
+    self.get = { defaults, key, set in
+      if let value = defaults[key] as? Wrapped {
+        return value
+      }
+      set(defaults, key, `default`)
+      return `default`
+    }
+    self.set = { defaults, key, newValue in
+      defaults[key] = newValue
+    }
   }
 
-  public init<Wrapped>(
+  public init<Wrapped: RawRepresentable>(
     defaults: UserDefaults = .standard,
     key: String,
-    default: Object = nil
-  ) where Object == Wrapped?, Wrapped: RawRepresentable, Wrapped.RawValue: PropertyListObject {
-    get = { return (defaults[key] as? Wrapped.RawValue).flatMap(Wrapped.init(rawValue:)) ?? `default` }
-    set = { defaults[key] = $0?.rawValue }
+    default: T = nil
+  ) where T == Wrapped?, Wrapped.RawValue: PropertyListObject {
+    self.defaults = defaults
+    self.key = key
+    self.get = { defaults, key, set in
+      if let rawValue = defaults[key] as? Wrapped.RawValue, let value = Wrapped(rawValue: rawValue) {
+        return value
+      }
+      set(defaults, key, `default`)
+      return `default`
+    }
+    self.set = { defaults, key, newValue in
+      defaults[key] = newValue?.rawValue
+    }
   }
 
-  public init<Wrapped>(
+  public init<Wrapped: Codable>(
     defaults: UserDefaults = .standard,
     key: String,
     decoder: JSONDecoder = .init(),
     encoder: JSONEncoder = .init(),
-    default: Object = nil
-  ) where Object == Wrapped?, Wrapped: Codable {
-    get = { return (defaults[key] as? Data).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default` }
-    set = { defaults[key] = $0.flatMap { try? encoder.encode($0) } }
+    default: T = nil
+  ) where T == Wrapped? {
+    self.defaults = defaults
+    self.key = key
+    self.get = { defaults, key, set in
+      if let data = defaults[key] as? Data, let value = try? decoder.decode(Wrapped.self, from: data) {
+        return value
+      }
+      set(defaults, key, `default`)
+      return `default`
+    }
+    self.set = { defaults, key, newValue in
+      defaults[key] = newValue.flatMap { try? encoder.encode($0) }
+    }
   }
 
-  public init<Wrapped>(
+  public init<Wrapped: Codable>(
     defaults: UserDefaults = .standard,
     key: String,
     decoder: PropertyListDecoder = .init(),
     encoder: PropertyListEncoder = .init(),
-    default: Object = nil
-  ) where Object == Wrapped?, Wrapped: Codable {
-    get = { return (defaults[key] as? Data).flatMap { try? decoder.decode(Wrapped.self, from: $0) } ?? `default` }
-    set = { defaults[key] = $0.flatMap { try? encoder.encode($0) } }
+    default: T = nil
+  ) where T == Wrapped? {
+    self.defaults = defaults
+    self.key = key
+    self.get = { defaults, key, set in
+      if let data = defaults[key] as? Data, let value = try? decoder.decode(Wrapped.self, from: data) {
+        return value
+      }
+      set(defaults, key, `default`)
+      return `default`
+    }
+    self.set = { defaults, key, newValue in
+      defaults[key] = newValue.flatMap { try? encoder.encode($0) }
+    }
   }
 }
 #endif
