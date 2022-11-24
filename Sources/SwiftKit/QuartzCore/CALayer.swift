@@ -5,6 +5,7 @@
 //
 
 #if canImport(QuartzCore)
+
 import QuartzCore
 
 extension CALayer {
@@ -19,20 +20,20 @@ extension CALayer {
   // MARK: Corner
   
   @available(iOS 11.0, *)
-  final public var continuousCorners: Bool {
-    get { return value(forKey: "continuousCorners") as? Bool ?? false }
-    set { setValue(newValue as NSNumber, forKey: "continuousCorners") }
+  public var continuousCorners: Bool {
+    get { return valueIfResponds(forKey: "continuousCorners") as? Bool ?? false }
+    set { setValueIfResponds(newValue, forKey: "continuousCorners") }
   }
   
   @available(iOS 11.0, *)
-  final public func setCorner(radius: CGFloat = 0, masks: CACornerMask = .all, continuous: Bool = false) {
+  public func setCorner(radius: CGFloat = 0, masks: CACornerMask = .all, continuous: Bool = false) {
     cornerRadius = radius
     maskedCorners = masks
     continuousCorners = continuous
   }
   
   @available(iOS 13.0, *)
-  final public func setCorner(radius: CGFloat = 0, masks: CACornerMask = .all, curve: CALayerCornerCurve = .circular) {
+  public func setCorner(radius: CGFloat = 0, masks: CACornerMask = .all, curve: CALayerCornerCurve = .circular) {
     cornerRadius = radius
     maskedCorners = masks
     cornerCurve = curve
@@ -40,7 +41,7 @@ extension CALayer {
   
   // MARK: Border
   
-  public struct Border {
+  public struct Border: Equatable {
     
     public var width: CGFloat
     public var color: CGColor?
@@ -56,14 +57,14 @@ extension CALayer {
     set { setBorder(width: newValue.width, color: newValue.color) }
   }
   
-  final public func setBorder(width: CGFloat = 0, color: CGColor? = nil) {
+  public func setBorder(width: CGFloat = 0, color: CGColor? = nil) {
     borderWidth = width
     borderColor = color
   }
   
   // MARK: Shadow
   
-  public struct Shadow {
+  public struct Shadow: Equatable {
     
     public var color: CGColor?
     public var opacity: Float
@@ -80,12 +81,12 @@ extension CALayer {
     }
   }
   
-  final public var shadow: Shadow {
+  public var shadow: Shadow {
     get { return Shadow(color: shadowColor, opacity: shadowOpacity, offset: shadowOffset, radius: shadowRadius, path: shadowPath) }
     set { setShadow(color: newValue.color, opacity: newValue.opacity, offset: newValue.offset, radius: newValue.radius, path: newValue.path) }
   }
   
-  final public func setShadow(color: CGColor? = nil, opacity: Float = 0, offset: CGSize = CGSize(width: 0, height: -3), radius: CGFloat = 3, path: CGPath? = nil) {
+  public func setShadow(color: CGColor? = nil, opacity: Float = 0, offset: CGSize = CGSize(width: 0, height: -3), radius: CGFloat = 3, path: CGPath? = nil) {
     shadowColor = color
     shadowOpacity = opacity
     shadowOffset = offset
@@ -102,14 +103,17 @@ extension CACornerMask {
 }
 
 #if canImport(UIKit)
+
 import UIKit
 
 extension CALayer {
   
-  final public func shouldRasterize(to screen: UIScreen) {
+  public func shouldRasterize(to screen: UIScreen) {
     rasterizationScale = screen.scale
     shouldRasterize = true
   }
 }
+
 #endif
+
 #endif
