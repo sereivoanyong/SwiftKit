@@ -17,12 +17,12 @@ extension NumberFormatter {
   }
 
   @inlinable
-  final public func string<T: _ObjectiveCBridgeable>(from number: T) -> String? where T._ObjectiveCType: NSNumber {
-    string(from: number._bridgeToObjectiveC())
+  public func string<T: _ObjectiveCBridgeable>(from number: T) -> String? where T._ObjectiveCType: NSNumber {
+    return string(from: number._bridgeToObjectiveC())
   }
 
   @inlinable
-  final public func decimal(from string: String) -> Decimal? {
+  public func decimal(from string: String) -> Decimal? {
     assert(generatesDecimalNumbers)
     return number(from: string) as! NSDecimalNumber? as Decimal?
   }
