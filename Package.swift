@@ -12,6 +12,7 @@ let package = Package(
   ],
   targets: [
     .target(name: "SwiftKit"),
-    .target(name: "PropertyWrapperKit", dependencies: ["SwiftKit"])
+    .target(name: "PropertyWrapperKit", dependencies: ["SwiftKit"]),
+    .testTarget(name: "SwiftKitTests", dependencies: ["SwiftKit"]),
   ]
 )

@@ -9,21 +9,19 @@ import Foundation
 @_marker
 public protocol PropertyListObject { }
 
-extension String: PropertyListObject { }
-extension Data: PropertyListObject { }
-extension URL: PropertyListObject { }
-extension Int: PropertyListObject { }
-extension Float: PropertyListObject { }
-extension Double: PropertyListObject { }
-extension Bool: PropertyListObject { }
-extension Date: PropertyListObject { }
-extension Array: PropertyListObject where Element: PropertyListObject { }
-extension Dictionary: PropertyListObject where Key: StringProtocol, Value: PropertyListObject { }
+extension String: PropertyListObject { } // NSString
+extension Int: PropertyListObject { } // NSNumber
+extension Float: PropertyListObject { } // NSNumber
+extension Double: PropertyListObject { } // NSNumber
+extension Bool: PropertyListObject { } // NSNumber
+extension Date: PropertyListObject { } // NSDate
+extension Data: PropertyListObject { } // NSData
+extension Array: PropertyListObject where Element: PropertyListObject { } // NSArray
+extension Dictionary: PropertyListObject where Key: StringProtocol, Value: PropertyListObject { } // NSDictionary
 
 extension NSString: PropertyListObject { }
-extension NSData: PropertyListObject { }
-extension NSURL: PropertyListObject { }
 extension NSNumber: PropertyListObject { }
 extension NSDate: PropertyListObject { }
+extension NSData: PropertyListObject { }
 extension NSArray: PropertyListObject { }
 extension NSDictionary: PropertyListObject { }

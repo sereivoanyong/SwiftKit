@@ -9,14 +9,9 @@ import Foundation
 
 extension UserDefaults {
 
-  final public var appleLanguages: [String] {
-    get { object(forKey: "AppleLanguages") as? [String] ?? [] }
+  public var appleLanguages: [String] {
+    get { return object(forKey: "AppleLanguages") as? [String] ?? [] }
     set { set(newValue, forKey: "AppleLanguages") }
-  }
-
-  final public subscript(key: String) -> PropertyListObject? {
-    @inlinable get { return object(forKey: key) as! PropertyListObject? }
-    @inlinable set { set(newValue, forKey: key) }
   }
 }
 #endif
