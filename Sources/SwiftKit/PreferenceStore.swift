@@ -1,20 +1,19 @@
 //
-//  StoreProtocol.swift
+//  PreferenceStore.swift
 //
 //  Created by Sereivoan Yong on 12/13/22.
 //
 
-#if canImport(Foundation)
 import Foundation
 
-public protocol StoreProtocol: AnyObject {
+public protocol PreferenceStore: AnyObject {
 
   func object(forKey key: String) -> Any?
 
   func set(_ value: Any?, forKey key: String)
 }
 
-extension StoreProtocol {
+extension PreferenceStore {
 
   public subscript(key: String) -> PropertyListObject? {
     @inlinable get { return object(forKey: key) as! PropertyListObject? }
@@ -22,21 +21,20 @@ extension StoreProtocol {
   }
 }
 
-extension UserDefaults: StoreProtocol { }
+extension UserDefaults: PreferenceStore { }
 
-extension NSUbiquitousKeyValueStore: StoreProtocol { }
+extension NSUbiquitousKeyValueStore: PreferenceStore { }
 
-extension StoreProtocol where Self == UserDefaults {
+extension PreferenceStore where Self == UserDefaults {
 
   public static var standardUserDefaults: Self {
     return UserDefaults.standard
   }
 }
 
-extension StoreProtocol where Self == NSUbiquitousKeyValueStore {
+extension PreferenceStore where Self == NSUbiquitousKeyValueStore {
 
   public static var defaultUbiquitousStore: Self {
     return NSUbiquitousKeyValueStore.default
   }
 }
-#endif

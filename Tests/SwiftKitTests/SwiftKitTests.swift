@@ -3,8 +3,8 @@ import XCTest
 
 final class SwiftKitTests: XCTestCase {
 
-  func testStoreProtocol() throws {
-    let stores: [StoreProtocol] = [UserDefaults.standard /*, NSUbiquitousKeyValueStore.default */]
+  func testPreferenceStore() throws {
+    let stores: [PreferenceStore] = [UserDefaults.standard /*, NSUbiquitousKeyValueStore.default */]
     let values: [any Equatable & PropertyListObject] = [
       "A",
       1 as Int,
