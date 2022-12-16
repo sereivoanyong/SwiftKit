@@ -14,7 +14,7 @@ extension UIView {
     if #available(iOS 13, *) {
       return .separator
     } else {
-      return .integer(red: 60, green: 60, blue: 67, alpha: 29)
+      return .decimal(red: 60, green: 60, blue: 67, alpha: 0.29)
     }
   }
   

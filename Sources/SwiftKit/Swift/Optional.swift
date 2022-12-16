@@ -122,8 +122,8 @@ extension Optional where Wrapped == UIColor {
     switch self {
     case .none:
       return true
-    case .some(let wrapped):
-      return wrapped == .clear
+    case .some(let color):
+      return color.isClear
     }
   }
 
@@ -132,7 +132,7 @@ extension Optional where Wrapped == UIColor {
     case .none:
       return nil
     case .some(let color):
-      return color == .clear ? nil : color
+      return color.isClear ? nil : self
     }
   }
 }
