@@ -8,13 +8,12 @@
 import Foundation
 
 extension Data {
-  
-  @inlinable public init?(resourceName: String, extension: String, in bundle: Bundle = .main, options: ReadingOptions = []) {
-    if let url = bundle.url(forResource: resourceName, withExtension: `extension`) {
-      try? self.init(contentsOf: url, options: options)
-    } else {
+
+  public init?(resourceName: String, extension: String, in bundle: Bundle = .main, options: ReadingOptions = []) {
+    guard let url = bundle.url(forResource: resourceName, withExtension: `extension`) else {
       return nil
     }
+    try? self.init(contentsOf: url, options: options)
   }
   
   public var mimeType: String {

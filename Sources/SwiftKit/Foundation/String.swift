@@ -21,11 +21,11 @@ extension StringProtocol {
     return components(separatedBy: characterSet.inverted).joined()
   }
 
-  public func indices(of string: String, options: String.CompareOptions = [], locale: Locale? = nil) -> [Int] {
+  public func indices(of string: any StringProtocol, options: String.CompareOptions = [], locale: Locale? = nil) -> [Int] {
     return ranges(of: string, options: options, locale: locale).map { distance(from: startIndex, to: $0.lowerBound) }
   }
 
-  public func ranges<T: StringProtocol>(of string: T, options: String.CompareOptions = [], locale: Locale? = nil) -> [Range<Index>] {
+  public func ranges(of string: any StringProtocol, options: String.CompareOptions = [], locale: Locale? = nil) -> [Range<Index>] {
     var ranges: [Range<Index>] = []
     var position = startIndex
     while let range = range(of: string, options: options, range: position..<endIndex, locale: locale) {
@@ -45,11 +45,11 @@ extension StringProtocol {
 extension String {
 
   public func firstCapitalized() -> String {
-    guard let firstCharacter = first else {
+    guard let first = first else {
       return self
     }
     var result = self
-    result.replaceSubrange(startIndex...startIndex, with: String(firstCharacter).capitalized)
+    result.replaceSubrange(startIndex...startIndex, with: String(first).capitalized)
     return result
   }
 
@@ -57,18 +57,7 @@ extension String {
     return try NSRegularExpression(pattern: pattern, options: options).matches(in: self, options: [], range: NSRange(location: 0, length: utf16.count))
   }
 
-  public var boolValue: Bool? {
-    switch lowercased() {
-    case "true", "yes", "1":
-      return true
-    case "false", "no", "0":
-      return false
-    default:
-      return nil
-    }
-  }
-
-  public mutating func replace(_ string: String, with replacementString: String) {
+  public mutating func replace(_ string: any StringProtocol, with replacementString: any Collection<Character>) {
     var upperbound = endIndex
     while let rangeToReplace = range(of: string, options: .backwards, range: startIndex..<upperbound) {
       replaceSubrange(rangeToReplace, with: replacementString)
@@ -76,7 +65,7 @@ extension String {
     }
   }
 
-  public mutating func remove(_ string: String) {
+  public mutating func remove(_ string: any StringProtocol) {
     var upperbound = endIndex
     while let rangeToRemove = range(of: string, options: .backwards, range: startIndex..<upperbound) {
       removeSubrange(rangeToRemove)
@@ -92,19 +81,11 @@ extension String {
     unicodeScalars.removeAll(where: { !set.contains($0) })
   }
 
-  public func removing(_ string: String) -> String {
-    var mutatingSelf = self
-    mutatingSelf.remove(string)
-    return mutatingSelf
-  }
-
-  @inlinable
   public init?(resourceName: String, extension: String, in bundle: Bundle = .main) {
-    if let path = bundle.path(forResource: resourceName, ofType: `extension`) {
-      try? self.init(contentsOfFile: path)
-    } else {
+    guard let path = bundle.path(forResource: resourceName, ofType: `extension`) else {
       return nil
     }
+    try? self.init(contentsOfFile: path)
   }
 
   @inlinable

@@ -92,11 +92,10 @@ extension UIImage: UIImageProtocol { }
 extension UIImage {
   
   public convenience init?(resourceName: String, extension: String?, in bundle: Bundle = .main) {
-    if let path = bundle.path(forResource: resourceName, ofType: `extension`) {
-      self.init(contentsOfFile: path)
-    } else {
+    guard let path = bundle.path(forResource: resourceName, ofType: `extension`) else {
       return nil
     }
+    self.init(contentsOfFile: path)
   }
   
   public convenience init(color: UIColor, size: CGSize = CGSize(width: 1, height: 1), cornerRadius: CGFloat = 0) {
@@ -108,7 +107,7 @@ extension UIImage {
     }
   }
   
-  final public func resizing(to newSize: CGSize) -> UIImage {
+  public func resizing(to newSize: CGSize) -> UIImage {
     return UIImage(size: newSize, opaque: false, scale: scale) { _ in
       draw(in: CGRect(origin: .zero, size: newSize))
     }
@@ -117,7 +116,7 @@ extension UIImage {
   /// Rotates the image by `angle` radians.
   /// - Parameter angle: The angle, in radians, by which to rotate the image. Positive values rotate counterclockwise and negative values rotate clockwise.
   /// - Returns: The rotated image.
-  final public func rotated(by angle: CGFloat) -> UIImage {
+  public func rotated(by angle: CGFloat) -> UIImage {
     let newSize = CGRect(origin: .zero, size: size).applying(CGAffineTransform(rotationAngle: angle)).size
     return UIImage(size: newSize, opaque: false, scale: scale) { context in
       context.translateBy(x: newSize.width/2, y: newSize.height/2)
