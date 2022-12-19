@@ -98,7 +98,8 @@ extension String {
     return mutatingSelf
   }
 
-  @inlinable public init?(resourceName: String, extension: String, in bundle: Bundle = .main) {
+  @inlinable
+  public init?(resourceName: String, extension: String, in bundle: Bundle = .main) {
     if let path = bundle.path(forResource: resourceName, ofType: `extension`) {
       try? self.init(contentsOfFile: path)
     } else {
@@ -106,16 +107,41 @@ extension String {
     }
   }
 
-  @inlinable public var localized: String {
+  @inlinable
+  public var localized: String {
     return NSLocalizedString(self, tableName: nil, bundle: .main, value: "", comment: "")
   }
 
-  @inlinable public func localized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "") -> String {
+  @inlinable
+  public func localized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "") -> String {
     return NSLocalizedString(self, tableName: tableName, bundle: bundle, value: value, comment: comment)
   }
 
-  @inlinable public func formatLocalized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "", _ arguments: CVarArg...) -> String {
+  @inlinable
+  public func formatLocalized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "", _ arguments: CVarArg...) -> String {
     return String(format: localized(tableName: tableName, bundle: bundle, value: value, comment: comment), arguments: arguments)
+  }
+}
+
+extension Optional where Wrapped: StringProtocol {
+
+  public var isNilOrBlank: Bool {
+    switch self {
+    case .none:
+      return true
+    case .some(let string):
+      return string.isBlank
+    }
+  }
+
+  /// Returns nil if the collection is nil or empty.
+  public var nonBlank: Wrapped? {
+    switch self {
+    case .none:
+      return nil
+    case .some(let string):
+      return string.isBlank ? nil : string
+    }
   }
 }
 #endif

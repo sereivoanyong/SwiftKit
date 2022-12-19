@@ -1,11 +1,11 @@
 //
-//  Delayed.swift
+//  DelayedMutable.swift
 //
-//  Created by Sereivoan Yong on 2/9/22.
+//  Created by Sereivoan Yong on 12/17/22.
 //
 
 @propertyWrapper
-public struct Delayed<Value> {
+public struct DelayedMutable<Value> {
 
   private var _value: Value?
 
@@ -17,12 +17,15 @@ public struct Delayed<Value> {
       return value
     }
     set {
-      precondition(_value != nil, "property initialized twice")
       _value = newValue
     }
   }
 
   public init() {
 
+  }
+
+  mutating func reset() {
+    _value = nil
   }
 }

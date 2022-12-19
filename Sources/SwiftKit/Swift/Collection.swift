@@ -6,11 +6,13 @@
 
 extension Collection {
   
-  @inlinable public var nonEmpty: Self? {
+  @inlinable
+  public var nonEmpty: Self? {
     return isEmpty ? nil : self
   }
   
-  @inlinable public subscript(safe index: Index) -> Element? {
+  @inlinable
+  public subscript(safe index: Index) -> Element? {
     return indices.contains(index) ? self[index] : nil
   }
   
@@ -18,7 +20,8 @@ extension Collection {
     return indexes.map { self[$0] }
   }
 
-  @inlinable public func firstIndex<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Index? where T: Equatable {
+  @inlinable
+  public func firstIndex<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Index? where T: Equatable {
     return firstIndex(where: { $0[keyPath: keyPath] == value })
   }
   
@@ -60,5 +63,27 @@ extension Collection {
       groups[key, default: []].append(value)
     }
     return groups.sorted(by: { orders[$0.key]! < orders[$1.key]! })
+  }
+}
+
+extension Optional where Wrapped: Collection {
+
+  public var isNilOrEmpty: Bool {
+    switch self {
+    case .none:
+      return true
+    case .some(let collection):
+      return collection.isEmpty
+    }
+  }
+
+  /// Returns nil if the collection is nil or empty.
+  public var nonEmpty: Wrapped? {
+    switch self {
+    case .none:
+      return nil
+    case .some(let collection):
+      return collection.isEmpty ? nil : collection
+    }
   }
 }

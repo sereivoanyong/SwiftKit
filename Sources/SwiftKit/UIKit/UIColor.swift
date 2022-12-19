@@ -52,7 +52,7 @@ extension UIColor {
   // MARK: Hex Support
 
   /// Creates a color object using the specified hexadecimal string.
-  /// - Parameter hexString: A hexadecimal representation string #RRGGBB / #RRGGBBAA.
+  /// - Parameter hexString: A hexadecimal representation string #RGB / #RGBA / #RRGGBB / #RRGGBBAA.
   public convenience init?(hexString: String) {
     var hexString = hexString
     if hexString.first == "#" {
@@ -164,6 +164,27 @@ extension UIColor {
   /// Returns a random color.
   public static func random(alpha: CGFloat = 1) -> UIColor {
     return decimal(red: UInt8.random(), green: .random(), blue: .random(), alpha: alpha)
+  }
+}
+
+extension Optional where Wrapped == UIColor {
+
+  public var isNilOrClear: Bool {
+    switch self {
+    case .none:
+      return true
+    case .some(let color):
+      return color.isClear
+    }
+  }
+
+  public var nonClear: UIColor? {
+    switch self {
+    case .none:
+      return nil
+    case .some(let color):
+      return color.isClear ? nil : self
+    }
   }
 }
 #endif
