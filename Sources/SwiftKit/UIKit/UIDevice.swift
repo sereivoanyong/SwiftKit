@@ -103,12 +103,14 @@ extension UIDevice {
     return modelIdentifier.map(modelName(identifier:))
   }
 
+  /// - See: https://stackoverflow.com/a/26962452/11235826
   public static func modelName(identifier: String) -> String {
 #if os(iOS)
     switch identifier {
     case "iPod5,1":                                       return "iPod touch (5th generation)"
     case "iPod7,1":                                       return "iPod touch (6th generation)"
     case "iPod9,1":                                       return "iPod touch (7th generation)"
+
     case "iPhone3,1", "iPhone3,2", "iPhone3,3":           return "iPhone 4"
     case "iPhone4,1":                                     return "iPhone 4s"
     case "iPhone5,1", "iPhone5,2":                        return "iPhone 5"
@@ -137,9 +139,14 @@ extension UIDevice {
     case "iPhone14,5":                                    return "iPhone 13"
     case "iPhone14,2":                                    return "iPhone 13 Pro"
     case "iPhone14,3":                                    return "iPhone 13 Pro Max"
+    case "iPhone14,7":                                    return "iPhone 14"
+    case "iPhone14,8":                                    return "iPhone 14 Plus"
+    case "iPhone15,2":                                    return "iPhone 14 Pro"
+    case "iPhone15,3":                                    return "iPhone 14 Pro Max"
     case "iPhone8,4":                                     return "iPhone SE"
     case "iPhone12,8":                                    return "iPhone SE (2nd generation)"
     case "iPhone14,6":                                    return "iPhone SE (3rd generation)"
+
     case "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4":      return "iPad 2"
     case "iPad3,1", "iPad3,2", "iPad3,3":                 return "iPad (3rd generation)"
     case "iPad3,4", "iPad3,5", "iPad3,6":                 return "iPad (4th generation)"
@@ -148,6 +155,7 @@ extension UIDevice {
     case "iPad7,11", "iPad7,12":                          return "iPad (7th generation)"
     case "iPad11,6", "iPad11,7":                          return "iPad (8th generation)"
     case "iPad12,1", "iPad12,2":                          return "iPad (9th generation)"
+    case "iPad13,18", "iPad13,19":                        return "iPad (10th generation)"
     case "iPad4,1", "iPad4,2", "iPad4,3":                 return "iPad Air"
     case "iPad5,3", "iPad5,4":                            return "iPad Air 2"
     case "iPad11,3", "iPad11,4":                          return "iPad Air (3rd generation)"
@@ -164,15 +172,20 @@ extension UIDevice {
     case "iPad8,1", "iPad8,2", "iPad8,3", "iPad8,4":      return "iPad Pro (11-inch) (1st generation)"
     case "iPad8,9", "iPad8,10":                           return "iPad Pro (11-inch) (2nd generation)"
     case "iPad13,4", "iPad13,5", "iPad13,6", "iPad13,7":  return "iPad Pro (11-inch) (3rd generation)"
+    case "iPad14,3", "iPad14,4":                          return "iPad Pro (11-inch) (4th generation)"
     case "iPad6,7", "iPad6,8":                            return "iPad Pro (12.9-inch) (1st generation)"
     case "iPad7,1", "iPad7,2":                            return "iPad Pro (12.9-inch) (2nd generation)"
     case "iPad8,5", "iPad8,6", "iPad8,7", "iPad8,8":      return "iPad Pro (12.9-inch) (3rd generation)"
     case "iPad8,11", "iPad8,12":                          return "iPad Pro (12.9-inch) (4th generation)"
     case "iPad13,8", "iPad13,9", "iPad13,10", "iPad13,11":return "iPad Pro (12.9-inch) (5th generation)"
+    case "iPad14,5", "iPad14,6":                          return "iPad Pro (12.9-inch) (6th generation)"
+
     case "AppleTV5,3":                                    return "Apple TV"
     case "AppleTV6,2":                                    return "Apple TV 4K"
+
     case "AudioAccessory1,1":                             return "HomePod"
     case "AudioAccessory5,1":                             return "HomePod mini"
+
     case "i386", "x86_64", "arm64":                       return "Simulator \(modelName(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"]!))"
     default:                                              return identifier
     }
