@@ -15,7 +15,7 @@ extension UISwitch {
   }
   
   /// Toggle the state of the switch to On or Off, optionally animating the transition
-  final public func toggleOn(animated: Bool) {
+  public func toggleOn(animated: Bool) {
     setOn(!isOn, animated: animated)
   }
 }

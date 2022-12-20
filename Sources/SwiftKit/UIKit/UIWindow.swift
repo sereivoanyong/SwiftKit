@@ -8,14 +8,14 @@
 import UIKit
 
 extension UIWindow {
-  
-  final public func setRootViewController(_ viewController: UIViewController, animated: Bool, duration: TimeInterval, options: AnimationOptions, completion: ((Bool) -> Void)? = nil) {
+
+  public func setRootViewController(_ viewController: UIViewController, animated: Bool, duration: TimeInterval, options: AnimationOptions, completion: ((Bool) -> Void)? = nil) {
     guard animated else {
       rootViewController = viewController
       completion?(true)
       return
     }
-    
+
     UIView.transition(with: self, duration: duration, options: options, animations: {
       let oldState = UIView.areAnimationsEnabled
       UIView.setAnimationsEnabled(false)
@@ -23,9 +23,9 @@ extension UIWindow {
       UIView.setAnimationsEnabled(oldState)
     }, completion: completion)
   }
-  
+
   /*
-  final public func setRootViewController(_ rootViewController: UIViewController?, animated: Bool) {
+  public func setRootViewController(_ rootViewController: UIViewController?, animated: Bool) {
     guard animated, let newRootViewController = rootViewController, let oldRootViewController = self.rootViewController else {
       self.rootViewController = rootViewController
       return
@@ -46,5 +46,4 @@ extension UIWindow {
   }
   */
 }
-
 #endif

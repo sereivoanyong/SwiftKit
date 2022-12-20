@@ -208,14 +208,5 @@ extension NSObjectProtocol where Self: UIView {
   public var withAutoLayout: Self {
     return with(\.translatesAutoresizingMaskIntoConstraints, false)
   }
-
-  @available(*, deprecated, message: "Use `withAutoLayout.configure()` instead.")
-  @discardableResult
-  @inlinable
-  public func withAutoLayout(configurationHandler: (Self) -> Void) -> Self {
-    translatesAutoresizingMaskIntoConstraints = false
-    configurationHandler(self)
-    return self
-  }
 }
 #endif

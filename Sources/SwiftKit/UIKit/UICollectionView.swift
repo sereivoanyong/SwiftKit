@@ -8,19 +8,19 @@
 import UIKit
 
 extension UICollectionView {
-  
+
   public typealias CellProvider<Item> = (UICollectionView, IndexPath, Item) -> UICollectionViewCell?
-  
+
   @inlinable
   public convenience init(collectionViewLayout: UICollectionViewLayout) {
     self.init(frame: .zero, collectionViewLayout: collectionViewLayout)
   }
-  
+
   /// Selects the items at the specified index paths.
   /// - Parameters:
   ///   - indexPaths: The index paths of the items to select. Specifying nil for this parameter clears the current selection.
   ///   - animated: Specify true to animate the change in the selection or false to make the change without animating it.
-  final public func selectItems(at indexPaths: [IndexPath]?, animated: Bool) {
+  public func selectItems(at indexPaths: [IndexPath]?, animated: Bool) {
     if let indexPaths = indexPaths {
       for indexPath in indexPaths {
         selectItem(at: indexPath, animated: animated, scrollPosition: [])
@@ -29,8 +29,8 @@ extension UICollectionView {
       selectItem(at: nil, animated: animated, scrollPosition: [])
     }
   }
-  
-  final public func deselectSelectedItems(animated: Bool, transitionCoordinator: UIViewControllerTransitionCoordinator? = nil) {
+
+  public func deselectSelectedItems(animated: Bool, transitionCoordinator: UIViewControllerTransitionCoordinator? = nil) {
     guard let selectedIndexPaths = indexPathsForSelectedItems, !selectedIndexPaths.isEmpty else {
       return
     }
@@ -56,76 +56,76 @@ extension UICollectionView {
   // Register
 
   @inlinable
-  final public func register<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
+  public func register<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
     register(cellClass, forCellWithReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: Reusable {
+  public func register<Cell: UICollectionViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(cellClass, forCellWithReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: NibReusable {
+  public func register<Cell: UICollectionViewCell & NibReusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(cellClass.nib, forCellWithReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String) {
+  public func register<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String) {
     register(viewClass, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String) where View: Reusable {
+  public func register<View: UICollectionReusableView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String) {
     register(viewClass, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String) where View: NibReusable {
+  public func register<View: UICollectionReusableView & NibReusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String) {
     register(viewClass.nib, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
   }
 
   // Unregister
 
   @inlinable
-  final public func unregister<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
+  public func unregister<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
     register(nil as AnyClass?, forCellWithReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func unregister<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: Reusable {
+  public func unregister<Cell: UICollectionViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(nil as AnyClass?, forCellWithReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func unregister<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String) {
+  public func unregister<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String) {
     register(nil as AnyClass?, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func unregister<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String) where View: Reusable {
+  public func unregister<View: UICollectionReusableView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String) {
     register(nil as AnyClass?, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
   }
 
   // Dequeue
 
   @inlinable
-  final public func dequeue<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell {
+  public func dequeue<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell {
     dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
   }
 
   @inlinable
-  final public func dequeue<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell where Cell: Reusable {
+  public func dequeue<Cell: UICollectionViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell {
     dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
   }
 
   @inlinable
-  final public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String, for indexPath: IndexPath) -> View {
+  public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String, for indexPath: IndexPath) -> View {
     dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
   }
 
   @inlinable
-  final public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String, for indexPath: IndexPath) -> View where View: Reusable {
+  public func dequeue<View: UICollectionReusableView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier, ofKind kind: String, for indexPath: IndexPath) -> View {
     dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
   }
 }

@@ -8,9 +8,9 @@
 import UIKit
 
 extension UIButton {
-  
+
   /// Sets the background image from color to use for the specified button state
-  final public func setBackgroundImage(color: UIColor?, cornerRadius: CGFloat = 0, renderingMode: UIImage.RenderingMode? = nil, for state: State) {
+  public func setBackgroundImage(color: UIColor?, cornerRadius: CGFloat = 0, renderingMode: UIImage.RenderingMode? = nil, for state: State) {
     guard let color = color else {
       setBackgroundImage(nil, for: state)
       return
@@ -21,8 +21,8 @@ extension UIButton {
     }
     setBackgroundImage(backgroundImage, for: state)
   }
-  
-  final public func reverseImageAndTitleHorizontally(spacing: CGFloat) {
+
+  public func reverseImageAndTitleHorizontally(spacing: CGFloat) {
     sizeToFit()
     let titleWidth = titleRect(forContentRect: bounds).width
     let imageWidth = imageRect(forContentRect: bounds).width
@@ -31,15 +31,15 @@ extension UIButton {
     imageEdgeInsets = UIEdgeInsets(top: 0, left: titleWidth + dx, bottom: 0, right: -titleWidth - dx)
     contentEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: dx)
   }
-  
-  final public func setSpacingBetweenImageAndTitle(_ spacing: CGFloat) {
+
+  public func setSpacingBetweenImageAndTitle(_ spacing: CGFloat) {
     let dx = spacing / 2
     titleEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: -dx)
     imageEdgeInsets = UIEdgeInsets(top: 0, left: -dx, bottom: 0, right: dx)
     contentEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: dx)
   }
-  
-  final public func setTitle(_ title: String?, for state: State, animated: Bool) {
+
+  public func setTitle(_ title: String?, for state: State, animated: Bool) {
     if animated {
       setTitle(title, for: state)
     } else {
@@ -49,7 +49,7 @@ extension UIButton {
       }
     }
   }
-  
+
   @inlinable
   public convenience init(type: ButtonType = .custom, image: UIImage? = nil, title: String? = nil, target: AnyObject? = nil, action: Selector? = nil) {
     self.init(type: type)
@@ -58,14 +58,6 @@ extension UIButton {
     if let target = target, let action = action {
       addTarget(target, action: action, for: .touchUpInside)
     }
-  }
-
-  @available(*, deprecated, message: "Use `init(type:image:title:target:action)` instead.")
-  public static func system(image: UIImage? = nil, title: String? = nil, target: AnyObject? = nil, action: Selector? = nil) -> UIButton {
-    let button = UIButton(type: .system, target: target, action: action)
-    button.setImage(image, for: .normal)
-    button.setTitle(title, for: .normal)
-    return button
   }
 
   public convenience init(type: ButtonType, primaryAction: Action?) {

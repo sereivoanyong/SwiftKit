@@ -9,30 +9,30 @@ import UIKit
 
 extension UIAlertController {
 
-  final public var contentViewController: UIViewController? {
+  public var contentViewController: UIViewController? {
     get { return value(forKey: "contentViewController") as? UIViewController }
     set { setValue(newValue, forKey: "contentViewController") }
   }
 
-  final public var dimmingView: UIView? {
+  public var dimmingView: UIView? {
     return value(forKey: "dimmingView") as? UIView
   }
 
-  final public var foregroundView: UIView? {
+  public var foregroundView: UIView? {
     return value(forKey: "_foregroundView") as? UIView
   }
 
-  final public var attributedTitle: NSAttributedString? {
+  public var attributedTitle: NSAttributedString? {
     get { return valueIfResponds(forKey: "_attributedTitle") as? NSAttributedString }
     set { performIfResponds(Selector(("_setAttributedTitle:")), with: newValue) }
   }
 
-  final public var attributedMessage: NSAttributedString? {
+  public var attributedMessage: NSAttributedString? {
     get { return valueIfResponds(forKey: "_attributedMessage") as? NSAttributedString }
     set { performIfResponds(Selector(("_setAttributedMessage:")), with: newValue) }
   }
 
-  final public var attributedDetailMessage: NSAttributedString? {
+  public var attributedDetailMessage: NSAttributedString? {
     get { return valueIfResponds(forKey: "_attributedDetailMessage") as? NSAttributedString }
     set { performIfResponds(Selector(("_setAttributedDetailMessage:")), with: newValue) }
   }
@@ -44,14 +44,14 @@ extension UIAlertController {
   }
 
   @discardableResult @inlinable
-  final public func addAction(title: String?, image: UIImage? = nil, style: UIAlertAction.Style, handler: ((UIAlertAction) -> Void)? = nil) -> UIAlertAction {
+  public func addAction(title: String?, image: UIImage? = nil, style: UIAlertAction.Style, handler: ((UIAlertAction) -> Void)? = nil) -> UIAlertAction {
     let action = UIAlertAction(title: title, image: image, style: style, handler: handler)
     addAction(action)
     return action
   }
 
   @discardableResult
-  final public func addTextField() -> UITextField {
+  public func addTextField() -> UITextField {
     var textField: UITextField!
     addTextField { textField = $0 }
     return textField
@@ -71,14 +71,14 @@ extension UIAlertController {
   }
 
   private static var windowKey: Void?
-  final private var window: UIWindow? {
+  private var window: UIWindow? {
     get { return associatedObject(forKey: &Self.windowKey) }
     set { setAssociatedObject(newValue, forKey: &Self.windowKey) }
   }
 
   /// - See: https://stackoverflow.com/a/30941356/11235826
   @available(iOS 13.0, *)
-  final public func show(on scene: UIScene? = nil, animated: Bool, completion: (() -> Void)? = nil) {
+  public func show(on scene: UIScene? = nil, animated: Bool, completion: (() -> Void)? = nil) {
     guard let windowScene = scene as? UIWindowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene else {
       print("Scene is not provided and application has no connected scenes.")
       return

@@ -8,18 +8,18 @@
 import UIKit
 
 extension UISearchBar {
-  
+
   @available(iOS 7.0, *)
-  final public var searchBarTextField: UITextField? {
+  public var searchBarTextField: UITextField? {
     return valueIfResponds(forKey: "_searchBarTextField") as? UITextField
   }
-  
-  final public var cancelButtonText: String? {
+
+  public var cancelButtonText: String? {
     get { return valueIfResponds(forKey: "_cancelButtonText") as? String }
     set { performIfResponds(Selector(("_setCancelButtonText:")), with: newValue) }
   }
-  
-  final public var cancelButton: UIButton? {
+
+  public var cancelButton: UIButton? {
     return performIfResponds(Selector(("cancelButton")))?.takeUnretainedValue() as? UIButton
   }
 }

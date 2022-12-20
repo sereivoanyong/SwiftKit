@@ -8,45 +8,46 @@
 import UIKit
 
 extension UITableView {
-  
+
   public typealias CellProvider<Item> = (UITableView, IndexPath, Item) -> UITableViewCell?
-  
+
   private static var allowsHeaderViewsToFloatKey: Void?
   @objc final public var allowsHeaderViewsToFloat: Bool {
     get { return associatedValue(forKey: &Self.allowsHeaderViewsToFloatKey, default: true) }
     set { setAssociatedValue(newValue, forKey: &Self.allowsHeaderViewsToFloatKey) }
   }
-  
+
   private static var allowsFooterViewsToFloatKey: Void?
   @objc final public var allowsFooterViewsToFloat: Bool {
     get { return associatedValue(forKey: &Self.allowsFooterViewsToFloatKey, default: true) }
     set { setAssociatedValue(newValue, forKey: &Self.allowsFooterViewsToFloatKey) }
   }
-  
-  final public var _headerAndFooterViewsFloat: Bool {
+
+  public var _headerAndFooterViewsFloat: Bool {
     get { return valueIfResponds(forKey: "_headerAndFooterViewsFloat") as? Bool ?? false }
     set { performIfResponds(Selector(("_setHeaderAndFooterViewsFloat:")), with: newValue as NSNumber) }
   }
-  
-  @inlinable public convenience init(style: Style) {
+
+  @inlinable
+  public convenience init(style: Style) {
     self.init(frame: .zero, style: style)
   }
-  
+
   /// Selects rows in the table view identified by index paths.
   /// - Parameters:
   ///   - indexPath: index paths identifying rows in the table view.
   ///   - animated: true if you want to animate the selection and any change in position; false if the change should be immediate.
-  final public func selectRows(at indexPaths: [IndexPath], animated: Bool) {
+  public func selectRows(at indexPaths: [IndexPath], animated: Bool) {
     for indexPath in indexPaths {
       selectRow(at: indexPath, animated: animated, scrollPosition: .none)
     }
   }
-  
+
   /// Deselects all selected rows and returns their index paths, with an option to animate the deselection.
   /// - Parameters:
   ///   - animated: true if you want to animate the deselection, and false if the change should be immediate.
   @discardableResult
-  final public func deselectAllRows(animated: Bool) -> [IndexPath]? {
+  public func deselectAllRows(animated: Bool) -> [IndexPath]? {
     guard let indexPaths = indexPathsForSelectedRows else {
       return nil
     }
@@ -55,18 +56,18 @@ extension UITableView {
     }
     return indexPaths
   }
-  
+
   /// Reloads the rows and sections of the table view
-  final public func reloadData(completion: @escaping (Bool) -> Void) {
+  public func reloadData(completion: @escaping (Bool) -> Void) {
     UIView.animate(withDuration: 0, animations: { self.reloadData() }, completion: completion)
   }
-  
+
   /// Returns a boolean value indicating whether the table view has the provided index path
-  final public func hasIndexPath(_ indexPath: IndexPath) -> Bool {
+  public func hasIndexPath(_ indexPath: IndexPath) -> Bool {
     return 0..<numberOfSections ~= indexPath.section && 0..<numberOfRows(inSection: indexPath.section) ~= indexPath.row
   }
 
-  final public func indexPathForCellContainingView(_ view: UIView) -> IndexPath? {
+  public func indexPathForCellContainingView(_ view: UIView) -> IndexPath? {
     if let cell = view as? UITableViewCell {
       return indexPath(for: cell)
     }
@@ -75,16 +76,16 @@ extension UITableView {
     }
     return nil
   }
-  
-  final public func disableEstimatedHeightIfUsed() {
+
+  public func disableEstimatedHeightIfUsed() {
     if #available(iOS 11.0, *) {
       estimatedSectionHeaderHeight = 0
       estimatedSectionFooterHeight = 0
       estimatedRowHeight = 0
     }
   }
-  
-  final public func deselectSelectedRows(animated: Bool, transitionCoordinator: UIViewControllerTransitionCoordinator? = nil) {
+
+  public func deselectSelectedRows(animated: Bool, transitionCoordinator: UIViewControllerTransitionCoordinator? = nil) {
     guard let selectedIndexPaths = indexPathsForSelectedRows, !selectedIndexPaths.isEmpty else {
       return
     }
@@ -106,13 +107,13 @@ extension UITableView {
       }
     })
   }
-  
-  final public func setNeedsUpdate() {
+
+  public func setNeedsUpdate() {
     beginUpdates()
     endUpdates()
   }
-  
-  final public func performUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?) {
+
+  public func performUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?) {
     if #available(iOS 11, *) {
       performBatchUpdates(updates, completion: completion)
     } else {
@@ -134,81 +135,81 @@ extension UITableView {
   // Register
 
   @inlinable
-  final public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
+  public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
     register(cellClass, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: Reusable {
+  public func register<Cell: UITableViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(cellClass, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: NibReusable {
+  public func register<Cell: UITableViewCell & NibReusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(cellClass.nib, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
+  public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
     register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) where View: Reusable {
+  public func register<View: UITableViewHeaderFooterView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
     register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) where View: NibReusable {
+  public func register<View: UITableViewHeaderFooterView & NibReusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
     register(viewClass.nib, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   // Unregister
 
   @inlinable
-  final public func unregister<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
+  public func unregister<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
     register(nil as AnyClass?, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func unregister<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) where Cell: Reusable {
+  public func unregister<Cell: UITableViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(nil as AnyClass?, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func unregister<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
+  public func unregister<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
     register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func unregister<View>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) where View: Reusable {
+  public func unregister<View: UITableViewHeaderFooterView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
     register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   // Dequeue
 
   @inlinable
-  final public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, style: UITableViewCell.CellStyle = .default, identifier: String = String(describing: Cell.self)) -> Cell {
+  public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, style: UITableViewCell.CellStyle = .default, identifier: String = String(describing: Cell.self)) -> Cell {
     return dequeueReusableCell(withIdentifier: identifier) as! Cell? ?? Cell(style: style, reuseIdentifier: identifier)
   }
 
   @inlinable
-  final public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell {
+  public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell {
     return dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! Cell
   }
 
   @inlinable
-  final public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell where Cell: Reusable {
+  public func dequeue<Cell: UITableViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell {
     return dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! Cell
   }
 
   @inlinable
-  final public func dequeue<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) -> View {
+  public func dequeue<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) -> View {
     return dequeueReusableHeaderFooterView(withIdentifier: identifier) as! View
   }
 
   @inlinable
-  final public func dequeue<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) -> View where View: Reusable {
+  public func dequeue<View: UITableViewHeaderFooterView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) -> View {
     return dequeueReusableHeaderFooterView(withIdentifier: identifier) as! View
   }
 }

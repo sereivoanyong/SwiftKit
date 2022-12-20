@@ -8,17 +8,17 @@
 import UIKit
 
 extension UINavigationController {
-  
-  final public var rootViewController: UIViewController? {
+
+  public var rootViewController: UIViewController? {
     return viewControllers.first
   }
-  
+
   public convenience init(navigationBarClass: UINavigationBar.Type? = nil, toolbarClass: UIToolbar.Type? = nil, rootViewController: UIViewController) {
     self.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
-    
+
     viewControllers = [rootViewController]
   }
-  
+
   @objc(navigationBar:shouldPopItem:)
   open func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
     if viewControllers.count < navigationBar.items!.count {
@@ -41,8 +41,8 @@ extension UINavigationController {
     }
     return false
   }
-  
-  final public func pushViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
+
+  public func pushViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
     pushViewController(viewController, animated: animated)
     if let completion = completion {
       if animated, let coordinator = transitionCoordinator {
@@ -56,7 +56,7 @@ extension UINavigationController {
   }
 
   @discardableResult
-  final public func popViewController(animated: Bool, completion: (() -> Void)?) -> UIViewController? {
+  public func popViewController(animated: Bool, completion: (() -> Void)?) -> UIViewController? {
     let poppedViewController = popViewController(animated: animated)
     if let completion = completion {
       if animated, let coordinator = transitionCoordinator {
@@ -69,9 +69,9 @@ extension UINavigationController {
     }
     return poppedViewController
   }
-  
+
   @discardableResult
-  final public func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
+  public func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
     let poppedViewControllers = popToViewController(viewController, animated: animated)
     if let completion = completion {
       if animated, let coordinator = transitionCoordinator {
@@ -84,14 +84,14 @@ extension UINavigationController {
     }
     return poppedViewControllers
   }
-  
+
   @discardableResult
-  final public func popToViewController(at index: Int, animated: Bool, completion: (() -> Void)? = nil) -> [UIViewController]? {
+  public func popToViewController(at index: Int, animated: Bool, completion: (() -> Void)? = nil) -> [UIViewController]? {
     popToViewController(viewControllers[index], animated: animated, completion: completion)
   }
-  
+
   @discardableResult
-  final public func popToRootViewController(animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
+  public func popToRootViewController(animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
     let poppedViewControllers = popToRootViewController(animated: animated)
     if let completion = completion {
       if animated, let coordinator = transitionCoordinator {
@@ -104,8 +104,8 @@ extension UINavigationController {
     }
     return poppedViewControllers
   }
-  
-  final public func setTopViewController(_ topViewController: UIViewController, animated: Bool) {
+
+  public func setTopViewController(_ topViewController: UIViewController, animated: Bool) {
     var newViewControllers = viewControllers
     if !newViewControllers.isEmpty {
       newViewControllers.removeLast()
@@ -113,23 +113,23 @@ extension UINavigationController {
     newViewControllers.append(topViewController)
     setViewControllers(newViewControllers, animated: animated)
   }
-  
+
   public static func swizzleForAppearanceAndRotationMethodsForwarding() {
     class_exchangeInstanceMethodImplementations(self, #selector(viewDidLoad), #selector(_a_viewDidLoad))
     class_exchangeInstanceMethodImplementations(self, #selector(getter: prefersStatusBarHidden), #selector(getter: _a_prefersStatusBarHidden))
     class_exchangeInstanceMethodImplementations(self, #selector(getter: preferredStatusBarStyle), #selector(getter: _a_preferredStatusBarStyle))
     class_exchangeInstanceMethodImplementations(self, #selector(getter: preferredStatusBarUpdateAnimation), #selector(getter: _a_preferredStatusBarUpdateAnimation))
-    
+
     class_exchangeInstanceMethodImplementations(self, #selector(getter: shouldAutorotate), #selector(getter: _r_shouldAutorotate))
     class_exchangeInstanceMethodImplementations(self, #selector(getter: supportedInterfaceOrientations), #selector(getter: _r_supportedInterfaceOrientations))
     class_exchangeInstanceMethodImplementations(self, #selector(getter: preferredInterfaceOrientationForPresentation), #selector(getter: _r_preferredInterfaceOrientationForPresentation))
   }
-  
+
   // Appearances
-  
+
   @objc private func _a_viewDidLoad() {
     _a_viewDidLoad()
-    
+
     if type(of: self) == UINavigationController.self {
       if #available(iOS 13.0, *) {
         view.backgroundColor = .systemBackground
@@ -138,51 +138,51 @@ extension UINavigationController {
       }
     }
   }
-  
+
   @objc private var _a_prefersStatusBarHidden: Bool {
     if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
       return lastViewController.prefersStatusBarHidden
     }
     return self._a_prefersStatusBarHidden
   }
-  
+
   @objc private var _a_preferredStatusBarStyle: UIStatusBarStyle {
     if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
       return lastViewController.preferredStatusBarStyle
     }
     return self._a_preferredStatusBarStyle
   }
-  
+
   @objc private var _a_preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
     if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
       return lastViewController.preferredStatusBarUpdateAnimation
     }
     return self._a_preferredStatusBarUpdateAnimation
   }
-  
+
   // Rotations
-  
+
   @objc private var _r_shouldAutorotate: Bool {
     if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
       return lastViewController.shouldAutorotate
     }
     return self._r_shouldAutorotate
   }
-  
+
   @objc private var _r_supportedInterfaceOrientations: UIInterfaceOrientationMask {
     if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
       return lastViewController.supportedInterfaceOrientations
     }
     return self._r_supportedInterfaceOrientations
   }
-  
+
   @objc private var _r_preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
     if let lastViewController = viewControllers.last, !lastViewController.isBeingDismissed {
       return lastViewController.preferredInterfaceOrientationForPresentation
     }
     return self._r_preferredInterfaceOrientationForPresentation
   }
-  
+
   /*
   open override var transitionCoordinator: UIViewControllerTransitionCoordinator? {
     guard let transitionCoordinator = super.transitionCoordinator else {

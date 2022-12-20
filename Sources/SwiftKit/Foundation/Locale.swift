@@ -26,13 +26,7 @@ extension Locale {
       self.init(identifier: localization)
     }
   }
-  
-  @available(*, deprecated, renamed: "emojiFlag(forRegionCode:)")
-  public static func flagEmoji(forRegionCode regionCode: String) -> String {
-    return emojiFlag(forRegionCode: regionCode)
-  }
-  
-  @available(iOS 9.0, *)
+
   public static func emojiFlag(forRegionCode regionCode: String) -> String {
     assert(regionCode.count == 2 && regionCode == regionCode.uppercased())
     var flagScalars = String.UnicodeScalarView()

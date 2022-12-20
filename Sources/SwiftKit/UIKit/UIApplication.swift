@@ -10,12 +10,12 @@ import UIKit
 extension UIApplication {
 
   /// The top most view controller of the app's key window
-  final public var keyTopMostViewController: UIViewController? {
-    keyWindow?.rootViewController?.topMostViewController
+  public var keyTopMostViewController: UIViewController? {
+    return keyWindow?.rootViewController?.topMostViewController
   }
 
   public static var openSettingsURL: URL {
-    URL(string: openSettingsURLString)!
+    return URL(string: openSettingsURLString)!
   }
 
   public static func appURL(id: String) -> URL {
@@ -23,9 +23,8 @@ extension UIApplication {
   }
 
   @available(iOS 10.0, *)
-  @available(iOSApplicationExtension, unavailable)
   @discardableResult
-  final public func openIfPossible(_ url: URL?, options: [OpenExternalURLOptionsKey: Any]? = nil, completion: ((Bool) -> Void)? = nil) -> Bool {
+  public func openIfPossible(_ url: URL?, options: [OpenExternalURLOptionsKey: Any]? = nil, completion: ((Bool) -> Void)? = nil) -> Bool {
     guard let url = url, canOpenURL(url) else {
       return false
     }
@@ -34,9 +33,8 @@ extension UIApplication {
   }
 
   @available(iOS 10.0, *)
-  @available(iOSApplicationExtension, unavailable)
   @discardableResult
-  final public func openAppOnAppStore(identifier: String, completion: ((Bool) -> Void)? = nil) -> Bool {
+  public func openAppOnAppStore(identifier: String, completion: ((Bool) -> Void)? = nil) -> Bool {
     return openIfPossible(URL(string: "itms-apps://itunes.apple.com/app/id\(identifier)")!, completion: completion)
   }
 }

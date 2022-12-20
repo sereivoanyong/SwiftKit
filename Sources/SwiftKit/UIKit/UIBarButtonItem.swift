@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIBarButtonItem {
-  
+
   @inlinable
   public convenience init(systemItem: SystemItem, target: AnyObject?, action: Selector?) {
     self.init(barButtonSystemItem: systemItem, target: target, action: action)
@@ -23,11 +23,11 @@ extension UIBarButtonItem {
 
   @available(iOS, obsoleted: 14.0)
   public static func flexibleSpace() -> Self {
-    Self(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    return Self(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
   }
-  
-  final public var view: UIView? {
-    get { value(forKey: "view") as? UIView }
+
+  public var view: UIView? {
+    get { return value(forKey: "view") as? UIView }
     set { setValue(newValue, forKey: "view") }
   }
 
@@ -49,8 +49,8 @@ extension UIBarButtonItem {
   }
 
   @available(*, deprecated, message: "Use `bc.primaryAction` instead.")
-  final public var _primaryAction: Action? {
-    get { bc.primaryAction }
+  public var _primaryAction: Action? {
+    get { return bc.primaryAction }
     set { bc.primaryAction = newValue }
   }
 }
@@ -59,7 +59,7 @@ private var primaryActionKey: Void?
 extension BackwardCompatibility where Base: UIBarButtonItem {
 
   public var primaryAction: Action? {
-    get { base.associatedObject(forKey: &primaryActionKey) }
+    get { return base.associatedObject(forKey: &primaryActionKey) }
     nonmutating set {
       let oldValue = primaryAction
       guard newValue !== oldValue else {

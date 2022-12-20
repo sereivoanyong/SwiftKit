@@ -8,8 +8,8 @@
 import UIKit
 
 extension UIScrollView {
-  
-  final public func configureForNonScrolling() {
+
+  public func configureForNonScrolling() {
     bounces = false
     alwaysBounceHorizontal = false
     alwaysBounceVertical = false
@@ -18,8 +18,8 @@ extension UIScrollView {
     showsHorizontalScrollIndicator = false
     showsVerticalScrollIndicator = false
   }
-  
-  final public func scrollToBottom(animated: Bool = false) {
+
+  public func scrollToBottom(animated: Bool = false) {
     let bottomInset: CGFloat
     if #available(iOS 11.0, *) {
       bottomInset = adjustedContentInset.bottom
@@ -28,9 +28,9 @@ extension UIScrollView {
     }
     setContentOffset(CGPoint(x: 0, y: contentSize.height - bounds.size.height + bottomInset), animated: animated)
   }
-  
+
   /// Returns a snapshot of an entire content of the scroll view
-  final public func contentSnapshot() -> UIImage? {
+  public func contentSnapshot() -> UIImage? {
     UIGraphicsBeginImageContextWithOptions(contentSize, false, 0)
     let context = UIGraphicsGetCurrentContext()!
     let previousFrame = frame
@@ -41,13 +41,13 @@ extension UIScrollView {
     UIGraphicsEndImageContext()
     return image
   }
-  
+
   public enum ArrangmentSpacing {
-    
+
     case fixed(CGFloat)
     case respective([CGFloat])
     case custom((Int) -> CGFloat)
-    
+
     public func value(at index: Int) -> CGFloat {
       switch self {
       case .fixed(let value):
@@ -59,9 +59,10 @@ extension UIScrollView {
       }
     }
   }
-  
+
   @available(iOS 11.0, *)
-  @inlinable final public func addArrangedSubviews(_ views: [UIView], alignmentLayoutGuide: LayoutGuide? = nil, spacing: ArrangmentSpacing = .fixed(0.0), insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
+  @inlinable
+  public func addArrangedSubviews(_ views: [UIView], alignmentLayoutGuide: LayoutGuide? = nil, spacing: ArrangmentSpacing = .fixed(0.0), insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
     let alignmentLayoutGuide = alignmentLayoutGuide ?? contentLayoutGuide
     switch axis {
     case .horizontal:
@@ -80,7 +81,7 @@ extension UIScrollView {
       }
       contentLayoutGuide.rightAnchor.equalTo(views.last!.rightAnchor, constant: insets.right)
       contentLayoutGuide.heightAnchor.equalTo(frameLayoutGuide.heightAnchor)
-      
+
     case .vertical:
       var lastBottomAnchor = contentLayoutGuide.topAnchor
       for (index, view) in views.enumerated() {
@@ -97,17 +98,17 @@ extension UIScrollView {
       }
       contentLayoutGuide.bottomAnchor.equalTo(views.last!.bottomAnchor, constant: insets.bottom)
       contentLayoutGuide.widthAnchor.equalTo(frameLayoutGuide.widthAnchor)
-      
+
     @unknown default:
       fatalError()
     }
   }
-  
+
   @available(iOS 11.0, *)
-  final public func addContentView(_ contentView: UIView, insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
+  public func addContentView(_ contentView: UIView, insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
     contentView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(contentView)
-    
+
     var constraints: [NSLayoutConstraint] = [
       contentView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor, constant: insets.top),
       contentView.leftAnchor.constraint(equalTo: contentLayoutGuide.leftAnchor, constant: insets.left),
@@ -124,21 +125,21 @@ extension UIScrollView {
     }
     NSLayoutConstraint.activate(constraints)
   }
-  
+
   private static var accessoryViewKey: Void?
   @available(iOS 11.0, *)
-  final public var accessoryView: UIView? {
+  public var accessoryView: UIView? {
     return associatedObject(forKey: &Self.accessoryViewKey)
   }
-  
+
   @available(iOS 11.0, *)
-  final public func setAccessoryView(_ accessoryView: UIView, alignmentLayoutGuide: LayoutGuide? = nil, preferredHeight: CGFloat, insets: UIEdgeInsets = .zero) {
+  public func setAccessoryView(_ accessoryView: UIView, alignmentLayoutGuide: LayoutGuide? = nil, preferredHeight: CGFloat, insets: UIEdgeInsets = .zero) {
     setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     addSubview(accessoryView)
-    
+
     contentInset.top = preferredHeight + insets.top + insets.bottom
     scrollIndicatorInsets.top = contentInset.top
-    
+
     let alignmentLayoutGuide = alignmentLayoutGuide ?? frameLayoutGuide
     NSLayoutConstraint.activate([
       accessoryView.heightAnchor.constraint(equalToConstant: preferredHeight),
@@ -161,7 +162,7 @@ extension UIScrollView {
   private static var usesContentSizeAsIntrinsicKey: Void?
 
   /// A `Bool` value that determines whether the scroll view uses its `contentSize` for `intrinsicContentSize`.
-  final public var usesContentSizeAsIntrinsic: Bool {
+  public var usesContentSizeAsIntrinsic: Bool {
     get { associatedValue(forKey: &Self.usesContentSizeAsIntrinsicKey) ?? false }
     set { _ = Self.swizzlingHandler; setAssociatedValue(newValue, forKey: &Self.usesContentSizeAsIntrinsicKey) }
   }

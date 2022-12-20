@@ -60,14 +60,14 @@ extension UIBarButtonItem {
   }
 
   @available(*, deprecated, message: "Use `bc.senderAction` instead.")
-  final public var senderAction: SenderAction<UIBarButtonItem>? {
-    get { bc.senderAction }
+  public var senderAction: SenderAction<UIBarButtonItem>? {
+    get { return bc.senderAction }
     set { bc.senderAction = newValue }
   }
 
   @available(*, deprecated, message: "Use `bc.handler` instead.")
-  final public var handler: ((UIBarButtonItem) -> Void)? {
-    get { bc.handler }
+  public var handler: ((UIBarButtonItem) -> Void)? {
+    get { return bc.handler }
     set { bc.handler = newValue }
   }
 }

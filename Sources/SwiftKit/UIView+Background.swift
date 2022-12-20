@@ -9,13 +9,13 @@ import UIKit
 
 extension UIView {
   
-  final public func addBackgroundView(backgroundColor: UIColor, below subview: UIView? = nil) {
+  public func addBackgroundView(backgroundColor: UIColor, below subview: UIView? = nil) {
     let backgroundView = UIView()
     backgroundView.backgroundColor = backgroundColor
     addBackgroundView(backgroundView, below: subview)
   }
   
-  final public func addBackgroundView(_ backgroundView: UIView, below subview: UIView? = nil) {
+  public func addBackgroundView(_ backgroundView: UIView, below subview: UIView? = nil) {
     let insertTo: (UIView) -> Void = { view in
       if let subview = subview {
         view.insertSubview(backgroundView, belowSubview: subview)
@@ -36,18 +36,6 @@ extension UIView {
         trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor)
       ])
     }
-  }
-  
-  @discardableResult @available(*, deprecated)
-  @inlinable final public func addBackgroundView<T>(_ backgroundViewClass: T.Type, below subview: UIView? = nil, configurationHandler: (T) -> Void) -> T where T: UIView {
-    let backgroundView = backgroundViewClass.init(frame: bounds)
-    backgroundView.autoresizingMask = .flexibleSize
-    if let subview = subview {
-      insertSubview(backgroundView, belowSubview: subview)
-    } else {
-      insertSubview(backgroundView, at: 0)
-    }
-    return backgroundView
   }
 }
 #endif

@@ -10,30 +10,30 @@ import UIKit
 extension UIControl {
 
   @available(*, deprecated, message: "Use `bc.primaryAction` instead.")
-  final public var _primaryAction: Action? {
-    get { bc.primaryAction }
+  public var _primaryAction: Action? {
+    get { return bc.primaryAction }
     set { bc.primaryAction = newValue }
   }
-  
+
   private struct Key: Hashable {
-    
+
     let identifier: Action.Identifier
     let events: Event
-    
+
     func hash(into hasher: inout Hasher) {
       hasher.combine(identifier)
       hasher.combine(events.rawValue)
     }
   }
-  
+
   private static var actionsKey: Void?
   private var actions: [Key: Action] {
-    get { associatedValue(forKey: &Self.actionsKey, default: [:]) }
+    get { return associatedValue(forKey: &Self.actionsKey, default: [:]) }
     set { setAssociatedValue(newValue, forKey: &Self.actionsKey) }
   }
-  
+
   /// Adds the `action` to given `events`. They are uniqued based on their `identifier`, and subsequent actions with the same `identifier` replace previously added actions. You may add multiple actions for corresponding `events`, and you may add the same action to multiple `events`.
-  final public func addAction(_ action: Action, for events: Event) {
+  public func addAction(_ action: Action, for events: Event) {
     var currentActions = actions
     // Check if there is a different action object but with the same identifer
     let hasTheSameIdentifier: (Key) -> Bool = { $0.identifier == action.identifier }
@@ -55,17 +55,17 @@ extension UIControl {
     actions = currentActions
   }
 
-  final public func addAction(handler: @escaping (Action) -> Void, for events: Event) {
+  public func addAction(handler: @escaping (Action) -> Void, for events: Event) {
     addAction(Action(handler: handler), for: events)
   }
-  
+
   /// Removes the `action` from the set of passed `events`.
-  final public func removeAction(_ action: Action, for events: Event) {
+  public func removeAction(_ action: Action, for events: Event) {
     removeAction(identifier: action.identifier, for: events)
   }
-  
+
   /// Removes the `action` with the provided `identifier` from the set of passed `events`.
-  final public func removeAction(identifier: Action.Identifier, for events: Event) {
+  public func removeAction(identifier: Action.Identifier, for events: Event) {
     let key = Key(identifier: identifier, events: events)
     if let action = actions.removeValue(forKey: key) {
       removeTarget(action, action: #selector(Action.invoke(_:)), for: events)
@@ -87,7 +87,7 @@ private var primaryActionKey: Void?
 extension BackwardCompatibility where Base: UIControl {
 
   public var primaryAction: Action? {
-    get { base.associatedObject(forKey: &primaryActionKey) }
+    get { return base.associatedObject(forKey: &primaryActionKey) }
     nonmutating set {
       let oldValue = primaryAction
       guard newValue !== oldValue else {

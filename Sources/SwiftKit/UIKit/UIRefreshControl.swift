@@ -8,8 +8,8 @@
 import UIKit
 
 extension UIRefreshControl {
-  
-  final public func beginRefreshingManually(animated: Bool) {
+
+  public func beginRefreshingManually(animated: Bool) {
     beginRefreshing()
     let offsetPoint = CGPoint(x: 0, y: -frame.height)
     if let scrollView = superview as? UIScrollView {

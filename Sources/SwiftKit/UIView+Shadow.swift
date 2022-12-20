@@ -20,13 +20,13 @@ extension UIView {
   
   private static var shadowViewsKey: Void?
   
-  final public fileprivate(set) var shadowViews: [CGRectEdge: UIView] {
+  public fileprivate(set) var shadowViews: [CGRectEdge: UIView] {
     get { return associatedValue(forKey: &Self.shadowViewsKey, default: [:]) }
     set { setAssociatedValue(newValue, forKey: &Self.shadowViewsKey) }
   }
   
   @discardableResult
-  final public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel) -> UIView {
+  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let frame: CGRect
     let autoresizingMask: UIView.AutoresizingMask
@@ -56,7 +56,7 @@ extension UIView {
   }
   
   @discardableResult
-  final public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel, target: LayoutGuide? = nil, layoutGuide: LayoutGuide, inset: UIEdgeInsets = .zero) -> UIView {
+  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel, target: LayoutGuide? = nil, layoutGuide: LayoutGuide, inset: UIEdgeInsets = .zero) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
     shadowView.backgroundColor = color ?? Self.defaultShadowColor
@@ -104,7 +104,7 @@ extension UIView {
   }
   
   @discardableResult
-  final public func removeShadowView(at edge: CGRectEdge) -> UIView? {
+  public func removeShadowView(at edge: CGRectEdge) -> UIView? {
     if let shadowView = shadowViews.removeValue(forKey: edge) {
       shadowView.removeFromSuperview()
       return shadowView

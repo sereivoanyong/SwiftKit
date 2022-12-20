@@ -10,7 +10,7 @@ import UIKit
 // @see: https://stackoverflow.com/a/34343418
 extension UINavigationItem {
   
-  final public var attributedTitle: NSAttributedString? {
+  public var attributedTitle: NSAttributedString? {
     get {
       return (titleView as? UILabel)?.attributedText
     }
@@ -36,17 +36,12 @@ extension UINavigationItem {
     }
   }
   
-  final public var isBackgroundHidden: Bool {
+  public var isBackgroundHidden: Bool {
     get { return value(forKey: "backgroundHidden") as? Bool ?? false }
     set { setValue(newValue as NSNumber, forKey: "backgroundHidden") }
   }
   
-  @available(iOS, deprecated, renamed: "removeBackButtonTitle()")
-  final public func removeBackBarButtonItemTitle() {
-    removeBackButtonTitle()
-  }
-  
-  final public func removeBackButtonTitle() {
+  public func removeBackButtonTitle() {
     if #available(iOS 14.0, *) {
       backButtonDisplayMode = .minimal
     } else if #available(iOS 11.0, *) {
@@ -57,7 +52,7 @@ extension UINavigationItem {
   }
   
   static private var shouldPopKey: Void?
-  final public var shouldPopHandler: (() -> Bool)? {
+  public var shouldPopHandler: (() -> Bool)? {
     get { return associatedValue(forKey: &UINavigationItem.shouldPopKey) as (() -> Bool)? }
     set { setAssociatedValue(newValue, forKey: &UINavigationItem.shouldPopKey) }
   }

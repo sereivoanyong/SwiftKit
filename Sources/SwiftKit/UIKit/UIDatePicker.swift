@@ -8,8 +8,8 @@
 import UIKit
 
 extension UIDatePicker {
-  
-  final public var textColor: UIColor? {
+
+  public var textColor: UIColor? {
     get { return value(forKey: "textColor") as? UIColor }
     set { setValue(newValue, forKey: "textColor") }
   }

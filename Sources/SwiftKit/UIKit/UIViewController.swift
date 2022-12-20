@@ -8,39 +8,39 @@
 import UIKit
 
 extension UIViewController {
-  
+
   @IBAction open func dismiss(_ sender: Any) {
     dismiss(animated: true, completion: nil)
   }
-  
+
   @IBAction open func endEditing(_ sender: Any) {
     if isViewLoaded {
       view.endEditing(true)
     }
   }
-  
+
   /// Check if ViewController is onscreen and not hidden.
-  final public var isVisible: Bool {
+  public var isVisible: Bool {
     // @see: http://stackoverflow.com/questions/2777438/how-to-tell-if-uiviewcontrollers-view-is-visible
     return isViewLoaded && view.window != nil
   }
-  
+
   /// Adds the specified view controller including its view as a child of the current view controller
-  final public func addChildIncludingView(_ childViewController: UIViewController, addHandler: (_ view: UIView, _ childView: UIView) -> Void) {
+  public func addChildIncludingView(_ childViewController: UIViewController, addHandler: (_ view: UIView, _ childView: UIView) -> Void) {
     addChild(childViewController)
     addHandler(view, childViewController.view)
     childViewController.didMove(toParent: self)
   }
-  
+
   /// Removes the view controller including its view from its parent
-  final public func removeFromParentIncludingView() {
+  public func removeFromParentIncludingView() {
     willMove(toParent: nil)
     view.removeFromSuperview()
     removeFromParent()
   }
-  
+
   @discardableResult
-  final public func enableEndEditingOnTap(on view: UIView? = nil) -> UITapGestureRecognizer {
+  public func enableEndEditingOnTap(on view: UIView? = nil) -> UITapGestureRecognizer {
     let view = view ?? self.view!
     view.isUserInteractionEnabled = true
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(endEditing))
@@ -48,45 +48,44 @@ extension UIViewController {
     view.addGestureRecognizer(tapGestureRecognizer)
     return tapGestureRecognizer
   }
-  
-  final public var topMostViewController: UIViewController? {
+
+  public var topMostViewController: UIViewController? {
     if let navigationController = self as? UINavigationController, let visibleViewController = navigationController.visibleViewController {
       return visibleViewController.topMostViewController
-      
+
     } else if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
       return selectedViewController.topMostViewController
-      
+
     } else if let presentedViewController = presentedViewController {
       return presentedViewController.topMostViewController
     }
-    
+
     return self
   }
 
-  final public func show(on viewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+  public func show(on viewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
     viewController.present(self, animated: animated, completion: completion)
   }
 
-  @available(iOSApplicationExtension, unavailable)
-  final public func show(animated: Bool, completion: (() -> Void)?) {
+  public func show(animated: Bool, completion: (() -> Void)?) {
     UIApplication.shared.keyTopMostViewController?.present(self, animated: animated, completion: completion)
   }
 
   @inlinable
-  final public func showDetail(_ detailViewController: UIViewController, sender: Any?) {
+  public func showDetail(_ detailViewController: UIViewController, sender: Any?) {
     showDetailViewController(detailViewController, sender: sender)
   }
-  
-  final public func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
+
+  public func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
     let navigationController = UINavigationController(rootViewController: self)
     configurationHandler?(navigationController)
     return navigationController
   }
-  
+
   // MARK: - Layout Convenience
-  
+
   private static var safeAreaLayoutGuide: Void?
-  final public var safeAreaLayoutGuide: UILayoutGuide {
+  public var safeAreaLayoutGuide: UILayoutGuide {
     if #available(iOS 11.0, *) {
       return view.safeAreaLayoutGuide
     } else {
@@ -103,57 +102,50 @@ extension UIViewController {
       }())
     }
   }
-  
-  final public var safeAreaTopAnchor: NSLayoutYAxisAnchor {
+
+  public var safeAreaTopAnchor: NSLayoutYAxisAnchor {
     if #available(iOS 11.0, *) {
       return view.safeAreaLayoutGuide.topAnchor
     } else {
       return topLayoutGuide.bottomAnchor
     }
   }
-  
-  final public var safeAreaBottomAnchor: NSLayoutYAxisAnchor {
+
+  public var safeAreaBottomAnchor: NSLayoutYAxisAnchor {
     if #available(iOS 11.0, *) {
       return view.safeAreaLayoutGuide.bottomAnchor
     } else {
       return bottomLayoutGuide.topAnchor
     }
   }
-  
-  final public var safeAreaTopInset: CGFloat {
+
+  public var safeAreaTopInset: CGFloat {
     if #available(iOS 11.0, *) {
       return view.safeAreaInsets.top
     } else {
       return topLayoutGuide.length
     }
   }
-  
-  final public var safeAreaBottomInset: CGFloat {
+
+  public var safeAreaBottomInset: CGFloat {
     if #available(iOS 11.0, *) {
       return view.safeAreaInsets.bottom
     } else {
       return bottomLayoutGuide.length
     }
   }
-  
-  final public var safeAreaFrame: CGRect {
+
+  public var safeAreaFrame: CGRect {
     if #available(iOS 11.0, *) {
       return view.bounds.inset(by: view.safeAreaInsets)
     } else {
       return CGRect(x: 0, y: topLayoutGuide.length, width: view.bounds.width, height: bottomLayoutGuide.length)
     }
   }
-  
+
   // MARK: - Others
 
-  @available(*, deprecated)
-  final public func present(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?, in queue: DispatchQueue) {
-    queue.async { [unowned self] in
-      self.present(viewController, animated: animated, completion: completion)
-    }
-  }
-  
-  final public var topPresentedViewController: UIViewController? {
+  public var topPresentedViewController: UIViewController? {
     var currentPresentedViewController = presentedViewController
     while let presentedViewController = currentPresentedViewController?.presentedViewController {
       currentPresentedViewController = presentedViewController

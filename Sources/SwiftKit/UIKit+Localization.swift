@@ -6,11 +6,8 @@
 
 import UIKit
 
-extension NSObjectProtocol {
-
-  fileprivate func messageForSetOnlyProperty(_ property: String = #function) -> Never {
-    fatalError("The \(property) property for \(type(of: self)) is reserved for the interface builder. It's only for setting")
-  }
+private func messageForSetOnlyProperty(_ property: String = #function) -> Never {
+  fatalError("The \(property) property is reserved for the interface builder.")
 }
 
 extension UILabel {

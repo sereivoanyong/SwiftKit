@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIStoryboard {
-  
+
   public static var main: UIStoryboard? {
     let bundle = Bundle.main
     if let name = bundle.object(forInfoDictionaryKey: "UIMainStoryboardFile") as? String {
@@ -16,8 +16,8 @@ extension UIStoryboard {
     }
     return nil
   }
-  
-  final public func instantiate<ViewController>(_ viewControllerClass: ViewController.Type, identifier: String = String(describing: ViewController.self)) -> ViewController where ViewController: UIViewController {
+
+  public func instantiate<ViewController>(_ viewControllerClass: ViewController.Type, identifier: String = String(describing: ViewController.self)) -> ViewController where ViewController: UIViewController {
     return unsafeDowncast(instantiateViewController(withIdentifier: identifier), to: ViewController.self)
   }
 }

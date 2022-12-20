@@ -8,16 +8,17 @@
 import UIKit
 
 extension UITextView {
-  
-  @inlinable public convenience init(text: String? = nil, font: UIFont? = nil, textAlignment: NSTextAlignment = .natural, textColor: UIColor? = nil) {
+
+  @inlinable
+  public convenience init(text: String? = nil, font: UIFont? = nil, textAlignment: NSTextAlignment = .natural, textColor: UIColor? = nil) {
     self.init(frame: .zero)
     self.font = font
     self.textAlignment = textAlignment
     self.textColor = textColor ?? .label()
     self.text = text
   }
-  
-  final public func inheritLabelBehavior() {
+
+  public func inheritLabelBehavior() {
     isEditable = false
     isSelectable = false
     isScrollEnabled = false
