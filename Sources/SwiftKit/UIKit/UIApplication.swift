@@ -14,8 +14,16 @@ extension UIApplication {
     return keyWindow?.rootViewController?.topMostViewController
   }
 
-  public static var openSettingsURL: URL {
-    return URL(string: openSettingsURLString)!
+  public static var openSettingsURL: URL? {
+    return URL(string: openSettingsURLString)
+  }
+  
+  @available(iOS 15.4, *)
+  public static var openNotificationSettingsURL: URL? {
+    if #available(iOS 16.0, *) {
+      return URL(string: openNotificationSettingsURLString)
+    }
+    return URL(string: UIApplicationOpenNotificationSettingsURLString)
   }
 
   public static func appURL(id: String) -> URL {
