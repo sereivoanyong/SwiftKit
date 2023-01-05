@@ -49,17 +49,17 @@ extension UIViewController {
     return tapGestureRecognizer
   }
 
+  @objc
   public var topMostViewController: UIViewController? {
     if let navigationController = self as? UINavigationController, let visibleViewController = navigationController.visibleViewController {
       return visibleViewController.topMostViewController
-
-    } else if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
+    }
+    if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
       return selectedViewController.topMostViewController
-
-    } else if let presentedViewController = presentedViewController {
+    }
+    if let presentedViewController = presentedViewController {
       return presentedViewController.topMostViewController
     }
-
     return self
   }
 
@@ -141,16 +141,6 @@ extension UIViewController {
     } else {
       return CGRect(x: 0, y: topLayoutGuide.length, width: view.bounds.width, height: bottomLayoutGuide.length)
     }
-  }
-
-  // MARK: - Others
-
-  public var topPresentedViewController: UIViewController? {
-    var currentPresentedViewController = presentedViewController
-    while let presentedViewController = currentPresentedViewController?.presentedViewController {
-      currentPresentedViewController = presentedViewController
-    }
-    return currentPresentedViewController
   }
 }
 #endif
