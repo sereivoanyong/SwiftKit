@@ -29,8 +29,8 @@ extension NibLoadable {
     return UINib(nibName: nibName, bundle: nibBundle)
   }
 
-  public static func loadFromNib(owner: Any? = nil, options: [UINib.OptionsKey: Any]? = nil) -> Self where Self: UIView {
-    return nib.instantiate(withOwner: owner, options: options)[0] as! Self
+  public static func loadFromNib(owner: Any? = nil, options: [UINib.OptionsKey: Any]? = nil, index: Int = 0) -> Self where Self: UIView {
+    return nib.instantiate(withOwner: owner, options: options)[index] as! Self
   }
 }
 #endif
