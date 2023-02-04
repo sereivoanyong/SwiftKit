@@ -4,37 +4,45 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(CoreGraphics) && canImport(UIKit)
+#if canImport(CoreGraphics)
 import CoreGraphics
-import UIKit
 
 extension CGFloat {
-  
-  public static let screenScale: CGFloat = UIScreen.main.scale
-  public static let pixel: CGFloat = 1 / screenScale
-  
-  @inlinable public mutating func ceilToPixel() {
-    self = ceiled(by: .screenScale)
+
+  /// Ceils `self` so that it's aligned on a pixel boundary with the provided scale.
+  @inlinable
+  public func ceiledToPixel(scale: CGFloat) -> CGFloat {
+    return Darwin.ceil(self * scale) / scale
   }
-  
-  @inlinable public mutating func floorToPixel() {
-    self = floored(by: .screenScale)
+
+  /// Floors `self` so that it's aligned on a pixel boundary with the provided scale.
+  @inlinable
+  public func flooredToPixel(scale: CGFloat) -> CGFloat {
+    return Darwin.floor(self * scale) / scale
   }
-  
-  @inlinable public mutating func roundToPixel() {
-    self = rounded(by: .screenScale)
+
+  /// Rounds `self` so that it's aligned on a pixel boundary with the provided scale.
+  @inlinable
+  public func roundedToPixel(scale: CGFloat) -> CGFloat {
+    return Darwin.round(self * scale) / scale
   }
-  
-  @inlinable public var ceiledToPixel: CGFloat {
-    return ceiled(by: .screenScale)
+
+  /// Ceils `self` so that it's aligned on a pixel boundary with the provided scale.
+  @inlinable
+  public mutating func ceilToPixel(scale: CGFloat) {
+    self = ceiledToPixel(scale: scale)
   }
-  
-  @inlinable public var flooredToPixel: CGFloat {
-    return floored(by: .screenScale)
+
+  /// Floors `self` so that it's aligned on a pixel boundary with the provided scale.
+  @inlinable
+  public mutating func floorToPixel(scale: CGFloat) {
+    self = flooredToPixel(scale: scale)
   }
-  
-  @inlinable public var roundedToPixel: CGFloat {
-    return rounded(by: .screenScale)
+
+  /// Rounds `self` so that it's aligned on a pixel boundary with the provided scale.
+  @inlinable
+  public mutating func roundToPixel(scale: CGFloat) {
+    self = roundedToPixel(scale: scale)
   }
 }
 #endif

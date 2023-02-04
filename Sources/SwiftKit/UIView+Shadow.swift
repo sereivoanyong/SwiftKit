@@ -26,7 +26,7 @@ extension UIView {
   }
   
   @discardableResult
-  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel) -> UIView {
+  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = UIScreen.main.pixelPerPoint) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let frame: CGRect
     let autoresizingMask: UIView.AutoresizingMask
@@ -56,7 +56,7 @@ extension UIView {
   }
   
   @discardableResult
-  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel, target: LayoutGuide? = nil, layoutGuide: LayoutGuide, inset: UIEdgeInsets = .zero) -> UIView {
+  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = UIScreen.main.pixelPerPoint, target: LayoutGuide? = nil, layoutGuide: LayoutGuide, inset: UIEdgeInsets = .zero) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
     shadowView.backgroundColor = color ?? Self.defaultShadowColor
@@ -116,7 +116,7 @@ extension UIView {
 extension NSObjectProtocol where Self: UIView {
   
   @discardableResult
-  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = .pixel, constraintsProvider: (Self, UIView) -> [NSLayoutConstraint]) -> UIView {
+  public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = UIScreen.main.pixelPerPoint, constraintsProvider: (Self, UIView) -> [NSLayoutConstraint]) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
     shadowView.backgroundColor = color ?? Self.defaultShadowColor
