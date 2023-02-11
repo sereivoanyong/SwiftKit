@@ -161,6 +161,13 @@ extension UIColor {
     }
   }
 
+  public func resolvedColorIfAvailable(with traitCollection: UITraitCollection) -> UIColor {
+    if #available(iOS 13.0, *) {
+      return resolvedColor(with: traitCollection)
+    }
+    return self
+  }
+
   /// Returns a random color.
   public static func random(alpha: CGFloat = 1) -> UIColor {
     return decimal(red: UInt8.random(), green: .random(), blue: .random(), alpha: alpha)
