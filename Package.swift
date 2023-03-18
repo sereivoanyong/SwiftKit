@@ -1,10 +1,10 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 import PackageDescription
 
 let package = Package(
   name: "SwiftKit",
   platforms: [
-    .iOS(.v9)
+    .iOS(.v11)
   ],
   products: [
     .library(name: "SwiftKit", targets: ["SwiftKit"]),
