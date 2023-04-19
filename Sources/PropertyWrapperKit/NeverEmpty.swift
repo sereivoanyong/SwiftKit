@@ -16,7 +16,7 @@ public struct NeverEmpty<Collection: Swift.Collection> {
   public var wrappedValue: Collection? {
     get { return _value }
     set {
-      if let newValue = newValue {
+      if let newValue {
         _value = newValue.isEmpty ? nil : newValue
       } else {
         _value = nil

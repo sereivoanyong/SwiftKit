@@ -46,19 +46,6 @@ extension UIView {
     return UIEdgeInsets(top: frame.minY, left: frame.minX, bottom: bounds.height - frame.maxY, right: bounds.width - frame.maxX)
   }
 
-  @available(iOS 11.0, *)
-  public var safeAreaFrame: CGRect {
-    return bounds.inset(by: safeAreaInsets)
-  }
-
-  public var safeAreaInsetsIfAvailable: UIEdgeInsets {
-    if #available(iOS 11.0, *) {
-      return safeAreaInsets
-    } else {
-      return .zero
-    }
-  }
-
   public func addSubviews(_ views: [UIView]) {
     for view in views {
       addSubview(view)

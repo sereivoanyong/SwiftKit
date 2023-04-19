@@ -76,9 +76,9 @@ extension Version: CustomStringConvertible {
   
   public var description: String {
     var string = "\(major)"
-    if let minor = minor {
+    if let minor {
       string += ".\(minor)"
-      if let patch = patch {
+      if let patch {
         string += ".\(patch)"
       }
     }

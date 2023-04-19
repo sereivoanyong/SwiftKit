@@ -110,10 +110,10 @@ extension Bundle {
   }
 
   @objc private func _localizedString(forKey key: String, value: String?, table tableName: String?) -> String {
-    if let selectedLocalizationBundle = selectedLocalizationBundle {
+    if let selectedLocalizationBundle {
       return selectedLocalizationBundle.localizedString(forKey: key, value: _localizedString(forKey: key, value: value, table: tableName), table: tableName)
     }
-    if let bundleIdentifier = bundleIdentifier, bundleIdentifier.hasSuffix("UIKitCore") {
+    if let bundleIdentifier, bundleIdentifier.hasSuffix("UIKitCore") {
       return Self.main.localizedString(forKey: key, value: _localizedString(forKey: key, value: value, table: tableName), table: tableName)
     }
     return _localizedString(forKey: key, value: value, table: tableName)

@@ -15,7 +15,7 @@ extension UINavigationItem {
       return (titleView as? UILabel)?.attributedText
     }
     set {
-      guard let newValue = newValue, newValue != attributedTitle else {
+      guard let newValue, newValue != attributedTitle else {
         if titleView is UILabel {
           titleView = nil
         }

@@ -44,7 +44,7 @@ extension UINavigationController {
 
   public func pushViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
     pushViewController(viewController, animated: animated)
-    if let completion = completion {
+    if let completion {
       if animated, let coordinator = transitionCoordinator {
         coordinator.animate(alongsideTransition: nil) { _ in
           completion()
@@ -58,7 +58,7 @@ extension UINavigationController {
   @discardableResult
   public func popViewController(animated: Bool, completion: (() -> Void)?) -> UIViewController? {
     let poppedViewController = popViewController(animated: animated)
-    if let completion = completion {
+    if let completion {
       if animated, let coordinator = transitionCoordinator {
         coordinator.animate(alongsideTransition: nil) { _ in
           completion()
@@ -73,7 +73,7 @@ extension UINavigationController {
   @discardableResult
   public func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
     let poppedViewControllers = popToViewController(viewController, animated: animated)
-    if let completion = completion {
+    if let completion {
       if animated, let coordinator = transitionCoordinator {
         coordinator.animate(alongsideTransition: nil) { _ in
           completion()
@@ -93,7 +93,7 @@ extension UINavigationController {
   @discardableResult
   public func popToRootViewController(animated: Bool, completion: (() -> Void)?) -> [UIViewController]? {
     let poppedViewControllers = popToRootViewController(animated: animated)
-    if let completion = completion {
+    if let completion {
       if animated, let coordinator = transitionCoordinator {
         coordinator.animate(alongsideTransition: nil) { _ in
           completion()

@@ -40,12 +40,11 @@ extension Sequence {
     if try contains(where: predicate) {
       return true
     }
-    guard let descendantsProvider = descendantsProvider else {
-      return false
-    }
-    for element in self {
-      if let descendants = descendantsProvider(element), try descendants.contains(where: predicate, descendantsProvider: descendantsProvider) {
-        return true
+    if let descendantsProvider {
+      for element in self {
+        if let descendants = descendantsProvider(element), try descendants.contains(where: predicate, descendantsProvider: descendantsProvider) {
+          return true
+        }
       }
     }
     return false
@@ -62,7 +61,7 @@ extension Sequence {
 
   /// Returns the number of elements of the sequence that satisfy the given `predicate` and their descendants that do.
   public func count<S>(where predicate: (Element) throws -> Bool, descendantsProvider: ((Element) -> S?)?) rethrows -> Int where S: Sequence, S.Element == Element {
-    guard let descendantsProvider = descendantsProvider else {
+    guard let descendantsProvider else {
       return try count(where: predicate)
     }
     var count = 0
@@ -102,7 +101,7 @@ extension Sequence {
     if let first = try first(of: type, where: predicate) {
       return first
     }
-    guard let descendantsProvider = descendantsProvider else {
+    guard let descendantsProvider else {
       return nil
     }
     for element in self {

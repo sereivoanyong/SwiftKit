@@ -22,7 +22,7 @@ extension BackgroundedView where Self: UIView {
       if let oldValue = associatedObject(forKey: &kBackgroundViewKey) as UIView? {
         oldValue.removeFromSuperview()
       }
-      if let newValue = newValue {
+      if let newValue {
         if newValue.translatesAutoresizingMaskIntoConstraints {
           newValue.frame = bounds
           newValue.autoresizingMask = .flexibleSize

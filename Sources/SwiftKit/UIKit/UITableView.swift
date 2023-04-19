@@ -48,13 +48,13 @@ extension UITableView {
   ///   - animated: true if you want to animate the deselection, and false if the change should be immediate.
   @discardableResult
   public func deselectAllRows(animated: Bool) -> [IndexPath]? {
-    guard let indexPaths = indexPathsForSelectedRows else {
+    guard let indexPathsForSelectedRows else {
       return nil
     }
-    for indexPath in indexPaths {
+    for indexPath in indexPathsForSelectedRows {
       deselectRow(at: indexPath, animated: animated)
     }
-    return indexPaths
+    return indexPathsForSelectedRows
   }
 
   /// Reloads the rows and sections of the table view
@@ -77,31 +77,29 @@ extension UITableView {
     return nil
   }
 
-  public func disableEstimatedHeightIfUsed() {
-    if #available(iOS 11.0, *) {
-      estimatedSectionHeaderHeight = 0
-      estimatedSectionFooterHeight = 0
-      estimatedRowHeight = 0
-    }
+  public func disableEstimatedHeights() {
+    estimatedSectionHeaderHeight = 0
+    estimatedSectionFooterHeight = 0
+    estimatedRowHeight = 0
   }
 
   public func deselectSelectedRows(animated: Bool, transitionCoordinator: UIViewControllerTransitionCoordinator? = nil) {
-    guard let selectedIndexPaths = indexPathsForSelectedRows, !selectedIndexPaths.isEmpty else {
+    guard let indexPathsForSelectedRows, !indexPathsForSelectedRows.isEmpty else {
       return
     }
-    guard let transitionCoordinator = transitionCoordinator else {
-      for indexPath in selectedIndexPaths {
+    guard let transitionCoordinator else {
+      for indexPath in indexPathsForSelectedRows {
         deselectRow(at: indexPath, animated: animated)
       }
       return
     }
     transitionCoordinator.animate(alongsideTransition: { [unowned self] context in
-      for indexPath in selectedIndexPaths {
+      for indexPath in indexPathsForSelectedRows {
         self.deselectRow(at: indexPath, animated: context.isAnimated)
       }
     }, completion: { [unowned self] context in
       if context.isCancelled {
-        for indexPath in selectedIndexPaths {
+        for indexPath in indexPathsForSelectedRows {
           self.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         }
       }
@@ -111,25 +109,6 @@ extension UITableView {
   public func setNeedsUpdate() {
     beginUpdates()
     endUpdates()
-  }
-
-  public func performUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?) {
-    if #available(iOS 11, *) {
-      performBatchUpdates(updates, completion: completion)
-    } else {
-      if let completion = completion {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock { completion(true) }
-        beginUpdates()
-        updates?()
-        endUpdates()
-        CATransaction.commit()
-      } else {
-        beginUpdates()
-        updates?()
-        endUpdates()
-      }
-    }
   }
 
   // Register

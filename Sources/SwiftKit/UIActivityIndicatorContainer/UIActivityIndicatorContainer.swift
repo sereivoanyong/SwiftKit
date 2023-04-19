@@ -118,7 +118,7 @@ extension UIActivityIndicatorContainer {
     case .none:
       break
     case .view(let view):
-      if let view = view {
+      if let view {
         view.isUserInteractionEnabled = isUserInteractionEnabled
       } else {
         (self as? UIViewController ?? containerViewForActivityIndicator?.owningViewController)?.view.isUserInteractionEnabled = isUserInteractionEnabled

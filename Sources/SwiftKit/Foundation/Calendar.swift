@@ -13,7 +13,7 @@ extension Calendar {
   public static func current(locale: Locale? = nil, timeZone: TimeZone? = nil) -> Calendar {
     var calendar = current
     calendar.locale = locale
-    if let timeZone = timeZone {
+    if let timeZone {
       calendar.timeZone = timeZone
     }
     return calendar

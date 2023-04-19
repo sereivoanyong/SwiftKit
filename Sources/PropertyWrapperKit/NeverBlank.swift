@@ -18,7 +18,7 @@ public struct NeverBlank: Equatable {
   public var wrappedValue: String? {
     get { return _value }
     set {
-      if let newValue = newValue {
+      if let newValue {
         _value = newValue.isBlank ? nil : newValue
       } else {
         _value = nil

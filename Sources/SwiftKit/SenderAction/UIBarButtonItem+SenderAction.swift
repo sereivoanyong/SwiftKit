@@ -12,7 +12,7 @@ extension BackwardCompatibility where Base: UIBarButtonItem {
   public var senderAction: SenderAction<UIBarButtonItem>? {
     get { base.associatedObject(forKey: &senderActionKey) }
     nonmutating set {
-      if let newValue = newValue {
+      if let newValue {
         base.target = newValue
         base.action = #selector(SenderAction<UIBarButtonItem>.invoke(_:))
       } else {
@@ -27,8 +27,8 @@ extension BackwardCompatibility where Base: UIBarButtonItem {
   public var handler: ((UIBarButtonItem) -> Void)? {
     get { senderAction?.handler }
     nonmutating set {
-      if let newValue = newValue {
-        if let senderAction = senderAction {
+      if let newValue {
+        if let senderAction {
           senderAction.handler = newValue
         } else {
           senderAction = SenderAction<UIBarButtonItem>(handler: newValue)

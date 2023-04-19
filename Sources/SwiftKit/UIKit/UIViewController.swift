@@ -57,7 +57,7 @@ extension UIViewController {
     if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
       return selectedViewController.topMostViewController
     }
-    if let presentedViewController = presentedViewController {
+    if let presentedViewController {
       return presentedViewController.topMostViewController
     }
     return self
@@ -68,7 +68,7 @@ extension UIViewController {
   }
 
   public func show(animated: Bool, completion: (() -> Void)?) {
-    UIApplication.shared.keyTopMostViewController?.present(self, animated: animated, completion: completion)
+    UIApplication.shared.keyWindow?.rootViewController?.present(self, animated: animated, completion: completion)
   }
 
   @inlinable
@@ -80,67 +80,6 @@ extension UIViewController {
     let navigationController = UINavigationController(rootViewController: self)
     configurationHandler?(navigationController)
     return navigationController
-  }
-
-  // MARK: - Layout Convenience
-
-  private static var safeAreaLayoutGuide: Void?
-  public var safeAreaLayoutGuide: UILayoutGuide {
-    if #available(iOS 11.0, *) {
-      return view.safeAreaLayoutGuide
-    } else {
-      return associatedObject(forKey: &UIViewController.safeAreaLayoutGuide, default: {
-        let layoutGuide = UILayoutGuide()
-        view.addLayoutGuide(layoutGuide)
-        NSLayoutConstraint.activate([
-          layoutGuide.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor),
-          layoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-          bottomLayoutGuide.topAnchor.constraint(equalTo: layoutGuide.bottomAnchor),
-          view.trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor),
-        ])
-        return layoutGuide
-      }())
-    }
-  }
-
-  public var safeAreaTopAnchor: NSLayoutYAxisAnchor {
-    if #available(iOS 11.0, *) {
-      return view.safeAreaLayoutGuide.topAnchor
-    } else {
-      return topLayoutGuide.bottomAnchor
-    }
-  }
-
-  public var safeAreaBottomAnchor: NSLayoutYAxisAnchor {
-    if #available(iOS 11.0, *) {
-      return view.safeAreaLayoutGuide.bottomAnchor
-    } else {
-      return bottomLayoutGuide.topAnchor
-    }
-  }
-
-  public var safeAreaTopInset: CGFloat {
-    if #available(iOS 11.0, *) {
-      return view.safeAreaInsets.top
-    } else {
-      return topLayoutGuide.length
-    }
-  }
-
-  public var safeAreaBottomInset: CGFloat {
-    if #available(iOS 11.0, *) {
-      return view.safeAreaInsets.bottom
-    } else {
-      return bottomLayoutGuide.length
-    }
-  }
-
-  public var safeAreaFrame: CGRect {
-    if #available(iOS 11.0, *) {
-      return view.bounds.inset(by: view.safeAreaInsets)
-    } else {
-      return CGRect(x: 0, y: topLayoutGuide.length, width: view.bounds.width, height: bottomLayoutGuide.length)
-    }
   }
 }
 #endif

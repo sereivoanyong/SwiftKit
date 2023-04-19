@@ -7,7 +7,6 @@
 #if canImport(Foundation)
 import Foundation
 
-@available(iOS 10.0, *)
 extension MeasurementFormatter {
   
   @inlinable public convenience init(unitOptions: UnitOptions, unitStyle: UnitStyle = .medium, locale: Locale? = nil) {

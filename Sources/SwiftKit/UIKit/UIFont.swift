@@ -43,7 +43,6 @@ extension UIFont {
   }
 
   // Returns an instance of the font associated with the text style and scaled appropriately for the content size category defined in the trait collection.
-  @available(iOS 10.0, *)
   @inlinable
   public static func preferred(for textStyle: TextStyle, compatibleWith traitCollection: UITraitCollection?) -> UIFont {
     return preferredFont(forTextStyle: textStyle, compatibleWith: traitCollection)

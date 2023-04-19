@@ -48,14 +48,14 @@ extension UITableViewCell {
     }
     set {
       guard let color = newValue else {
-        if let selectedBackgroundView = selectedBackgroundView, type(of: selectedBackgroundView) == UIView.self {
+        if let selectedBackgroundView, type(of: selectedBackgroundView) == UIView.self {
           selectedBackgroundView.backgroundColor = nil
         } else {
           selectedBackgroundView = nil
         }
         return
       }
-      if let selectedBackgroundView = selectedBackgroundView, type(of: selectedBackgroundView) == UIView.self {
+      if let selectedBackgroundView, type(of: selectedBackgroundView) == UIView.self {
         selectedBackgroundView.backgroundColor = color
       } else {
         let selectedBackgroundView = UIView()

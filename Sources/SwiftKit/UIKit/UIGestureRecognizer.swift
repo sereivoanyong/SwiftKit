@@ -32,7 +32,7 @@ extension UIGestureRecognizerProtocol {
   /// - Parameter handler: The handler to be called by the action message.
   /// - Returns: The token used to remove handler
   public func addAction(identifier: SenderAction<Self>.Identifier? = nil, handler: @escaping (Self) -> Void) {
-    if let identifier = identifier, let action = actions[identifier] {
+    if let identifier, let action = actions[identifier] {
       removeTarget(action, action: #selector(SenderAction<Self>.invoke(_:)))
     }
     let action = SenderAction<Self>(identifier: identifier, handler: handler)

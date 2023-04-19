@@ -7,9 +7,9 @@
 extension Result {
   
   @inlinable public init?(_ success: Success?, _ failure: Failure?) {
-    if let success = success {
+    if let success {
       self = .success(success)
-    } else if let failure = failure {
+    } else if let failure {
       self = .failure(failure)
     } else {
       return nil

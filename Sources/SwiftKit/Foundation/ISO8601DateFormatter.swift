@@ -7,7 +7,6 @@
 #if canImport(Foundation)
 import Foundation
 
-@available(iOS 10.0, *)
 extension ISO8601DateFormatter {
 
   @inlinable
@@ -20,7 +19,6 @@ extension ISO8601DateFormatter {
 
 extension Date {
 
-  @available(iOS 10.0, *)
   @inlinable
   public func formatted(by formatter: ISO8601DateFormatter) -> String {
     return formatter.string(from: self)

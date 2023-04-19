@@ -45,7 +45,7 @@ extension NSObjectProtocol {
   }
   
   @inlinable public func setAssociatedValue<Value>(_ value: Value?, forKey key: UnsafeRawPointer) {
-    if let value = value {
+    if let value {
       if let box = associatedObject(forKey: key) as Box<Value>? {
         box.value = value
       } else {

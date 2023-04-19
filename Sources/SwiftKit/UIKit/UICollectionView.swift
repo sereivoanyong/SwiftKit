@@ -21,7 +21,7 @@ extension UICollectionView {
   ///   - indexPaths: The index paths of the items to select. Specifying nil for this parameter clears the current selection.
   ///   - animated: Specify true to animate the change in the selection or false to make the change without animating it.
   public func selectItems(at indexPaths: [IndexPath]?, animated: Bool) {
-    if let indexPaths = indexPaths {
+    if let indexPaths {
       for indexPath in indexPaths {
         selectItem(at: indexPath, animated: animated, scrollPosition: [])
       }
@@ -31,23 +31,23 @@ extension UICollectionView {
   }
 
   public func deselectSelectedItems(animated: Bool, transitionCoordinator: UIViewControllerTransitionCoordinator? = nil) {
-    guard let selectedIndexPaths = indexPathsForSelectedItems, !selectedIndexPaths.isEmpty else {
+    guard let indexPathsForSelectedItems, !indexPathsForSelectedItems.isEmpty else {
       return
     }
     guard let transitionCoordinator = transitionCoordinator else {
-      for indexPath in selectedIndexPaths {
+      for indexPath in indexPathsForSelectedItems {
         deselectItem(at: indexPath, animated: animated)
       }
       return
     }
     transitionCoordinator.animate(alongsideTransition: { [unowned self] context in
-      for indexPath in selectedIndexPaths {
-        self.deselectItem(at: indexPath, animated: context.isAnimated)
+      for indexPath in indexPathsForSelectedItems {
+        deselectItem(at: indexPath, animated: context.isAnimated)
       }
     }, completion: { [unowned self] context in
       if context.isCancelled {
-        for indexPath in selectedIndexPaths {
-          self.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        for indexPath in indexPathsForSelectedItems {
+          selectItem(at: indexPath, animated: false, scrollPosition: [])
         }
       }
     })

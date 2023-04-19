@@ -40,7 +40,7 @@ extension String {
   }
 
   public func sizeThatFits(width: CGFloat?, options: NSStringDrawingOptions = [.usesFontLeading, .usesLineFragmentOrigin], attributes: [NSAttributedString.Key: Any]) -> CGSize {
-    if let width = width {
+    if let width {
       let height = boundingRect(with: CGSize(width: width, height: .greatestFiniteMagnitude), options: options, attributes: attributes).height
       return CGSize(width: width, height: height)
     } else {
@@ -60,7 +60,7 @@ extension String {
 extension NSAttributedString {
 
   public func sizeThatFits(width: CGFloat?) -> CGSize {
-    if let width = width {
+    if let width {
       let height = boundingRect(with: CGSize(width: width, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).height
       return CGSize(width: width, height: height)
     } else {

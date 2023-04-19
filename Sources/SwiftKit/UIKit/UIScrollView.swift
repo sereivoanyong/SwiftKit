@@ -20,13 +20,7 @@ extension UIScrollView {
   }
 
   public func scrollToBottom(animated: Bool = false) {
-    let bottomInset: CGFloat
-    if #available(iOS 11.0, *) {
-      bottomInset = adjustedContentInset.bottom
-    } else {
-      bottomInset = contentInset.bottom
-    }
-    setContentOffset(CGPoint(x: 0, y: contentSize.height - bounds.size.height + bottomInset), animated: animated)
+    setContentOffset(CGPoint(x: 0, y: contentSize.height - bounds.size.height + adjustedContentInset.bottom), animated: animated)
   }
 
   /// Returns a snapshot of an entire content of the scroll view
@@ -60,7 +54,6 @@ extension UIScrollView {
     }
   }
 
-  @available(iOS 11.0, *)
   @inlinable
   public func addArrangedSubviews(_ views: [UIView], alignmentLayoutGuide: LayoutGuide? = nil, spacing: ArrangmentSpacing = .fixed(0.0), insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
     let alignmentLayoutGuide = alignmentLayoutGuide ?? contentLayoutGuide
@@ -104,7 +97,6 @@ extension UIScrollView {
     }
   }
 
-  @available(iOS 11.0, *)
   public func addContentView(_ contentView: UIView, insets: UIEdgeInsets = .zero, axis: NSLayoutConstraint.Axis) {
     contentView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(contentView)
@@ -127,12 +119,10 @@ extension UIScrollView {
   }
 
   private static var accessoryViewKey: Void?
-  @available(iOS 11.0, *)
   public var accessoryView: UIView? {
     return associatedObject(forKey: &Self.accessoryViewKey)
   }
 
-  @available(iOS 11.0, *)
   public func setAccessoryView(_ accessoryView: UIView, alignmentLayoutGuide: LayoutGuide? = nil, preferredHeight: CGFloat, insets: UIEdgeInsets = .zero) {
     setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     addSubview(accessoryView)

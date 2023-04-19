@@ -45,7 +45,7 @@ extension StringProtocol {
 extension String {
 
   public func firstCapitalized() -> String {
-    guard let first = first else {
+    guard let first else {
       return self
     }
     var result = self

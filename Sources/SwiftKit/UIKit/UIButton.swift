@@ -11,12 +11,12 @@ extension UIButton {
 
   /// Sets the background image from color to use for the specified button state
   public func setBackgroundImage(color: UIColor?, cornerRadius: CGFloat = 0, renderingMode: UIImage.RenderingMode? = nil, for state: State) {
-    guard let color = color else {
+    guard let color else {
       setBackgroundImage(nil, for: state)
       return
     }
     var backgroundImage = UIImage(color: color, size: CGSize(dimension: cornerRadius * 2), cornerRadius: cornerRadius).resizableImage(withCapInsets: UIEdgeInsets(top: cornerRadius, left: cornerRadius, bottom: cornerRadius, right: cornerRadius))
-    if let renderingMode = renderingMode {
+    if let renderingMode {
       backgroundImage = backgroundImage.withRenderingMode(renderingMode)
     }
     setBackgroundImage(backgroundImage, for: state)
@@ -55,7 +55,7 @@ extension UIButton {
     self.init(type: type)
     setImage(image, for: .normal)
     setTitle(title, for: .normal)
-    if let target = target, let action = action {
+    if let target, let action {
       addTarget(target, action: action, for: .touchUpInside)
     }
   }

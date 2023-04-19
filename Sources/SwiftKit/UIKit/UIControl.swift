@@ -93,10 +93,10 @@ extension BackwardCompatibility where Base: UIControl {
       guard newValue !== oldValue else {
         return
       }
-      if let oldValue = oldValue {
+      if let oldValue {
         base.removeTarget(oldValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
       }
-      if let newValue = newValue {
+      if let newValue {
         base.addTarget(newValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
       }
       base.setAssociatedObject(newValue, forKey: &primaryActionKey)

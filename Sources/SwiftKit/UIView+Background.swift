@@ -17,7 +17,7 @@ extension UIView {
   
   public func addBackgroundView(_ backgroundView: UIView, below subview: UIView? = nil) {
     let insertTo: (UIView) -> Void = { view in
-      if let subview = subview {
+      if let subview {
         view.insertSubview(backgroundView, belowSubview: subview)
       } else {
         view.insertSubview(backgroundView, at: 0)
