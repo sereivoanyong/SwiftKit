@@ -23,21 +23,22 @@ extension Action {
   }
 }
 
+// https://developer.limneos.net/index.php?ios=14.4&framework=UIKitCore.framework&header=UIAction.h
 @objc open class Action: NSObject {
 
+  open var handler: (Action) -> Void
+
   /// The action's title.
-  public let title: String?
+  open var title: String?
 
   /// The action's image.
-  public let image: UIImage?
+  open var image: UIImage?
 
   /// The unique identifier for the action.
-  public let identifier: Identifier
+  open var identifier: Identifier
 
   /// The object responsible for the action handler.
   public private(set) var sender: Any?
-
-  let handler: (Action) -> Void
 
   public init(title: String? = nil, image: UIImage? = nil, identifier: Identifier? = nil, handler: @escaping (Action) -> Void) {
     self.title = title
@@ -46,7 +47,7 @@ extension Action {
     self.handler = handler
   }
 
-  @objc open func invoke(_ sender: Any) {
+  @objc open func performAction(_ sender: Any) {
     self.sender = sender
     handler(self)
     self.sender = nil

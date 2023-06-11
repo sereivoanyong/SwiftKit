@@ -66,7 +66,7 @@ extension BackwardCompatibility where Base: UIBarButtonItem {
         return
       }
       base.target = newValue
-      base.action = #selector(Action.invoke(_:))
+      base.action = #selector(Action.performAction(_:))
       base.title = newValue?.title
       base.image = newValue?.image
       base.setAssociatedObject(newValue, forKey: &primaryActionKey)

@@ -9,12 +9,6 @@ import UIKit
 
 extension UIControl {
 
-  @available(*, deprecated, message: "Use `bc.primaryAction` instead.")
-  public var _primaryAction: Action? {
-    get { return bc.primaryAction }
-    set { bc.primaryAction = newValue }
-  }
-
   private struct Key: Hashable {
 
     let identifier: Action.Identifier
@@ -34,25 +28,23 @@ extension UIControl {
 
   /// Adds the `action` to given `events`. They are uniqued based on their `identifier`, and subsequent actions with the same `identifier` replace previously added actions. You may add multiple actions for corresponding `events`, and you may add the same action to multiple `events`.
   public func addAction(_ action: Action, for events: Event) {
-    var currentActions = actions
-    // Check if there is a different action object but with the same identifer
-    let hasTheSameIdentifier: (Key) -> Bool = { $0.identifier == action.identifier }
-    if let key = currentActions.keys.first(where: hasTheSameIdentifier), action !== currentActions[key] {
-      let action = currentActions.removeValue(forKey: key)
-      removeTarget(action, action: #selector(Action.invoke(_:)), for: key.events)
-      for key in currentActions.keys.filter(hasTheSameIdentifier) {
-        let action = currentActions.removeValue(forKey: key)
-        removeTarget(action, action: #selector(Action.invoke(_:)), for: key.events)
-      }
+    let key = Key(identifier: action.identifier, events: events)
+    var actions = actions
+
+    // Check if the action already exists
+    if actions[key] === action {
+      return
     }
 
-    let key = Key(identifier: action.identifier, events: events)
-    // Ignore if attempting to add the same action and the same events
-    if currentActions[key] == nil {
-      currentActions[key] = action
-      addTarget(action, action: #selector(Action.invoke(_:)), for: events)
+    // Removing existing actions with the same identifer
+    for (existingKey, existingAction) in actions where existingAction.identifier == action.identifier {
+      actions[existingKey] = nil
+      removeTarget(existingAction, action: #selector(Action.performAction(_:)), for: existingKey.events)
     }
-    actions = currentActions
+
+    actions[key] = action
+    addTarget(action, action: #selector(Action.performAction(_:)), for: events)
+    self.actions = actions
   }
 
   public func addAction(handler: @escaping (Action) -> Void, for events: Event) {
@@ -68,7 +60,7 @@ extension UIControl {
   public func removeAction(identifier: Action.Identifier, for events: Event) {
     let key = Key(identifier: identifier, events: events)
     if let action = actions.removeValue(forKey: key) {
-      removeTarget(action, action: #selector(Action.invoke(_:)), for: events)
+      removeTarget(action, action: #selector(Action.performAction(_:)), for: events)
     }
   }
 
@@ -94,10 +86,10 @@ extension BackwardCompatibility where Base: UIControl {
         return
       }
       if let oldValue {
-        base.removeTarget(oldValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
+        base.removeTarget(oldValue, action: #selector(Action.performAction(_:)), for: .primaryActionTriggered)
       }
       if let newValue {
-        base.addTarget(newValue, action: #selector(Action.invoke(_:)), for: .primaryActionTriggered)
+        base.addTarget(newValue, action: #selector(Action.performAction(_:)), for: .primaryActionTriggered)
       }
       base.setAssociatedObject(newValue, forKey: &primaryActionKey)
       base.bc_setPrimaryAction(newValue)
