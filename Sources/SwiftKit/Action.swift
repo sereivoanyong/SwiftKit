@@ -21,6 +21,21 @@ extension Action {
       self.rawValue = rawValue
     }
   }
+
+  public struct Attributes: OptionSet {
+
+    public let rawValue: UInt
+
+    public init(rawValue: UInt) {
+      self.rawValue = rawValue
+    }
+
+    public static let disabled = Attributes(rawValue: 1 << 0)
+
+    public static let destructive = Attributes(rawValue: 1 << 1)
+
+    public static let hidden = Attributes(rawValue: 1 << 2)
+  }
 }
 
 // https://developer.limneos.net/index.php?ios=14.4&framework=UIKitCore.framework&header=UIAction.h
@@ -37,13 +52,17 @@ extension Action {
   /// The unique identifier for the action.
   open var identifier: Identifier
 
+  /// The attributes indicating the style of the action.
+  open var attributes: Attributes
+
   /// The object responsible for the action handler.
   public private(set) var sender: Any?
 
-  public init(title: String? = nil, image: UIImage? = nil, identifier: Identifier? = nil, handler: @escaping (Action) -> Void) {
+  public init(title: String? = nil, image: UIImage? = nil, identifier: Identifier? = nil, attributes: Attributes = [], handler: @escaping (Action) -> Void) {
     self.title = title
     self.image = image
     self.identifier = identifier ?? Identifier(UUID().uuidString)
+    self.attributes = attributes
     self.handler = handler
   }
 
