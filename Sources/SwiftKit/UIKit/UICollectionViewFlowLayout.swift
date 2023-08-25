@@ -10,7 +10,14 @@ import UIKit
 extension UICollectionViewFlowLayout {
 
   @inlinable
-  public convenience init(scrollDirection: UICollectionView.ScrollDirection, minimumLineSpacing: CGFloat = 10, minimumInteritemSpacing: CGFloat = 10, itemSize: CGSize = CGSize(width: 50, height: 50), sectionInset: UIEdgeInsets = .zero, sectionInsetReference: SectionInsetReference) {
+  public convenience init(
+    scrollDirection: UICollectionView.ScrollDirection,
+    minimumLineSpacing: CGFloat = 10, 
+    minimumInteritemSpacing: CGFloat = 10,
+    itemSize: CGSize = CGSize(width: 50, height: 50),
+    sectionInset: UIEdgeInsets = .zero,
+    sectionInsetReference: SectionInsetReference = .fromContentInset
+  ) {
     self.init()
     self.scrollDirection = scrollDirection
     self.minimumLineSpacing = minimumLineSpacing

@@ -31,34 +31,44 @@ extension NSObjectProtocol {
   // Value
   
   @inlinable public func associatedValue<Value>(forKey key: UnsafeRawPointer) -> Value? {
-    return (objc_getAssociatedObject(self, key) as? Box<Value>)?.value
+    return (objc_getAssociatedObject(self, key) as? Reference<Value>)?.value
   }
   
-  @inlinable public func associatedValue<Value>(forKey key: UnsafeRawPointer, default: @autoclosure () -> Value) -> Value {
-    if let box = associatedObject(forKey: key) as Box<Value>? {
-      return box.value
+  @inlinable public func associatedValue<Value>(forKey key: UnsafeRawPointer, default defaultValue: @autoclosure () -> Value) -> Value {
+    if let reference = associatedReference(forKey: key) as Reference<Value>? {
+      return reference.value
     } else {
-      let `default` = `default`()
-      setAssociatedValue(`default`, forKey: key)
-      return `default`
+      let value = defaultValue()
+      setAssociatedValue(value, forKey: key)
+      return value
     }
   }
   
   @inlinable public func setAssociatedValue<Value>(_ value: Value?, forKey key: UnsafeRawPointer) {
     if let value {
-      if let box = associatedObject(forKey: key) as Box<Value>? {
-        box.value = value
+      if let reference = associatedReference(forKey: key) as Reference<Value>? {
+        reference.value = value
       } else {
-        setAssociatedObject(Box<Value>(value), forKey: key, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        setAssociatedReference(Reference<Value>(value), forKey: key)
       }
     } else {
-      setAssociatedObject(nil as Box<Value>?, forKey: key, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+      setAssociatedReference(nil as Reference<Value>?, forKey: key)
     }
   }
-  
+
+  // Reference
+
+  @inlinable public func associatedReference<T>(forKey key: UnsafeRawPointer) -> Reference<T>? {
+    return objc_getAssociatedObject(self, key) as? Reference<T>
+  }
+
+  @inlinable public func setAssociatedReference<T>(_ object: T?, forKey key: UnsafeRawPointer) {
+    objc_setAssociatedObject(self, key, object, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+  }
+
   // Object
-  
-  @inlinable public func associatedObject<T>(forKey key: UnsafeRawPointer) -> T? where T: AnyObject {
+
+  @inlinable public func associatedObject<T: AnyObject>(forKey key: UnsafeRawPointer) -> T? {
     return objc_getAssociatedObject(self, key) as? T
   }
   

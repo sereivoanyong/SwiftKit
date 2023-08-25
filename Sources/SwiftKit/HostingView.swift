@@ -76,8 +76,8 @@ private var rootViewConstraintsKey: Void?
 extension HostingViewProtocol {
 
   private var rootViewConstraints: [NSLayoutConstraint] {
-    get { return (objc_getAssociatedObject(self, &rootViewConstraintsKey) as? Box<[NSLayoutConstraint]>)?.value ?? [] }
-    set { objc_setAssociatedObject(self, &rootViewConstraintsKey, Box(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    get { return (objc_getAssociatedObject(self, &rootViewConstraintsKey) as? Reference<[NSLayoutConstraint]>)?.value ?? [] }
+    set { objc_setAssociatedObject(self, &rootViewConstraintsKey, Reference(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
   }
 
   private func setRootView(_ rootView: RootView) {
@@ -122,13 +122,13 @@ extension HostingViewProtocol {
   }
 
   public var rootViewLayoutProvider: RootViewLayoutProvider<RootView> {
-    get { return (objc_getAssociatedObject(self, &rootViewLayoutProviderKey) as? Box<RootViewLayoutProvider<RootView>>)?.value ?? .default }
+    get { return (objc_getAssociatedObject(self, &rootViewLayoutProviderKey) as? Reference<RootViewLayoutProvider<RootView>>)?.value ?? .default }
     set {
       let rootViewLayoutProvider = rootViewLayoutProvider
       guard rootViewLayoutProvider != newValue else {
         return
       }
-      objc_setAssociatedObject(self, &rootViewLayoutProviderKey, Box(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+      objc_setAssociatedObject(self, &rootViewLayoutProviderKey, Reference(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
       reloadRootViewConstraints()
     }
   }
