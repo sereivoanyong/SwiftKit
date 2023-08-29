@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIApplication {
@@ -39,4 +38,3 @@ extension UIApplication {
     return openIfPossible(URL(string: "itms-apps://itunes.apple.com/app/id\(identifier)")!, completion: completion)
   }
 }
-#endif

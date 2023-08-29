@@ -61,7 +61,6 @@ extension CollectionViewWaterfallLayout {
 
     case fromLayoutMargins
 
-    @available(iOS 11.0, *)
     case fromSafeArea
   }
 }
@@ -133,11 +132,7 @@ open class CollectionViewWaterfallLayout: UICollectionViewLayout {
     case .fromContentInset:
       insets = collectionView.contentInset
     case .fromSafeArea:
-      if #available(iOS 11.0, *) {
-        insets = collectionView.safeAreaInsets
-      } else {
-        insets = .zero
-      }
+      insets = collectionView.safeAreaInsets
     case .fromLayoutMargins:
       insets = collectionView.layoutMargins
     }

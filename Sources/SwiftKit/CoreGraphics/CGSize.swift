@@ -4,21 +4,23 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(CoreGraphics)
 import CoreGraphics
 
 extension CGSize {
   
   /// Creates a size with the same dimension
-  @inlinable public init(dimension: CGFloat) {
-    self.init(width: dimension, height: dimension)
+  @inlinable 
+  public init(value: CGFloat) {
+    self.init(width: value, height: value)
   }
   
-  @inlinable public var maxDimension: CGFloat {
+  @inlinable 
+  public var maxDimension: CGFloat {
     return max(width, height)
   }
   
-  @inlinable public var minDimension: CGFloat {
+  @inlinable 
+  public var minDimension: CGFloat {
     return min(width, height)
   }
   
@@ -74,4 +76,3 @@ extension CGSize {
     lhs = lhs / scalar
   }
 }
-#endif

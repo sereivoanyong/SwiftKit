@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIDevice {
@@ -224,4 +223,3 @@ extension UIDevice {
     }
   }
 }
-#endif

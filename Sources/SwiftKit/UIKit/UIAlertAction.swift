@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 // https://github.com/nst/iOS-Runtime-Headers/blob/master/PrivateFrameworks/UIKitCore.framework/UIAlertAction.h
@@ -59,4 +58,3 @@ extension UIAlertAction {
     self.image = image
   }
 }
-#endif

@@ -91,17 +91,17 @@ extension Bundle {
   // Set to nil to force reload
   private var selectedLocalizationBundle: Bundle? {
     get {
-      if let bundle = associatedObject(forKey: &Self.selectedLocalizationBundleKey) as Bundle? {
+      if let bundle = associatedObject(forKey: &Self.selectedLocalizationBundleKey, with: self) as Bundle? {
         return bundle
       }
       if let url = url(forResource: selectedLocalization, withExtension: "lproj"), let bundle = Bundle(url: url) {
-        setAssociatedObject(bundle, forKey: &Self.selectedLocalizationBundleKey)
+        setAssociatedObject(bundle, forKey: &Self.selectedLocalizationBundleKey, with: self)
         return bundle
       }
       return nil
     }
     set {
-      setAssociatedObject(newValue, forKey: &Self.selectedLocalizationBundleKey)
+      setAssociatedObject(newValue, forKey: &Self.selectedLocalizationBundleKey, with: self)
     }
   }
 

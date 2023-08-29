@@ -13,7 +13,7 @@ private func messageForSetOnlyProperty(_ property: String = #function) -> Never 
 extension UILabel {
 
   @IBInspectable
-  final public var textLocalization: String! {
+  public var textLocalization: String! {
     get { messageForSetOnlyProperty() }
     set { text = newValue.localized }
   }
@@ -22,7 +22,7 @@ extension UILabel {
 extension UIButton {
 
   @IBInspectable
-  final public var titleLocalization: String! {
+  public var titleLocalization: String! {
     get { messageForSetOnlyProperty() }
     set { setTitle(newValue.localized, for: .normal) }
   }
@@ -31,7 +31,7 @@ extension UIButton {
 extension UITextView {
 
   @IBInspectable
-  final public var textLocalization: String! {
+  public var textLocalization: String! {
     get { messageForSetOnlyProperty() }
     set { text = newValue.localized }
   }
@@ -40,7 +40,7 @@ extension UITextView {
 extension UITextField {
 
   @IBInspectable
-  final public var placeholderLocalization: String! {
+  public var placeholderLocalization: String! {
     get { messageForSetOnlyProperty() }
     set { placeholder = newValue.localized }
   }
@@ -49,7 +49,7 @@ extension UITextField {
 extension UINavigationItem {
 
   @IBInspectable
-  final public var titleLocalization: String! {
+  public var titleLocalization: String! {
     get { messageForSetOnlyProperty() }
     set { title = newValue.localized }
   }

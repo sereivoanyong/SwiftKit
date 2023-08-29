@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 8/22/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 public protocol ShadowedView: AnyObject {
@@ -27,7 +26,7 @@ public protocol ShadowedViewHideable: AnyObject {
 extension ShadowedViewHideable where Self: UIView {
   
   public var hidesShadow: Bool {
-    get { value(forKey: "_hidesShadow") as? Bool ?? false }
+    get { return value(forKey: "_hidesShadow") as? Bool ?? false }
     set { setValue(newValue, forKey: "_hidesShadow") }
   }
 }
@@ -36,4 +35,3 @@ extension UINavigationBar: ShadowedViewHideable { }
 extension UITabBar: ShadowedView & ShadowedViewHideable { }
 extension UIToolbar: ShadowedView & ShadowedViewHideable { }
 extension UISearchBar: ShadowedView { }
-#endif

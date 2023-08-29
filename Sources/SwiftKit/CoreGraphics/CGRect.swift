@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 8/2/17.
 //
 
-#if canImport(CoreGraphics)
 import CoreGraphics
 
 extension CGRect {
@@ -54,4 +53,3 @@ extension CGRect {
     return CGRect(origin: offset, size: size)
   }
 }
-#endif

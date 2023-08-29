@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/8/17.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 @objc extension NSLayoutAnchor {
@@ -84,4 +83,3 @@ extension NSLayoutDimension {
     return c
   }
 }
-#endif

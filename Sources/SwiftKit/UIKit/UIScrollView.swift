@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 10/29/19.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIScrollView {
@@ -120,11 +119,11 @@ extension UIScrollView {
 
   private static var accessoryViewKey: Void?
   public var accessoryView: UIView? {
-    return associatedObject(forKey: &Self.accessoryViewKey)
+    return associatedObject(forKey: &Self.accessoryViewKey, with: self)
   }
 
   public func setAccessoryView(_ accessoryView: UIView, alignmentLayoutGuide: LayoutGuide? = nil, preferredHeight: CGFloat, insets: UIEdgeInsets = .zero) {
-    setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey,with: self)
     addSubview(accessoryView)
 
     contentInset.top = preferredHeight + insets.top + insets.bottom
@@ -153,8 +152,11 @@ extension UIScrollView {
 
   /// A `Bool` value that determines whether the scroll view uses its `contentSize` for `intrinsicContentSize`.
   public var usesContentSizeAsIntrinsic: Bool {
-    get { associatedValue(forKey: &Self.usesContentSizeAsIntrinsicKey) ?? false }
-    set { _ = Self.swizzlingHandler; setAssociatedValue(newValue, forKey: &Self.usesContentSizeAsIntrinsicKey) }
+    get { return associatedValue(forKey: &Self.usesContentSizeAsIntrinsicKey, with: self) ?? false }
+    set {
+      _ = Self.swizzlingHandler;
+      setAssociatedValue(newValue, forKey: &Self.usesContentSizeAsIntrinsicKey, with: self)
+    }
   }
 
   @objc private func _sk_sv_layoutSubviews() {
@@ -184,4 +186,3 @@ extension UIScrollView {
     _sk_sv_setContentSize(newContentSize)
   }
 }
-#endif

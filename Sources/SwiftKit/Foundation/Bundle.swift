@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 2/22/22.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension Bundle {
@@ -25,4 +24,3 @@ extension Bundle {
     return string
   }
 }
-#endif

@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 7/7/20.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension CharacterSet {
@@ -35,4 +34,3 @@ extension CharacterSet {
     return String.UnicodeScalarView(unicodeScalars)
   }
 }
-#endif

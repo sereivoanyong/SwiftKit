@@ -145,7 +145,7 @@ open class TextField: UITextField {
     }
   }
 
-  final public func setBecomesFirstResponderOnClearButtonTap(_ becomesFirstResponderOnClearButtonTap: Bool) {
+  public func setBecomesFirstResponderOnClearButtonTap(_ becomesFirstResponderOnClearButtonTap: Bool) {
     let selector = Selector(("setBecomesFirstResponderOnClearButtonTap:"))
     if responds(to: selector) {
       perform(selector, with: becomesFirstResponderOnClearButtonTap)
@@ -175,38 +175,38 @@ open class TextField: UITextField {
 extension TextField {
 
   @IBInspectable
-  final public var topInset: CGFloat {
-    get { insets.top }
+  public var topInset: CGFloat {
+    get { return insets.top }
     set { insets.top = newValue }
   }
 
   @IBInspectable
-  final public var leftInset: CGFloat {
-    get { insets.left }
+  public var leftInset: CGFloat {
+    get { return insets.left }
     set { insets.left = newValue }
   }
 
   @IBInspectable
-  final public var bottomInset: CGFloat {
-    get { insets.bottom }
+  public var bottomInset: CGFloat {
+    get { return insets.bottom }
     set { insets.bottom = newValue }
   }
 
   @IBInspectable
-  final public var rightInset: CGFloat {
-    get { insets.right }
+  public var rightInset: CGFloat {
+    get { return insets.right }
     set { insets.right = newValue }
   }
 
   @IBInspectable
-  final public var leftViewPadding: CGFloat {
-    get { leftViewLayoutAttributes.padding }
+  public var leftViewPadding: CGFloat {
+    get { return leftViewLayoutAttributes.padding }
     set { leftViewLayoutAttributes.padding = newValue }
   }
 
   @IBInspectable
-  final public var rightViewPadding: CGFloat {
-    get { rightViewLayoutAttributes.padding }
+  public var rightViewPadding: CGFloat {
+    get { return rightViewLayoutAttributes.padding }
     set { rightViewLayoutAttributes.padding = newValue }
   }
 }

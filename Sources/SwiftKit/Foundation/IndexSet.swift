@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 11/26/20.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension RangeReplaceableCollection where Index == IndexSet.Element {
@@ -26,4 +25,3 @@ extension RangeReplaceableCollection where Index == IndexSet.Element {
     return removedElements
   }
 }
-#endif

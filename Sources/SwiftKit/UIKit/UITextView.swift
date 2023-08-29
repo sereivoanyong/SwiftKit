@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UITextView {
@@ -18,7 +17,7 @@ extension UITextView {
     self.text = text
   }
 
-  public func inheritLabelBehavior() {
+  public func configureAsLabel() {
     isEditable = false
     isSelectable = false
     isScrollEnabled = false
@@ -30,4 +29,3 @@ extension UITextView {
     bouncesZoom = false
   }
 }
-#endif

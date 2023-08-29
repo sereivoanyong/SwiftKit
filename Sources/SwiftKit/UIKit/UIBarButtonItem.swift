@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIBarButtonItem {
@@ -59,7 +58,7 @@ private var primaryActionKey: Void?
 extension BackwardCompatibility where Base: UIBarButtonItem {
 
   public var primaryAction: Action? {
-    get { return base.associatedObject(forKey: &primaryActionKey) }
+    get { return associatedObject(forKey: &primaryActionKey, with: base) }
     nonmutating set {
       let oldValue = primaryAction
       guard newValue !== oldValue else {
@@ -69,8 +68,7 @@ extension BackwardCompatibility where Base: UIBarButtonItem {
       base.action = #selector(Action.performAction(_:))
       base.title = newValue?.title
       base.image = newValue?.image
-      base.setAssociatedObject(newValue, forKey: &primaryActionKey)
+      setAssociatedObject(newValue, forKey: &primaryActionKey, with: base)
     }
   }
 }
-#endif

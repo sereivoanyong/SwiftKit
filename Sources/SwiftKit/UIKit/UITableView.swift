@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UITableView {
@@ -13,14 +12,14 @@ extension UITableView {
 
   private static var allowsHeaderViewsToFloatKey: Void?
   @objc final public var allowsHeaderViewsToFloat: Bool {
-    get { return associatedValue(forKey: &Self.allowsHeaderViewsToFloatKey, default: true) }
-    set { setAssociatedValue(newValue, forKey: &Self.allowsHeaderViewsToFloatKey) }
+    get { return associatedValue(default: true, forKey: &Self.allowsHeaderViewsToFloatKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &Self.allowsHeaderViewsToFloatKey, with: self) }
   }
 
   private static var allowsFooterViewsToFloatKey: Void?
   @objc final public var allowsFooterViewsToFloat: Bool {
-    get { return associatedValue(forKey: &Self.allowsFooterViewsToFloatKey, default: true) }
-    set { setAssociatedValue(newValue, forKey: &Self.allowsFooterViewsToFloatKey) }
+    get { return associatedValue(default: true, forKey: &Self.allowsFooterViewsToFloatKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &Self.allowsFooterViewsToFloatKey, with: self) }
   }
 
   public var _headerAndFooterViewsFloat: Bool {
@@ -55,11 +54,6 @@ extension UITableView {
       deselectRow(at: indexPath, animated: animated)
     }
     return indexPathsForSelectedRows
-  }
-
-  /// Reloads the rows and sections of the table view
-  public func reloadData(completion: @escaping (Bool) -> Void) {
-    UIView.animate(withDuration: 0, animations: { self.reloadData() }, completion: completion)
   }
 
   /// Returns a boolean value indicating whether the table view has the provided index path
@@ -192,4 +186,3 @@ extension UITableView {
     return dequeueReusableHeaderFooterView(withIdentifier: identifier) as! View
   }
 }
-#endif

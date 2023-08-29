@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension DateFormatter {
@@ -53,4 +52,3 @@ extension Date {
     return formatter.string(from: self)
   }
 }
-#endif

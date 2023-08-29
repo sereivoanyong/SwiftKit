@@ -4,16 +4,15 @@
 //  Created by Sereivoan Yong on 4/30/21.
 //
 
-#if os(iOS)
-
 import UIKit
+import SwiftKit
 
 extension UIView {
 
   private static var emptyViewKey: Void?
-  final public var emptyView: EmptyView? {
+  public var emptyView: EmptyView? {
     get {
-      return objc_getAssociatedObject(self, &Self.emptyViewKey) as? EmptyView
+      return associatedObject(forKey: &Self.emptyViewKey, with: self)
     }
     set {
       if let oldValue = emptyView {
@@ -33,7 +32,7 @@ extension UIView {
           newValue.topAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.topAnchor)
         ])
       }
-      objc_setAssociatedObject(self, &Self.emptyViewKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+      setAssociatedObject(newValue, forKey: &Self.emptyViewKey, with: self)
     }
   }
 }
@@ -62,9 +61,7 @@ extension UITableView {
   fileprivate static let swizzlingHandler: Void = {
     let klass = UITableView.self
     class_exchangeInstanceMethodImplementations(klass, #selector(reloadData), #selector(ev_reloadData))
-    if #available(iOS 11.0, *) {
-      class_exchangeInstanceMethodImplementations(klass, #selector(performBatchUpdates(_:completion:)), #selector(ev_performBatchUpdates(_:completion:)))
-    }
+    class_exchangeInstanceMethodImplementations(klass, #selector(performBatchUpdates(_:completion:)), #selector(ev_performBatchUpdates(_:completion:)))
     class_exchangeInstanceMethodImplementations(klass, #selector(endUpdates), #selector(ev_endUpdates))
   }()
 
@@ -73,7 +70,6 @@ extension UITableView {
     reloadEmptyViewIfPossible()
   }
 
-  @available(iOS 11.0, *)
   @objc private func ev_performBatchUpdates(_ updates: (() -> Void)?, completion: ((Bool) -> Void)?) {
     ev_performBatchUpdates(updates, completion: completion)
     reloadEmptyViewIfPossible()
@@ -84,5 +80,3 @@ extension UITableView {
     reloadEmptyViewIfPossible()
   }
 }
-
-#endif

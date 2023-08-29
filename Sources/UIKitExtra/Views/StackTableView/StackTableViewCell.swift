@@ -118,9 +118,7 @@ open class StackTableViewCell: UIView {
     super.init(frame: .zero)
 
     clipsToBounds = true
-    if #available(iOS 11.0, *) {
-      insetsLayoutMarginsFromSafeArea = false
-    }
+    insetsLayoutMarginsFromSafeArea = false
     translatesAutoresizingMaskIntoConstraints = false
 
     contentView.translatesAutoresizingMaskIntoConstraints = false

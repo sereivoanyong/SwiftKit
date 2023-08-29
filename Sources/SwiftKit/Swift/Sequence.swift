@@ -6,11 +6,13 @@
 
 extension Sequence {
 
-  @inlinable public func filter<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> [Element] where T: Equatable {
+  @inlinable 
+  public func filter<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> [Element] where T: Equatable {
     return filter({ $0[keyPath: keyPath] == value })
   }
 
-  @inlinable public func first<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Element? where T: Equatable {
+  @inlinable 
+  public func first<T>(where keyPath: KeyPath<Element, T>, equalTo value: T) -> Element? where T: Equatable {
     return first(where: { $0[keyPath: keyPath] == value })
   }
 

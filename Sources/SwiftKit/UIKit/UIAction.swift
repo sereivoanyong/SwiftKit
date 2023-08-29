@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 2/19/22.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 @available(iOS 13.0, *)
@@ -16,4 +15,3 @@ extension UIAction {
     return unsafeBitCast(handler, to: Block.self)
   }
 }
-#endif

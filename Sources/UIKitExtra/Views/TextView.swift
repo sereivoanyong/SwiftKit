@@ -4,9 +4,8 @@
 //  Created by Sereivoan Yong on 5/2/21.
 //
 
-#if os(iOS)
-
 import UIKit
+import SwiftKit
 
 @IBDesignable
 open class TextView: UITextView {
@@ -33,7 +32,8 @@ open class TextView: UITextView {
 
   private var _placeholderTextView: UITextView?
   lazy open private(set) var placeholderTextView: UITextView = {
-    let textView = UITextView()
+    let textView = UITextView(frame: bounds)
+    textView.autoresizingMask = .flexibleSize
     textView.backgroundColor = .clear
     if #available(iOS 13.0, *) {
       textView.textColor = .placeholderText
@@ -46,18 +46,16 @@ open class TextView: UITextView {
     textView.showsHorizontalScrollIndicator = false
     textView.showsVerticalScrollIndicator = false
 
-    let `self`: UITextView = self
-    self.bind(\.bounds, to: textView, at: \.frame).store(in: &placeholderTextViewBindings)
-    self.bind(\.font, to: textView).store(in: &placeholderTextViewBindings)
-    self.bind(\.textAlignment, to: textView).store(in: &placeholderTextViewBindings)
-    self.bind(\.textContainer.layoutManager!.usesFontLeading, to: textView).store(in: &placeholderTextViewBindings)
-    self.bind(\.textContainer.exclusionPaths, to: textView).store(in: &placeholderTextViewBindings)
-    self.bind(\.textContainer.lineFragmentPadding, to: textView).store(in: &placeholderTextViewBindings)
-    self.bind(\.textContainerInset, to: textView).store(in: &placeholderTextViewBindings)
+    bind(\.font, to: textView).store(in: &placeholderTextViewBindings)
+    bind(\.textAlignment, to: textView).store(in: &placeholderTextViewBindings)
+    bind(\.textContainer.layoutManager!.usesFontLeading, to: textView).store(in: &placeholderTextViewBindings)
+    bind(\.textContainer.exclusionPaths, to: textView).store(in: &placeholderTextViewBindings)
+    bind(\.textContainer.lineFragmentPadding, to: textView).store(in: &placeholderTextViewBindings)
+    bind(\.textContainerInset, to: textView).store(in: &placeholderTextViewBindings)
 
     NotificationCenter.default.addObserver(self, selector: #selector(updatePlaceholderTextView), name: UITextView.textDidChangeNotification, object: self)
 
-    if text.isEmpty {
+    if text.isNilOrEmpty {
       insertSubview(textView, at: 0)
     }
     _placeholderTextView = textView
@@ -72,18 +70,18 @@ open class TextView: UITextView {
 
   @IBInspectable
   open var placeholder: String? {
-    get { placeholderTextView.text }
+    get { return placeholderTextView.text }
     set { placeholderTextView.text = newValue }
   }
 
   open var attributedPlaceholder: NSAttributedString? {
-    get { placeholderTextView.attributedText }
+    get { return placeholderTextView.attributedText }
     set { placeholderTextView.attributedText = newValue }
   }
 
   @IBInspectable
   open var placeholderColor: UIColor? {
-    get { placeholderTextView.textColor }
+    get { return placeholderTextView.textColor }
     set { placeholderTextView.textColor = newValue }
   }
 
@@ -110,6 +108,23 @@ open class TextView: UITextView {
       placeholderTextView.removeFromSuperview()
     }
   }
+
+//  func bind<Target, Value>(_ keyPath: KeyPath<TextView, Value>, to target: Target, at targetKeyPath: ReferenceWritableKeyPath<Target, Value>) -> NSKeyValueObservation {
+//    observe(keyPath, options: [.initial, .new]) { source, _ in
+//      target[keyPath: targetKeyPath] = source[keyPath: keyPath]
+//    }
+//  }
+
+  func bind<Value>(_ keyPath: ReferenceWritableKeyPath<UITextView, Value>, to target: UITextView) -> NSKeyValueObservation {
+    (self as UITextView).observe(keyPath, options: [.initial, .new]) { source, _ in
+      target[keyPath: keyPath] = source[keyPath: keyPath]
+    }
+  }
 }
 
-#endif
+extension NSKeyValueObservation {
+
+  final func store<C>(in collection: inout C) where C: RangeReplaceableCollection, C.Element == NSKeyValueObservation {
+    collection.append(self)
+  }
+}

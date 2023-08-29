@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 11/14/17.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIColor {
@@ -194,4 +193,3 @@ extension Optional where Wrapped == UIColor {
     }
   }
 }
-#endif

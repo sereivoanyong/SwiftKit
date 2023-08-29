@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 5/18/21.
 //
 
-#if os(iOS)
-
 import UIKit
 
 @IBDesignable
@@ -233,14 +231,12 @@ open class Button: UIButton {
 extension Button {
 
   @IBInspectable
-  final public var isVertical: Bool {
-    get { contentAxis == .vertical }
+  public var isVertical: Bool {
+    get { return contentAxis == .vertical }
     set { contentAxis = newValue ? .vertical : .horizontal }
   }
 
-  final public func setButtonType(_ buttonType: ButtonType) {
+  public func setButtonType(_ buttonType: ButtonType) {
     setValue(buttonType.rawValue, forKey: "buttonType")
   }
 }
-
-#endif

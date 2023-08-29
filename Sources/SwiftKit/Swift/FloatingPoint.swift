@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(Darwin)
 import Darwin
 
 extension FloatingPoint {
@@ -39,4 +38,3 @@ extension FloatingPoint {
     self = Darwin.round(self)
   }
 }
-#endif

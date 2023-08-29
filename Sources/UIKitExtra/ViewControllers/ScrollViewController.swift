@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 3/6/21.
 //
 
-#if os(iOS)
-
 import UIKit
 
 open class ScrollViewController: UIViewController {
@@ -46,5 +44,3 @@ open class ScrollViewController: UIViewController {
     }
   }
 }
-
-#endif

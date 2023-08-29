@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIFont {
@@ -37,28 +36,10 @@ extension UIFont {
     }
   }
 
-  @inlinable
-  public static func preferred(for textStyle: TextStyle) -> UIFont {
-    return preferredFont(forTextStyle: textStyle)
-  }
-
-  // Returns an instance of the font associated with the text style and scaled appropriately for the content size category defined in the trait collection.
-  @inlinable
-  public static func preferred(for textStyle: TextStyle, compatibleWith traitCollection: UITraitCollection?) -> UIFont {
-    return preferredFont(forTextStyle: textStyle, compatibleWith: traitCollection)
-  }
-
-  @inlinable
-  public static func system(size: CGFloat, weight: Weight = .regular) -> UIFont {
-    return systemFont(ofSize: size, weight: weight)
-  }
-
-  @inlinable
   public func addingFallback(to fallbackFont: UIFont) -> UIFont {
     return addingFallbackFont(name: fallbackFont.fontName)
   }
 
-  @inlinable
   public func addingFallbackFont(name: String) -> UIFont {
     return UIFont(descriptor: fontDescriptor.addingAttributes([.cascadeList: [UIFontDescriptor(fontAttributes: [.name: name])]]), size: 0)
   }
@@ -67,4 +48,3 @@ extension UIFont {
     return CTFontCopyTable(CTFontCreateWithName(fontName as CFString, pointSize, nil), CTFontTableTag(kCTFontTableCFF), []) as Data?
   }
 }
-#endif

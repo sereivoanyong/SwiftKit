@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIButton {
@@ -15,7 +14,14 @@ extension UIButton {
       setBackgroundImage(nil, for: state)
       return
     }
-    var backgroundImage = UIImage(color: color, size: CGSize(dimension: cornerRadius * 2), cornerRadius: cornerRadius).resizableImage(withCapInsets: UIEdgeInsets(top: cornerRadius, left: cornerRadius, bottom: cornerRadius, right: cornerRadius))
+    var backgroundImage: UIImage
+    if cornerRadius > 0 {
+      backgroundImage = UIImage(color: color, size: CGSize(value: cornerRadius * 2), cornerRadius: cornerRadius)
+        .resizableImage(withCapInsets: UIEdgeInsets(cornerRadius))
+    } else {
+      backgroundImage = UIImage(color: color, size: CGSize(value: 2))
+        .resizableImage(withCapInsets: UIEdgeInsets(1))
+    }
     if let renderingMode {
       backgroundImage = backgroundImage.withRenderingMode(renderingMode)
     }
@@ -70,4 +76,3 @@ extension UIButton {
     setImage(primaryAction?.image, for: .normal)
   }
 }
-#endif

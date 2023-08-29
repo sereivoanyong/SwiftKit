@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 6/19/20.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension NumberFormatter {
@@ -35,4 +34,3 @@ extension _ObjectiveCBridgeable where _ObjectiveCType: NSNumber {
     return formatter.string(from: self)
   }
 }
-#endif

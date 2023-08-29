@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UISearchBar {
@@ -23,4 +22,3 @@ extension UISearchBar {
     return performIfResponds(Selector(("cancelButton")))?.takeUnretainedValue() as? UIButton
   }
 }
-#endif

@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/27/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UICollectionViewFlowLayout {
@@ -27,4 +26,3 @@ extension UICollectionViewFlowLayout {
     self.sectionInsetReference = sectionInsetReference
   }
 }
-#endif

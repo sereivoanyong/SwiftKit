@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 8/26/21.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension Calendar {
@@ -19,4 +18,3 @@ extension Calendar {
     return calendar
   }
 }
-#endif

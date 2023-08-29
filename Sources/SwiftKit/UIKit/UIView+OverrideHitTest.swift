@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/5/23.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIView {
@@ -17,10 +16,10 @@ extension UIView {
 
   /// Set to negative to increase and positive to decrease
   public var overrideHitTestInsets: UIEdgeInsets? {
-    get { return associatedValue(forKey: &Self.overrideHitTestInsetsKey) }
+    get { return associatedValue(forKey: &Self.overrideHitTestInsetsKey, with: self) }
     set {
       _ = Self._override_hit_test_swizzler
-      setAssociatedValue(newValue, forKey: &Self.overrideHitTestInsetsKey)
+      setAssociatedValue(newValue, forKey: &Self.overrideHitTestInsetsKey, with: self)
     }
   }
 
@@ -31,4 +30,3 @@ extension UIView {
     return _override_hit_test_point(inside: point, with: event)
   }
 }
-#endif

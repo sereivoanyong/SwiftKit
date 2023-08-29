@@ -38,7 +38,7 @@ open class DateTextField: DropdownTextField {
   ///
   /// Changing this causes `text` to change as well if `date` is not nil.
   open var dateTransformer: DateTransformer! {
-    get { _dateTransformer }
+    get { return _dateTransformer }
     set(newDateTransformer) {
       _dateTransformer = newDateTransformer ?? .default
       super.text = date.map(_dateTransformer.string(from:))
@@ -49,7 +49,7 @@ open class DateTextField: DropdownTextField {
   ///
   /// If the value is nil, it will be set to `Date()` in `becomeFirstResponder()`
   @objc open var date: Date? {
-    get { _date }
+    get { return _date }
     set(newDate) {
       if let newDate = newDate {
         let newText = dateTransformer.string(from: newDate)
@@ -65,7 +65,7 @@ open class DateTextField: DropdownTextField {
   /// The setting value is treated as `nil` if it is not date-representable (`nil` when converted by the `dateFormatter`).
   /// The value (if non-nil) is guaranteed to have a date representation.
   open override var text: String? {
-    get { super.text }
+    get { return super.text }
     set(newText) {
       if let newText = newText, let newDate = dateTransformer.date(from: newText) {
         setDate(newDate, text: newText, updatePicker: true, sendValueChangedActions: false)
@@ -104,7 +104,7 @@ open class DateTextField: DropdownTextField {
   // MARK: Public
 
   open override var inputView: UIView? {
-    get { super.inputView ?? inputViewWrapperView }
+    get { return super.inputView ?? inputViewWrapperView }
     set { super.inputView = newValue }
   }
 

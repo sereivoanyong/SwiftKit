@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/16/22.
 //
 
-#if canImport(UIKit)
 import UIKit.UIColor
 
 // MARK: iOS 13 Color Compatibility
@@ -275,4 +274,3 @@ extension UIColor {
     return UIColor(red: 0.4549019607843137, green: 0.4549019607843137, blue: 0.5019607843137255, alpha: 0.08)
   }
 }
-#endif

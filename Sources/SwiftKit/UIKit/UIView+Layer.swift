@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 13/5/23.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 private var layerBorderWidthKey: Void?
@@ -15,55 +14,61 @@ private var layerShadowColorKey: Void?
 extension UIView {
 
   /// Default is 0.
-  @IBInspectable public var layerCornerRadius: CGFloat {
+  @IBInspectable
+  public var layerCornerRadius: CGFloat {
     get { return layer.cornerRadius }
     set { layer.cornerRadius = newValue }
   }
 
   /// Default is `false`.
-  @IBInspectable public var layerContinuousCorners: Bool {
+  @IBInspectable
+  public var layerContinuousCorners: Bool {
     get { return layer.continuousCorners }
     set { layer.continuousCorners = newValue }
   }
 
-  /// Set to negative (-1 preferred) to use `1 / traitCollection.displayScale`. Default is 0.
+  /// Set to negative (-1 preferred) to use `traitCollection.displayPointPerPixel`. Default is 0.
   /// We're supposed to use `nil` but IB does not support optional type.
-  @IBInspectable public var layerBorderWidth: CGFloat {
-    get { return associatedValue(forKey: &layerBorderWidthKey) ?? layer.borderWidth }
+  @IBInspectable
+  public var layerBorderWidth: CGFloat {
+    get { return associatedValue(forKey: &layerBorderWidthKey, with: self) ?? layer.borderWidth }
     set {
-      setAssociatedValue(newValue, forKey: &layerBorderWidthKey)
-      layer.borderWidth = newValue < 0 ? (1 / traitCollection.displayScale) : newValue
+      setAssociatedValue(newValue, forKey: &layerBorderWidthKey, with: self)
+      layer.borderWidth = newValue < 0 ? traitCollection.displayPointPerPixel : newValue
       _ = Self._layerSwizzler
     }
   }
 
   /// Set to `nil` to use `tintColor`. Default is `nil`.
-  @IBInspectable public var layerBorderColor: UIColor? {
-    get { return associatedObject(forKey: &layerBorderColorKey) }
+  @IBInspectable
+  public var layerBorderColor: UIColor? {
+    get { return associatedObject(forKey: &layerBorderColorKey, with: self) }
     set {
       isLayerBorderColorConfigured = true
-      setAssociatedObject(newValue, forKey: &layerBorderColorKey)
+      setAssociatedObject(newValue, forKey: &layerBorderColorKey, with: self)
       layer.borderColor = resolveColor(newValue, from: traitCollection).cgColor
       _ = Self._layerSwizzler
     }
   }
 
   /// Set to `nil` to use `tintColor`. Default is `nil`.
-  @IBInspectable public var layerShadowColor: UIColor? {
-    get { return associatedObject(forKey: &layerShadowColorKey) }
+  @IBInspectable
+  public var layerShadowColor: UIColor? {
+    get { return associatedObject(forKey: &layerShadowColorKey, with: self) }
     set {
       isLayerShadowColorConfigured = true
-      setAssociatedObject(newValue, forKey: &layerShadowColorKey)
+      setAssociatedObject(newValue, forKey: &layerShadowColorKey, with: self)
       layer.shadowColor = resolveColor(newValue, from: traitCollection).cgColor
       _ = Self._layerSwizzler
     }
   }
 
   /// - See: https://stackoverflow.com/a/73680511/11235826
-  @IBInspectable public var layerShouldRasterizeAtDisplayScale: Bool {
-    get { return associatedValue(forKey: &layerShouldRasterizeAtDisplayScaleKey, default: false) }
+  @IBInspectable
+  public var layerShouldRasterizeAtDisplayScale: Bool {
+    get { return associatedValue(forKey: &layerShouldRasterizeAtDisplayScaleKey, with: self) ?? false }
     set {
-      setAssociatedValue(newValue, forKey: &layerShouldRasterizeAtDisplayScaleKey)
+      setAssociatedValue(newValue, forKey: &layerShouldRasterizeAtDisplayScaleKey, with: self)
       layer.rasterizationScale = newValue ? traitCollection.displayScale : 1
       layer.shouldRasterize = newValue
     }
@@ -76,13 +81,13 @@ private var isLayerShadowColorConfiguredKey: Void?
 extension UIView {
 
   private var isLayerBorderColorConfigured: Bool {
-    get { return associatedValue(forKey: &isLayerBorderColorConfiguredKey, default: false) }
-    set { setAssociatedValue(newValue, forKey: &isLayerBorderColorConfiguredKey) }
+    get { return associatedValue(forKey: &isLayerBorderColorConfiguredKey, with: self) ?? false }
+    set { setAssociatedValue(newValue, forKey: &isLayerBorderColorConfiguredKey, with: self) }
   }
 
   private var isLayerShadowColorConfigured: Bool {
-    get { return associatedValue(forKey: &isLayerShadowColorConfiguredKey, default: false) }
-    set { setAssociatedValue(newValue, forKey: &isLayerShadowColorConfiguredKey) }
+    get { return associatedValue(forKey: &isLayerShadowColorConfiguredKey, with: self) ?? false }
+    set { setAssociatedValue(newValue, forKey: &isLayerShadowColorConfiguredKey, with: self) }
   }
 
   private static let _layerSwizzler: Void = {
@@ -95,7 +100,7 @@ extension UIView {
 
   private func reloadTraitCollectionBasedLayerConfigurations(_ previousTraitCollection: UITraitCollection? = nil) {
     if layerBorderWidth < 0 {
-      layer.borderWidth = 1 / traitCollection.displayScale
+      layer.borderWidth = traitCollection.displayPointPerPixel
     }
     if #available(iOS 13.0, *), traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
       if isLayerBorderColorConfigured {
@@ -141,4 +146,3 @@ extension UIView {
     reloadTraitCollectionBasedLayerConfigurations(previousTraitCollection)
   }
 }
-#endif

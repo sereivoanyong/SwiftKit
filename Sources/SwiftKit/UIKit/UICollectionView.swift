@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 8/2/17.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UICollectionView {
@@ -129,4 +128,3 @@ extension UICollectionView {
     dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
   }
 }
-#endif

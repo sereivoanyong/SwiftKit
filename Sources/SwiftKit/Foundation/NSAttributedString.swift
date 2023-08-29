@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 8/22/20.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension NSAttributedString {
@@ -15,13 +14,13 @@ extension NSAttributedString {
     return NSAttributedString(string: nonPrintableString, attributes: [.kern: width._bridgeToObjectiveC()])
   }
   
-  @inlinable public static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSMutableAttributedString {
+  public static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSMutableAttributedString {
     let result = NSMutableAttributedString(attributedString: lhs)
     result.append(rhs)
     return result
   }
   
-  @inlinable public static func + (lhs: NSAttributedString, rhs: String) -> NSMutableAttributedString {
+  public static func + (lhs: NSAttributedString, rhs: String) -> NSMutableAttributedString {
     return lhs + NSAttributedString(string: rhs)
   }
 }
@@ -39,4 +38,3 @@ extension Collection where Element: NSAttributedString, Index == Int {
     }
   }
 }
-#endif

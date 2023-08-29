@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 2/4/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 public protocol UIGestureRecognizerProtocol: NSObjectProtocol {
@@ -14,12 +13,12 @@ public protocol UIGestureRecognizerProtocol: NSObjectProtocol {
   func removeTarget(_ target: Any?, action: Selector?)
 }
 
-private var kActionsKey: Void?
+private var actionsKey: Void?
 extension UIGestureRecognizerProtocol {
   
   private var actions: [SenderAction<Self>.Identifier: SenderAction<Self>] {
-    get { associatedValue(forKey: &kActionsKey, default: [:]) }
-    set { setAssociatedValue(newValue, forKey: &kActionsKey) }
+    get { return associatedValue(default: [:], forKey: &actionsKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &actionsKey, with: self) }
   }
   
   public init(identifier: SenderAction<Self>.Identifier? = nil, handler: @escaping (Self) -> Void) {
@@ -54,4 +53,3 @@ extension UIGestureRecognizerProtocol {
 }
 
 extension UIGestureRecognizer: UIGestureRecognizerProtocol { }
-#endif

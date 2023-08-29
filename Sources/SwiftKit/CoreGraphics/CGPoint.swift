@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(CoreGraphics)
 import CoreGraphics
 
 extension CGPoint {
@@ -41,4 +40,3 @@ extension CGPoint {
     point = point / scalar
   }
 }
-#endif

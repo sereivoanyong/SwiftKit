@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/1/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIControl {
@@ -22,8 +21,8 @@ extension UIControl {
 
   private static var actionsKey: Void?
   private var actions: [Key: Action] {
-    get { return associatedValue(forKey: &Self.actionsKey, default: [:]) }
-    set { setAssociatedValue(newValue, forKey: &Self.actionsKey) }
+    get { return associatedValue(default: [:], forKey: &Self.actionsKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &Self.actionsKey, with: self) }
   }
 
   /// Adds the `action` to given `events`. They are uniqued based on their `identifier`, and subsequent actions with the same `identifier` replace previously added actions. You may add multiple actions for corresponding `events`, and you may add the same action to multiple `events`.
@@ -79,7 +78,7 @@ private var primaryActionKey: Void?
 extension BackwardCompatibility where Base: UIControl {
 
   public var primaryAction: Action? {
-    get { return base.associatedObject(forKey: &primaryActionKey) }
+    get { return associatedObject(forKey: &primaryActionKey, with: base) }
     nonmutating set {
       let oldValue = primaryAction
       guard newValue !== oldValue else {
@@ -91,11 +90,10 @@ extension BackwardCompatibility where Base: UIControl {
       if let newValue {
         base.addTarget(newValue, action: #selector(Action.performAction(_:)), for: .primaryActionTriggered)
       }
-      base.setAssociatedObject(newValue, forKey: &primaryActionKey)
+      setAssociatedObject(newValue, forKey: &primaryActionKey, with: base)
       base.bc_setPrimaryAction(newValue)
     }
   }
 }
 
 extension UIControl: BackwardCompatible { }
-#endif

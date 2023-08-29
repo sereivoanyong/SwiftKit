@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/25/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIImageView {
@@ -20,4 +19,3 @@ extension UIImageView {
     return imageView
   }
 }
-#endif

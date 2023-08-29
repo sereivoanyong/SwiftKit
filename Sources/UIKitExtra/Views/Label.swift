@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 3/2/21.
 //
 
-#if os(iOS)
-
 import UIKit
 
 extension Label {
@@ -155,40 +153,38 @@ open class Label: UILabel {
 extension Label {
 
   @IBInspectable
-  final public var isContentConfigured: Bool {
-    get { contentConfiguration != nil }
+  public var isContentConfigured: Bool {
+    get { return contentConfiguration != nil }
     set { contentConfiguration = newValue ? .init(color: _textColor) : nil }
   }
 
   @IBInspectable
-  final public var isBackgroundConfigured: Bool {
-    get { backgroundConfiguration != nil }
+  public var isBackgroundConfigured: Bool {
+    get { return backgroundConfiguration != nil }
     set { backgroundConfiguration = newValue ? .init(backgroundColor: _backgroundColor) : nil }
   }
 
   @IBInspectable
-  final public var topInset: CGFloat {
-    get { insets.top }
+  public var topInset: CGFloat {
+    get { return insets.top }
     set { insets.top = newValue }
   }
 
   @IBInspectable
-  final public var leftInset: CGFloat {
-    get { insets.left }
+  public var leftInset: CGFloat {
+    get { return insets.left }
     set { insets.left = newValue }
   }
 
   @IBInspectable
-  final public var bottomInset: CGFloat {
-    get { insets.bottom }
+  public var bottomInset: CGFloat {
+    get { return insets.bottom }
     set { insets.bottom = newValue }
   }
 
   @IBInspectable
-  final public var rightInset: CGFloat {
-    get { insets.right }
+  public var rightInset: CGFloat {
+    get { return insets.right }
     set { insets.right = newValue }
   }
 }
-
-#endif

@@ -1,21 +1,20 @@
 //
-//  ContentConfigurable.swift
+//  ContentConfiguring.swift
 //
 //  Created by Sereivoan Yong on 2/26/20.
 //
 
-public protocol ContentConfigurable {
-  
+import UIKit
+
+public protocol ContentConfiguring<Content> {
+
   associatedtype Content
   
   func configure(_ content: Content)
 }
 
-#if canImport(UIKit)
-import UIKit
+extension ContentConfiguring where Self: UITableViewCell {
 
-extension ContentConfigurable where Self: UITableViewCell {
-  
   public static var provider: UITableView.CellProvider<Content> {
     return provider(identifier: String(describing: self))
   }
@@ -30,7 +29,7 @@ extension ContentConfigurable where Self: UITableViewCell {
   }
 }
 
-extension ContentConfigurable where Self: UICollectionViewCell {
+extension ContentConfiguring where Self: UICollectionViewCell {
   
   public static var provider: UICollectionView.CellProvider<Content> {
     return provider(identifier: String(describing: self))
@@ -44,4 +43,3 @@ extension ContentConfigurable where Self: UICollectionViewCell {
     }
   }
 }
-#endif

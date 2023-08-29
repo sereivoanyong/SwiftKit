@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 2/4/23.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIScreen {
@@ -19,8 +18,7 @@ extension UIScreen {
   }
 
   @inlinable
-  public var pixelPerPoint: CGFloat {
+  public var pointPerPixel: CGFloat {
     return 1 / nonZeroScale
   }
 }
-#endif

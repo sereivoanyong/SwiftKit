@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 10/29/17.
 //
 
-#if canImport(ObjectiveC)
 import ObjectiveC
 
 // MARK: - Swizzle
@@ -26,68 +25,104 @@ public func class_exchangeInstanceMethodImplementations(_ cls: AnyClass, _ origi
   }
 }
 
-extension NSObjectProtocol {
-  
-  // Value
-  
-  @inlinable public func associatedValue<Value>(forKey key: UnsafeRawPointer) -> Value? {
-    return (objc_getAssociatedObject(self, key) as? Reference<Value>)?.value
-  }
-  
-  @inlinable public func associatedValue<Value>(forKey key: UnsafeRawPointer, default defaultValue: @autoclosure () -> Value) -> Value {
-    if let reference = associatedReference(forKey: key) as Reference<Value>? {
-      return reference.value
-    } else {
-      let value = defaultValue()
-      setAssociatedValue(value, forKey: key)
-      return value
-    }
-  }
-  
-  @inlinable public func setAssociatedValue<Value>(_ value: Value?, forKey key: UnsafeRawPointer) {
-    if let value {
-      if let reference = associatedReference(forKey: key) as Reference<Value>? {
-        reference.value = value
-      } else {
-        setAssociatedReference(Reference<Value>(value), forKey: key)
-      }
-    } else {
-      setAssociatedReference(nil as Reference<Value>?, forKey: key)
-    }
-  }
+// MARK: Value
 
-  // Reference
+public func associatedValue<T>(
+  default defaultValue: @autoclosure () -> T,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> T {
+  return associatedReference(default: defaultValue, forKey: key, with: source).value
+}
 
-  @inlinable public func associatedReference<T>(forKey key: UnsafeRawPointer) -> Reference<T>? {
-    return objc_getAssociatedObject(self, key) as? Reference<T>
+public func associatedValue<T>(forKey key: UnsafeRawPointer, with source: AnyObject) -> T? {
+  if let reference = associatedReference(forKey: key, with: source) as Reference<T>? {
+    return reference.value
   }
+  return nil
+}
 
-  @inlinable public func setAssociatedReference<T>(_ object: T?, forKey key: UnsafeRawPointer) {
-    objc_setAssociatedObject(self, key, object, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-  }
+public func setAssociatedValue<T>(_ value: T?, forKey key: UnsafeRawPointer, with source: AnyObject) {
+  setAssociatedReference(value.map(Reference.init), forKey: key, with: source)
+}
 
-  // Object
+// MARK: Reference
 
-  @inlinable public func associatedObject<T: AnyObject>(forKey key: UnsafeRawPointer) -> T? {
-    return objc_getAssociatedObject(self, key) as? T
-  }
-  
-  @inlinable public func associatedObject<T>(forKey key: UnsafeRawPointer, default: @autoclosure () -> T, policy: @autoclosure () -> objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC) -> T where T: AnyObject {
-    if let object = objc_getAssociatedObject(self, key) as? T {
-      return object
-    } else {
-      let `default` = `default`()
-      setAssociatedObject(`default`, forKey: key, policy: policy())
-      return `default`
-    }
-  }
-  
-  @inlinable public func setAssociatedObject<T>(_ object: T?, forKey key: UnsafeRawPointer, policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC) {
-    objc_setAssociatedObject(self, key, object, policy)
-  }
-  
-  @inlinable public func removeAssociatedObjects() {
-    objc_removeAssociatedObjects(self)
+@inlinable
+func associatedReference<T>(
+  default defaultValue: () -> T,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> Reference<T> {
+  return associatedObject(default: { Reference(defaultValue()) }, forKey: key, with: source, policy: { .OBJC_ASSOCIATION_RETAIN_NONATOMIC })
+}
+
+public func associatedReference<T>(
+  default defaultValue: @autoclosure () -> T,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> Reference<T> {
+  return associatedReference(default: defaultValue, forKey: key, with: source)
+}
+
+public func associatedReference<T>(
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> Reference<T>? {
+  return associatedObject(forKey: key, with: source)
+}
+
+public func setAssociatedReference<T>(
+  _ reference: Reference<T>?,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) {
+  setAssociatedObject(reference, forKey: key, with: source, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+}
+
+// MARK: Object
+
+@inlinable
+func associatedObject<T: AnyObject>(
+  default defaultObject: () -> T,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject,
+  policy: () -> objc_AssociationPolicy
+) -> T {
+  if let object = objc_getAssociatedObject(source, key) as? T {
+    return object
+  } else {
+    let object = defaultObject()
+    setAssociatedObject(object, forKey: key, with: source, policy: policy())
+    return object
   }
 }
-#endif
+
+public func associatedObject<T: AnyObject>(
+  default defaultObject: @autoclosure () -> T,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject,
+  policy: @autoclosure () -> objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+) -> T {
+  return associatedObject(default: defaultObject, forKey: key, with: source, policy: policy)
+}
+
+public func associatedObject<T: AnyObject>(
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> T? {
+  return objc_getAssociatedObject(source, key) as? T
+}
+
+public func setAssociatedObject<T: AnyObject>(
+  _ object: T?, forKey
+  key: UnsafeRawPointer,
+  with source: AnyObject,
+  policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+) {
+  objc_setAssociatedObject(source, key, object, policy)
+}
+
+public func removeAssociatedObjects(with source: AnyObject) {
+  objc_removeAssociatedObjects(source)
+}

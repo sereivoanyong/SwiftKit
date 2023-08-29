@@ -4,12 +4,10 @@
 //  Created by Sereivoan Yong on 11/23/19.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 @_marker
 public protocol UIImageProtocol {
-
 }
 
 extension UIImageProtocol {
@@ -224,4 +222,3 @@ extension UIImage {
     return newImage
   }
 }
-#endif

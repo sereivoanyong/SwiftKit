@@ -56,8 +56,8 @@ private var kKeyboardFrameKey: Void?
 extension KeyboardObserver {
   
   public fileprivate(set) var keyboardFrame: CGRect {
-    get { return objc_getAssociatedObject(self, &kKeyboardFrameKey) as? CGRect ?? .zero }
-    set { objc_setAssociatedObject(self, &kKeyboardFrameKey, newValue, .OBJC_ASSOCIATION_RETAIN) }
+    get { return associatedValue(forKey: &kKeyboardFrameKey, with: self) ?? .zero }
+    set { setAssociatedValue(newValue, forKey: &kKeyboardFrameKey, with: self) }
   }
 }
 

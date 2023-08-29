@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/8/17.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIView {
@@ -128,4 +127,3 @@ extension NSObjectProtocol where Self: UIView {
     return with(\.translatesAutoresizingMaskIntoConstraints, false)
   }
 }
-#endif

@@ -7,6 +7,7 @@
 #if os(iOS)
 
 import UIKit
+import SwiftKit
 
 @IBDesignable
 open class DropdownTextField: TextField {
@@ -41,7 +42,7 @@ open class DropdownTextField: TextField {
 
   @IBInspectable
   open var dropdownImage: UIImage! {
-    get { dropdownView.image }
+    get { return dropdownView.image }
     set { dropdownView.image = newValue ?? defaultDropdownImage }
   }
 
@@ -68,11 +69,9 @@ open class DropdownTextField: TextField {
     autocapitalizationType = .none
     autocorrectionType = .no // See: https://github.com/hackiftekhar/IQKeyboardManager/issues/1616#issuecomment-566500228
     spellCheckingType = .no
-    if #available(iOS 11.0, *) {
-      smartQuotesType = .no
-      smartDashesType = .no
-      smartInsertDeleteType = .no
-    }
+    smartQuotesType = .no
+    smartDashesType = .no
+    smartInsertDeleteType = .no
 
     // setBecomesFirstResponderOnClearButtonTap(true)
 
@@ -139,17 +138,10 @@ open class DropdownTextField: TextField {
     inputView.translatesAutoresizingMaskIntoConstraints = false
     wrapperView.addSubview(inputView)
 
-    let wrapperViewBottomAnchor: NSLayoutYAxisAnchor
-    if #available(iOS 11.0, *) {
-      wrapperViewBottomAnchor = wrapperView.safeAreaLayoutGuide.bottomAnchor
-    } else {
-      wrapperViewBottomAnchor = wrapperView.bottomAnchor
-    }
-
     NSLayoutConstraint.activate([
       inputView.topAnchor.constraint(equalTo: wrapperView.topAnchor),
       inputView.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor),
-      wrapperViewBottomAnchor.constraint(equalTo: inputView.bottomAnchor),
+      wrapperView.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: inputView.bottomAnchor),
       wrapperView.trailingAnchor.constraint(equalTo: inputView.trailingAnchor),
     ])
     return wrapperView

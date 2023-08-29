@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension URLSession {
@@ -64,4 +63,3 @@ extension URLSession {
     }
   }
 }
-#endif

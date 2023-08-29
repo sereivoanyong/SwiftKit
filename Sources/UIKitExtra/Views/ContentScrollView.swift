@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 5/4/21.
 //
 
-#if os(iOS)
-
 import UIKit
 
 open class ContentScrollView<ContentView: UIView>: UIScrollView {
@@ -73,5 +71,3 @@ open class ContentScrollView<ContentView: UIView>: UIScrollView {
     contentViewDimensionConstraint.isActive = true
   }
 }
-
-#endif

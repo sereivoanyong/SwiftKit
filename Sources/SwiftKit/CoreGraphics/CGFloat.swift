@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(CoreGraphics)
 import CoreGraphics
 
 extension CGFloat {
@@ -45,4 +44,3 @@ extension CGFloat {
     self = roundedToPixel(scale: scale)
   }
 }
-#endif

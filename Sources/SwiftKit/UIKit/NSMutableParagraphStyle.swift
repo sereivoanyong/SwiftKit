@@ -4,11 +4,11 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension NSMutableParagraphStyle {
   
+  @inlinable
   public convenience init(lineSpacing: CGFloat = 0, paragraphSpacing: CGFloat = 0, alignment: NSTextAlignment = .natural) {
     self.init()
     self.lineSpacing = lineSpacing
@@ -16,4 +16,3 @@ extension NSMutableParagraphStyle {
     self.alignment = alignment
   }
 }
-#endif

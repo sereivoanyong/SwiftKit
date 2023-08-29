@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 11/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIFontDescriptor {
@@ -19,4 +18,3 @@ extension UIFontDescriptor {
     return addingAttributes([.traits: traits])
   }
 }
-#endif

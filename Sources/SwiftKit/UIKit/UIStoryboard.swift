@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIStoryboard {
@@ -21,4 +20,3 @@ extension UIStoryboard {
     return unsafeDowncast(instantiateViewController(withIdentifier: identifier), to: ViewController.self)
   }
 }
-#endif

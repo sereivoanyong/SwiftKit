@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 3/25/16.
 //
 
-#if canImport(QuartzCore)
-
 import QuartzCore
 
 extension CALayer {
@@ -99,19 +97,3 @@ extension CACornerMask {
     return [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
   }
 }
-
-#if canImport(UIKit)
-
-import UIKit
-
-extension CALayer {
-
-  public func shouldRasterize(to screen: UIScreen) {
-    rasterizationScale = screen.scale
-    shouldRasterize = true
-  }
-}
-
-#endif
-
-#endif

@@ -43,8 +43,8 @@ private var activityIndicatorViewKey: Void?
 extension UIActivityIndicatorContainer {
 
   public var activityIndicatorConfigurationHandler: ((UIActivityIndicatorView) -> Void)? {
-    get { return associatedValue(forKey: &activityIndicatorConfigurationHandlerKey) }
-    set { setAssociatedValue(newValue, forKey: &activityIndicatorConfigurationHandlerKey) }
+    get { return associatedValue(forKey: &activityIndicatorConfigurationHandlerKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &activityIndicatorConfigurationHandlerKey, with: self) }
   }
 
   public var defaultActivityIndicatorUserInteractionLevel: ActivityIndicatorUserInteractionLevel {
@@ -52,18 +52,18 @@ extension UIActivityIndicatorContainer {
   }
 
   public var activityIndicatorUserInteractionLevel: ActivityIndicatorUserInteractionLevel {
-    get { return associatedValue(forKey: &userInteractionLevelKey, default: defaultActivityIndicatorUserInteractionLevel) }
-    set { setAssociatedValue(newValue, forKey: &userInteractionLevelKey) }
+    get { return associatedValue(default: defaultActivityIndicatorUserInteractionLevel, forKey: &userInteractionLevelKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &userInteractionLevelKey, with: self) }
   }
 
   public var activityIndicatorViewIfLoaded: UIActivityIndicatorView? {
-    return associatedObject(forKey: &activityIndicatorViewKey)
+    return associatedObject(forKey: &activityIndicatorViewKey, with: self)
   }
 
   public var activityIndicatorView: UIActivityIndicatorView {
     let activityIndicatorView = activityIndicatorViewIfLoaded ?? {
       let activityIndicatorView = makeActivityIndicatorView()
-      setAssociatedObject(activityIndicatorView, forKey: &activityIndicatorViewKey)
+      setAssociatedObject(activityIndicatorView, forKey: &activityIndicatorViewKey, with: self)
       activityIndicatorConfigurationHandler?(activityIndicatorView)
       return activityIndicatorView
     }()

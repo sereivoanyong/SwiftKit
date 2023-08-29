@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UIWindow {
@@ -46,4 +45,3 @@ extension UIWindow {
   }
   */
 }
-#endif

@@ -6,7 +6,7 @@
 
 extension Result {
   
-  @inlinable public init?(_ success: Success?, _ failure: Failure?) {
+  public init?(_ success: Success?, _ failure: Failure?) {
     if let success {
       self = .success(success)
     } else if let failure {

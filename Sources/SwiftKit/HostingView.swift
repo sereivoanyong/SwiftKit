@@ -76,13 +76,13 @@ private var rootViewConstraintsKey: Void?
 extension HostingViewProtocol {
 
   private var rootViewConstraints: [NSLayoutConstraint] {
-    get { return (objc_getAssociatedObject(self, &rootViewConstraintsKey) as? Reference<[NSLayoutConstraint]>)?.value ?? [] }
-    set { objc_setAssociatedObject(self, &rootViewConstraintsKey, Reference(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    get { return associatedValue(default: [], forKey: &rootViewConstraintsKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &rootViewConstraintsKey, with: self) }
   }
 
   private func setRootView(_ rootView: RootView) {
     assert(!rootView.translatesAutoresizingMaskIntoConstraints)
-    objc_setAssociatedObject(self, &rootViewKey, rootView, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    setAssociatedObject(rootView, forKey: &rootViewKey, with: self)
 
     let targetView = targetViewForRootView
     targetView.addSubview(rootView)
@@ -97,7 +97,7 @@ extension HostingViewProtocol {
 
   public var rootView: RootView {
     get {
-      if let rootView = objc_getAssociatedObject(self, &rootViewKey) as? RootView {
+      if let rootView = associatedObject(forKey: &rootViewKey, with: self) as RootView? {
         return rootView
       }
       let rootView: RootView
@@ -122,13 +122,13 @@ extension HostingViewProtocol {
   }
 
   public var rootViewLayoutProvider: RootViewLayoutProvider<RootView> {
-    get { return (objc_getAssociatedObject(self, &rootViewLayoutProviderKey) as? Reference<RootViewLayoutProvider<RootView>>)?.value ?? .default }
+    get { return associatedValue(forKey: &rootViewLayoutProviderKey, with: self) ?? .default }
     set {
       let rootViewLayoutProvider = rootViewLayoutProvider
       guard rootViewLayoutProvider != newValue else {
         return
       }
-      objc_setAssociatedObject(self, &rootViewLayoutProviderKey, Reference(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+      setAssociatedValue(newValue, forKey: &rootViewLayoutProviderKey, with: self)
       reloadRootViewConstraints()
     }
   }

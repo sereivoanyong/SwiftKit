@@ -27,7 +27,7 @@ open class PickerTextField<Item: Equatable>: DropdownTextField {
   private var inputViewWrapperView: UIView!
 
   open override var inputView: UIView? {
-    get { super.inputView ?? inputViewWrapperView }
+    get { return super.inputView ?? inputViewWrapperView }
     set { super.inputView = newValue }
   }
 
@@ -35,7 +35,7 @@ open class PickerTextField<Item: Equatable>: DropdownTextField {
 
   private var _selectedItem: Item?
   open var selectedItem: Item? {
-    get { _selectedItem }
+    get { return _selectedItem }
     set { select(newValue, updateSource: true, sendValueChangedActions: false) }
   }
 

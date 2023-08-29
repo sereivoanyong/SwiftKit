@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/23/21.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension ISO8601DateFormatter {
@@ -24,4 +23,3 @@ extension Date {
     return formatter.string(from: self)
   }
 }
-#endif

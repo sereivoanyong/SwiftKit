@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UITableViewCell {
@@ -87,4 +86,3 @@ extension UITableViewCell {
     return perform(Selector(("_checkmarkImage:")), with: arg1 as NSNumber)?.takeUnretainedValue() as? UIImage
   }
 }
-#endif

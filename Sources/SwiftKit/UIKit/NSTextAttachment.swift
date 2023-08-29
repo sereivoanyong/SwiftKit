@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 11/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension NSTextAttachment {
@@ -23,8 +22,8 @@ extension NSTextAttachment {
 }
 
 extension NSAttributedString {
-  
-  @inlinable public static func + (lhs: NSAttributedString, rhs: NSTextAttachment) -> NSMutableAttributedString {
+
+  public static func + (lhs: NSAttributedString, rhs: NSTextAttachment) -> NSMutableAttributedString {
     return lhs + NSAttributedString(attachment: rhs)
   }
   
@@ -36,4 +35,3 @@ extension NSAttributedString {
     return NSAttributedString(attachment: NSTextAttachment(image: image))
   }
 }
-#endif

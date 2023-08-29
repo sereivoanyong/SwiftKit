@@ -4,14 +4,13 @@
 //  Created by Sereivoan Yong on 11/27/20.
 //
 
-#if canImport(Foundation)
 import Foundation
 
 extension Decimal {
 
   @inlinable
   public var doubleValue: Double {
-    (self as NSDecimalNumber).doubleValue
+    return (self as NSDecimalNumber).doubleValue
   }
 
   /// Compacts the decimal structure for efficiency.
@@ -51,4 +50,3 @@ extension Decimal {
     return result
   }
 }
-#endif

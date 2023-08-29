@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/27/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension NSLayoutConstraint {
@@ -36,4 +35,3 @@ extension Sequence where Element == NSLayoutConstraint {
     NSLayoutConstraint.deactivate(self as? [NSLayoutConstraint] ?? [NSLayoutConstraint](self))
   }
 }
-#endif

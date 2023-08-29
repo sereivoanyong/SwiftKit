@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/8/17.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 public typealias DirectionalXAxisEdgeAnchors = DirectionalXAxisEdges<NSLayoutXAxisAnchor>
@@ -73,5 +72,3 @@ extension UILayoutGuide: LayoutGuide {
     return owningView
   }
 }
-
-#endif

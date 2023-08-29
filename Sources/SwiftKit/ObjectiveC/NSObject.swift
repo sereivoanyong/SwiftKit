@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
-#if canImport(ObjectiveC)
-
 import ObjectiveC
 
 extension NSObject {
@@ -82,8 +80,6 @@ extension NSObjectProtocol {
   }
 }
 
-#if canImport(Foundation)
-
 import Foundation
 
 private var kObservationKey: Void?
@@ -91,8 +87,8 @@ private var kObservationKey: Void?
 extension _KeyValueCodingAndObserving where Self: NSObject {
 
   public var observations: [AnyHashable: NSKeyValueObservation] {
-    get { return associatedValue(forKey: &kObservationKey, default: [:]) }
-    set { setAssociatedValue(newValue, forKey: &kObservationKey)}
+    get { return associatedValue(default: [:], forKey: &kObservationKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &kObservationKey, with: self)}
   }
 
   @discardableResult
@@ -102,7 +98,3 @@ extension _KeyValueCodingAndObserving where Self: NSObject {
     return observation
   }
 }
-
-#endif
-
-#endif

@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 3/5/21.
 //
 
-#if os(iOS)
-
 import UIKit
 
 open class CollectionViewController: UIViewController {
@@ -68,10 +66,8 @@ open class CollectionViewController: UIViewController {
     collectionView.dataSource = self as? UICollectionViewDataSource
     collectionView.delegate = self as? UICollectionViewDelegate
     collectionView.prefetchDataSource = self as? UICollectionViewDataSourcePrefetching
-    if #available(iOS 11.0, *) {
-      collectionView.dragDelegate = self as? UICollectionViewDragDelegate
-      collectionView.dropDelegate = self as? UICollectionViewDropDelegate
-    }
+    collectionView.dragDelegate = self as? UICollectionViewDragDelegate
+    collectionView.dropDelegate = self as? UICollectionViewDropDelegate
     self.collectionView = collectionView
   }
 
@@ -117,5 +113,3 @@ open class CollectionViewController: UIViewController {
     }
   }
 }
-
-#endif

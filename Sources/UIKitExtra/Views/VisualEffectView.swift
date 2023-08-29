@@ -4,11 +4,8 @@
 //  Created by Sereivoan Yong on 5/2/21.
 //
 
-#if os(iOS)
-
 import UIKit
 
-@available(iOS 10.0, *)
 open class VisualEffectView: UIVisualEffectView {
 
   private var animator: UIViewPropertyAnimator!
@@ -32,5 +29,3 @@ open class VisualEffectView: UIVisualEffectView {
     fatalError()
   }
 }
-
-#endif

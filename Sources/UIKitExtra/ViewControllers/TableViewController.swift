@@ -76,10 +76,8 @@ open class TableViewController: UIViewController {
     tableView.dataSource = self as? UITableViewDataSource
     tableView.delegate = self as? UITableViewDelegate
     tableView.prefetchDataSource = self as? UITableViewDataSourcePrefetching
-    if #available(iOS 11.0, *) {
-      tableView.dragDelegate = self as? UITableViewDragDelegate
-      tableView.dropDelegate = self as? UITableViewDropDelegate
-    }
+    tableView.dragDelegate = self as? UITableViewDragDelegate
+    tableView.dropDelegate = self as? UITableViewDropDelegate
     self.tableView = tableView
   }
 

@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 8/22/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 public protocol BackgroundedView: AnyObject {
@@ -17,9 +16,9 @@ private var kBackgroundViewKey: Void?
 extension BackgroundedView where Self: UIView {
   
   public var backgroundView: UIView? {
-    get { associatedObject(forKey: &kBackgroundViewKey) }
+    get { return associatedObject(forKey: &kBackgroundViewKey, with: self) }
     set {
-      if let oldValue = associatedObject(forKey: &kBackgroundViewKey) as UIView? {
+      if let oldValue = associatedObject(forKey: &kBackgroundViewKey, with: self) as UIView? {
         oldValue.removeFromSuperview()
       }
       if let newValue {
@@ -36,8 +35,7 @@ extension BackgroundedView where Self: UIView {
           ])
         }
       }
-      setAssociatedObject(newValue, forKey: &kBackgroundViewKey, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+      setAssociatedObject(newValue, forKey: &kBackgroundViewKey, with: self)
     }
   }
 }
-#endif

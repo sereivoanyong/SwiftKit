@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 2/4/23.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 extension UITraitCollection {
@@ -19,8 +18,7 @@ extension UITraitCollection {
   }
 
   @inlinable
-  public var displayPixelPerPoint: CGFloat {
+  public var displayPointPerPixel: CGFloat {
     return 1 / nonZeroDisplayScale
   }
 }
-#endif

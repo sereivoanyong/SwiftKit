@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 1/23/20.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 // @see: https://stackoverflow.com/a/34343418
@@ -44,17 +43,14 @@ extension UINavigationItem {
   public func removeBackButtonTitle() {
     if #available(iOS 14.0, *) {
       backButtonDisplayMode = .minimal
-    } else if #available(iOS 11.0, *) {
-      backButtonTitle = ""
     } else {
-      backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+      backButtonTitle = ""
     }
   }
   
   static private var shouldPopKey: Void?
   public var shouldPopHandler: (() -> Bool)? {
-    get { return associatedValue(forKey: &UINavigationItem.shouldPopKey) as (() -> Bool)? }
-    set { setAssociatedValue(newValue, forKey: &UINavigationItem.shouldPopKey) }
+    get { return associatedValue(forKey: &UINavigationItem.shouldPopKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &UINavigationItem.shouldPopKey, with: self) }
   }
 }
-#endif

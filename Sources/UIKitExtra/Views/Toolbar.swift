@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 3/3/21.
 //
 
-#if os(iOS)
-
 import UIKit
 
 @IBDesignable
@@ -21,10 +19,8 @@ open class Toolbar: UIToolbar {
 extension Toolbar {
 
   @IBInspectable
-  final public var overrideBarPositionRaw: Int {
-    get { overrideBarPosition?.rawValue ?? -1 }
+  public var overrideBarPositionRaw: Int {
+    get { return overrideBarPosition?.rawValue ?? -1 }
     set { overrideBarPosition = UIBarPosition(rawValue: newValue) }
   }
 }
-
-#endif

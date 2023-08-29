@@ -49,9 +49,7 @@ open class PasswordTextField: TextField {
 
   private func commonInit() {
     isSecureTextEntry = true
-    if #available(iOS 11.0, *) {
-      textContentType = .password
-    }
+    textContentType = .password
     rightView = isSecureTextEntryToggleButton
     rightViewMode = .always
   }

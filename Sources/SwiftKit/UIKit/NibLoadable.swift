@@ -4,7 +4,6 @@
 //  Created by Sereivoan Yong on 12/8/17.
 //
 
-#if canImport(UIKit)
 import UIKit
 
 public typealias NibReusable = NibLoadable & Reusable
@@ -33,4 +32,3 @@ extension NibLoadable {
     return nib.instantiate(withOwner: owner, options: options)[index] as! Self
   }
 }
-#endif
