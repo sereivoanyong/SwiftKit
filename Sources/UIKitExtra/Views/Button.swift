@@ -232,8 +232,8 @@ extension Button {
 
   @IBInspectable
   public var isVertical: Bool {
-    get { return contentAxis == .vertical }
-    set { contentAxis = newValue ? .vertical : .horizontal }
+    get { return contentAxis.isVertical }
+    set { contentAxis.isVertical = newValue }
   }
 
   public func setButtonType(_ buttonType: ButtonType) {

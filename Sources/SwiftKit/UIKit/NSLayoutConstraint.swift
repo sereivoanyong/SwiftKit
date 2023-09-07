@@ -6,6 +6,15 @@
 
 import UIKit
 
+extension NSLayoutConstraint.Axis {
+
+  @inlinable
+  public var isVertical: Bool {
+    get { return self == .vertical }
+    set { self = newValue ? .vertical : .horizontal }
+  }
+}
+
 extension NSLayoutConstraint {
 
   public static func constraints(visualFormats: [String], options: FormatOptions = [], metrics: [String: Any]? = nil, views: [String: LayoutGuide]) -> [NSLayoutConstraint] {

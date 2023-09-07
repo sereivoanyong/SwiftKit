@@ -23,24 +23,26 @@ extension StackView {
 @IBDesignable
 open class StackView: UIStackView {
 
-  open private(set) var separatorViews: [UIView] = []
+  open private(set) var separatorViews: [SeparatorView] = []
 
-  open var separatorViewProvider: () -> UIView = {
-    let separatorView = UIView()
-    if #available(iOS 13.0, *) {
-      separatorView.backgroundColor = .separator
-    } else {
-      separatorView.backgroundColor = UIColor(red: 0.23529411764705882, green: 0.23529411764705882, blue: 0.2627450980392157, alpha: 0.29)
-    }
-    return separatorView
+  open var separatorViewProvider: () -> SeparatorView = {
+    return SeparatorView()
   }
 
-  @IBInspectable
-  open var separatorThickness: CGFloat = -1
-
-  open var separatorInset: UIEdgeInsets = .zero
+  open var separatorInsets: UIEdgeInsets = .zero
 
   open var separatorInsetReference: SeparatorInsetReference = .fromEdges
+
+  open override var spacing: CGFloat {
+    get { return super.spacing }
+    set {
+      if Int(newValue / traitCollection.displayPointPerPixel) % 2 == 1 {
+        super.spacing = newValue
+      } else {
+        super.spacing = newValue + traitCollection.displayPointPerPixel
+      }
+    }
+  }
 
   open override func layoutSubviews() {
     super.layoutSubviews()
@@ -49,7 +51,7 @@ open class StackView: UIStackView {
   }
 
   private func layoutSeparatorViews() {
-    let arrangedSubviews = self.arrangedSubviews
+    let arrangedSubviews = arrangedSubviews
     guard arrangedSubviews.count > 1 else {
       if !separatorViews.isEmpty {
         for separatorView in separatorViews {
@@ -64,6 +66,7 @@ open class StackView: UIStackView {
     if countToAdd > 0 {
       for _ in 0..<countToAdd {
         let separatorView = separatorViewProvider()
+        separatorView.axis.isVertical = !axis.isVertical
         addSubview(separatorView)
         separatorViews.append(separatorView)
       }
@@ -77,37 +80,39 @@ open class StackView: UIStackView {
 
     precondition(separatorViews.count == arrangedSubviews.count - 1)
 
-    var insets = separatorInset
-    let referenceInset: UIEdgeInsets
+    let referenceInsets: UIEdgeInsets
     switch separatorInsetReference {
     case .fromEdges:
-      referenceInset = .zero
+      referenceInsets = .zero
     case .fromSafeArea:
-      referenceInset = safeAreaInsets
+      referenceInsets = safeAreaInsets
     case .fromLayoutMargins:
-      referenceInset = layoutMargins
+      referenceInsets = layoutMargins
     }
-    insets = UIEdgeInsets(top: insets.top + referenceInset.top, left: insets.left + referenceInset.left, bottom: insets.bottom + referenceInset.bottom, right: insets.right + referenceInset.right)
+    var insets = separatorInsets
+    insets = UIEdgeInsets(top: insets.top + referenceInsets.top, left: insets.left + referenceInsets.left, bottom: insets.bottom + referenceInsets.bottom, right: insets.right + referenceInsets.right)
 
-    let thickness = separatorThickness < 0 ? traitCollection.displayPointPerPixel: separatorThickness
-
-    let frameProvider: (UIView, UIView) -> CGRect
+    let frameProvider: (SeparatorView, UIView, UIView) -> CGRect
     switch axis {
     case .vertical:
-      frameProvider = { [unowned self] topView, bottomView in
-        let y = topView.frame.maxY + ((bottomView.frame.minY - topView.frame.maxY + thickness) / 2).ceiledToPixel(scale: traitCollection.displayScale)
-        return CGRect(x: insets.left, y: y, width: bounds.width - insets.left - insets.right, height: thickness)
+      frameProvider = { [unowned self] separatorView, topView, bottomView in
+        var size = CGSize(width: bounds.width - insets.horizontal, height: bottomView.frame.minY - topView.frame.maxY)
+        size.height = separatorView.sizeThatFits(size).height
+        let y = topView.frame.maxY + ((bottomView.frame.minY - size.height - topView.frame.maxY) / 2).flooredToPixel(scale: traitCollection.displayScale)
+        return CGRect(origin: CGPoint(x: insets.left, y: y), size: size)
       }
     default:
-      frameProvider = { [unowned self] leftView, rightView in
-        let x = leftView.frame.maxX + ((rightView.frame.minX - leftView.frame.maxX + thickness) / 2).ceiledToPixel(scale: traitCollection.displayScale)
-        return CGRect(x: x, y: insets.top, width: thickness, height: bounds.height - insets.top - insets.bottom)
+      frameProvider = { [unowned self] separatorView, leftView, rightView in
+        var size = CGSize(width: rightView.frame.minX - leftView.frame.maxX, height: bounds.height - insets.vertical)
+        size.width = separatorView.sizeThatFits(size).width
+        let x = leftView.frame.maxX + ((rightView.frame.minX - size.width - leftView.frame.maxX) / 2).flooredToPixel(scale: traitCollection.displayScale)
+        return CGRect(origin: CGPoint(x: x, y: insets.top), size: size)
       }
     }
 
     for (index, arrangedSubview) in arrangedSubviews.dropLast().enumerated() {
       let separatorView = separatorViews[index]
-      separatorView.frame = frameProvider(arrangedSubview, arrangedSubviews[index + 1])
+      separatorView.frame = frameProvider(separatorView, arrangedSubview, arrangedSubviews[index + 1])
     }
   }
 }

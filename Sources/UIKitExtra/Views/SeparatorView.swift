@@ -23,8 +23,8 @@ open class SeparatorView: UIView {
 
   @IBInspectable
   public var isVertical: Bool {
-    get { return axis == .vertical }
-    set { axis = newValue ? .vertical : .horizontal }
+    get { return axis.isVertical }
+    set { axis.isVertical = newValue }
   }
 
   // Set to nil to use default.
@@ -72,6 +72,15 @@ open class SeparatorView: UIView {
     }
     if contentCompressionResistancePriority(for: .vertical) == .defaultHigh {
       setContentCompressionResistancePriority(.defaultHigh + 1, for: .vertical)
+    }
+  }
+
+  open override func sizeThatFits(_ size: CGSize) -> CGSize {
+    let resolvedThickness = thickness < 0 ? traitCollection.displayPointPerPixel : thickness
+    if isVertical {
+      return CGSize(width: resolvedThickness, height: 0)
+    } else {
+      return CGSize(width: 0, height: resolvedThickness)
     }
   }
 
