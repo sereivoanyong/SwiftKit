@@ -20,8 +20,13 @@ public func printIfDEBUG(_ item: Any) {
   #endif
 }
 
-public func deinitLog(_ object: Any) {
-  printIfDEBUG("\(type(of: object)) deinit")
+@inlinable
+public func deinitPrint<T: AnyObject>(_ object: T) {
+#if DEBUG
+  if type(of: object) == T.self {
+    print("\(T.self) deinit")
+  }
+#endif
 }
 
 @inlinable
