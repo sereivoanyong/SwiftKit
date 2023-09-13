@@ -9,7 +9,7 @@ import UIKit
 // TODO: section/item modeling rework, search support & deselection support
 
 @available(iOS 14.0, *)
-open class PickerListViewController<Item>: CollectionViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+open class PickerListViewController<Item: Equatable>: CollectionViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 
   public struct Section {
 
@@ -41,8 +41,6 @@ open class PickerListViewController<Item>: CollectionViewController, UICollectio
     case presentWithSaveChangeOnSelectionThenDismiss(saveHandler: (Item) -> Void)
   }
 
-  private let equalityProvider: (Item, Item) -> Bool
-
   public let behavior: Behavior
 
   open var sections: [Section] {
@@ -67,16 +65,7 @@ open class PickerListViewController<Item>: CollectionViewController, UICollectio
     }
   }
 
-  public convenience init(items: [Item], behavior: Behavior) where Item: Identifiable {
-    self.init(equalityProvider: { $0.id == $1.id }, items: items, behavior: behavior)
-  }
-
-  public convenience init(items: [Item], behavior: Behavior) where Item: Equatable {
-    self.init(equalityProvider: ==, items: items, behavior: behavior)
-  }
-
-  private init(equalityProvider: @escaping (Item, Item) -> Bool, items: [Item], behavior: Behavior) {
-    self.equalityProvider = equalityProvider
+  public init(items: [Item], behavior: Behavior) {
     self.sections = [.init(items: items)]
     self.behavior = behavior
     super.init(nibName: nil, bundle: nil)
@@ -102,8 +91,8 @@ open class PickerListViewController<Item>: CollectionViewController, UICollectio
 
     if let selectedItem = selectedItem {
       for (sectionIndex, section) in sections.enumerated() {
-        for (itemIndex, item) in section.items.enumerated() where equalityProvider(item, selectedItem) {
-          DispatchQueue.main.async { [unowned collectionView] in
+        for (itemIndex, item) in section.items.enumerated() where item == selectedItem {
+          DispatchQueue.main.async { [unowned self] in
             collectionView.selectItem(at: IndexPath(item: itemIndex, section: sectionIndex), animated: false, scrollPosition: .centeredVertically)
           }
           return

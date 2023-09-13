@@ -13,31 +13,9 @@ open class CollectionViewController: UIViewController {
 
   open var invalidatesLayoutOnViewWillTransition: Bool = true
 
-  public init(collectionViewLayout: UICollectionViewLayout) {
-    _collectionViewLayout = collectionViewLayout
-    super.init(nibName: nil, bundle: nil)
-  }
-
-  public override init(nibName: String? = nil, bundle: Bundle? = nil) {
-    super.init(nibName: nibName, bundle: bundle)
-  }
-
-  public required init?(coder: NSCoder) {
-    super.init(coder: coder)
-  }
-
-  // MARK: Collection View Lifecycle
-
-  private var _collectionViewLayout: UICollectionViewLayout!
-  open var collectionViewLayout: UICollectionViewLayout {
-    if _collectionViewLayout == nil {
-      _collectionViewLayout = makeCollectionViewLayout()
-    }
-    return _collectionViewLayout
-  }
-
   private var _collectionView: UICollectionView!
-  open var collectionView: UICollectionView {
+
+  open weak var collectionView: UICollectionView! {
     get {
       if _collectionView == nil {
         loadCollectionView()
@@ -48,8 +26,24 @@ open class CollectionViewController: UIViewController {
     set {
       precondition(_collectionView == nil, "Collection view can only be set before it is loaded.")
       _collectionView = newValue
+      collectionViewDidLoad()
     }
   }
+
+  private var _collectionViewLayout: UICollectionViewLayout!
+  open var collectionViewLayout: UICollectionViewLayout {
+    if let _collectionViewLayout {
+      return _collectionViewLayout
+    }
+    if let _collectionView {
+      _collectionViewLayout = _collectionView.collectionViewLayout
+    } else {
+      _collectionViewLayout = makeCollectionViewLayout()
+    }
+    return _collectionViewLayout
+  }
+
+  // MARK: Collection View Lifecycle
 
   open func makeCollectionViewLayout() -> UICollectionViewLayout {
     fatalError("\(#function) has not been implemented")
