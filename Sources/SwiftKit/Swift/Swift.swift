@@ -54,6 +54,11 @@ public func modifying<T>(_ value: T, _ modify: (inout T) -> Void) -> T {
   return value
 }
 
+@inlinable
+public func isEqual<T, U: Equatable>(_ lhs: T, _ rhs: T, at keyPath: KeyPath<T, U>) -> Bool {
+  return lhs[keyPath: keyPath] == rhs[keyPath: keyPath]
+}
+
 /// Returns the first value for the key path of the type on the value that satisfies the given predicate.
 ///
 ///     let view = UIView()

@@ -32,6 +32,14 @@ extension YAxisEdgesProtocol where YAxisItem: AdditiveArithmetic {
   }
 }
 
+extension YAxisEdgesProtocol where YAxisItem: Hashable {
+
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(top)
+    hasher.combine(bottom)
+  }
+}
+
 public struct YAxisEdges<YAxisItem>: YAxisEdgesProtocol {
 
   public var top, bottom: YAxisItem

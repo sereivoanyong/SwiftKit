@@ -32,6 +32,14 @@ extension DirectionalXAxisEdgesProtocol where XAxisItem: AdditiveArithmetic {
   }
 }
 
+extension DirectionalXAxisEdgesProtocol where XAxisItem: Hashable {
+
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(leading)
+    hasher.combine(trailing)
+  }
+}
+
 public struct DirectionalXAxisEdges<XAxisItem>: DirectionalXAxisEdgesProtocol {
 
   public var leading, trailing: XAxisItem

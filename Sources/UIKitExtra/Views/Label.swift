@@ -8,12 +8,6 @@ import UIKit
 
 extension Label {
 
-  /// `UIConfigurationColorTransformer`
-  public struct ConfigurationColorTransformer {
-
-    public let transform: (UIColor) -> UIColor
-  }
-
   /// `UIListContentConfiguration`
   public struct ContentConfiguration {
 
@@ -21,40 +15,19 @@ extension Label {
     public var color: UIColor? // The original implementation is not optional tho
 
     /// Optional color transformer that is used to resolve the color. A nil value means the `color` is used as-is.
-    public var colorTransformer: ConfigurationColorTransformer?
+    public var colorTransformer: BCConfigurationColorTransformer?
 
-    public init(color: UIColor? = nil, colorTransformer: Label.ConfigurationColorTransformer? = nil) {
+    public init(color: UIColor? = nil, colorTransformer: BCConfigurationColorTransformer? = nil) {
       self.color = color
       self.colorTransformer = colorTransformer
     }
 
     public func resolvedColor(for tintColor: UIColor) -> UIColor {
-      if let color = color {
-        return colorTransformer?.transform(color) ?? color
+      let color = color ?? tintColor
+      if let colorTransformer {
+        return colorTransformer(color)
       }
-      return tintColor
-    }
-  }
-
-  /// `UIBackgroundConfiguration`
-  public struct BackgroundConfiguration {
-
-    /// Configures the color of the background. A nil value uses the view's tint color; use `.clear` for no color (transparent).
-    public var backgroundColor: UIColor?
-
-    /// Optional color transformer that is used to resolve the background color. A nil value means the `backgroundColor` is used as-is.
-    public var backgroundColorTransformer: ConfigurationColorTransformer?
-
-    public init(backgroundColor: UIColor? = nil, backgroundColorTransformer: Label.ConfigurationColorTransformer? = nil) {
-      self.backgroundColor = backgroundColor
-      self.backgroundColorTransformer = backgroundColorTransformer
-    }
-
-    public func resolvedBackgroundColor(for tintColor: UIColor) -> UIColor {
-      if let backgroundColor = backgroundColor {
-        return backgroundColorTransformer?.transform(backgroundColor) ?? backgroundColor
-      }
-      return tintColor
+      return color
     }
   }
 }
@@ -70,7 +43,7 @@ open class Label: UILabel {
   /// The current content configuration of the label.
   open var contentConfiguration: ContentConfiguration? {
     didSet {
-      if let contentConfiguration = contentConfiguration {
+      if let contentConfiguration {
         super.textColor = contentConfiguration.resolvedColor(for: tintColor)
       } else {
         super.textColor = _textColor
@@ -79,9 +52,9 @@ open class Label: UILabel {
   }
 
   /// The current background configuration of the cell.
-  open var backgroundConfiguration: BackgroundConfiguration? {
+  open var backgroundConfiguration: BCBackgroundConfiguration? {
     didSet {
-      if let backgroundConfiguration = backgroundConfiguration {
+      if let backgroundConfiguration {
         super.backgroundColor = backgroundConfiguration.resolvedBackgroundColor(for: tintColor)
       } else {
         super.backgroundColor = _backgroundColor
@@ -104,7 +77,7 @@ open class Label: UILabel {
     }
     set {
       _textColor = newValue
-      if var contentConfiguration = contentConfiguration {
+      if var contentConfiguration {
         contentConfiguration.color = newValue
         self.contentConfiguration = contentConfiguration
       } else {
@@ -119,7 +92,7 @@ open class Label: UILabel {
     }
     set {
       _backgroundColor = newValue
-      if var backgroundConfiguration = backgroundConfiguration {
+      if var backgroundConfiguration {
         backgroundConfiguration.backgroundColor = newValue
         self.backgroundConfiguration = backgroundConfiguration
       } else {
@@ -131,10 +104,10 @@ open class Label: UILabel {
   open override func tintColorDidChange() {
     super.tintColorDidChange()
 
-    if let contentConfiguration = contentConfiguration, contentConfiguration.color == nil {
+    if let contentConfiguration, contentConfiguration.color == nil {
       super.textColor = contentConfiguration.resolvedColor(for: tintColor)
     }
-    if let backgroundConfiguration = backgroundConfiguration, backgroundConfiguration.backgroundColor == nil {
+    if let backgroundConfiguration, backgroundConfiguration.backgroundColor == nil {
       super.backgroundColor = backgroundConfiguration.resolvedBackgroundColor(for: tintColor)
     }
   }

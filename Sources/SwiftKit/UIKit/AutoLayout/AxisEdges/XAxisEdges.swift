@@ -32,6 +32,14 @@ extension XAxisEdgesProtocol where XAxisItem: AdditiveArithmetic {
   }
 }
 
+extension XAxisEdgesProtocol where XAxisItem: Hashable {
+
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(left)
+    hasher.combine(right)
+  }
+}
+
 public struct XAxisEdges<XAxisItem>: XAxisEdgesProtocol {
 
   public var left, right: XAxisItem

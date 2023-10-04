@@ -12,6 +12,8 @@ import UIKit
 
 extension NSDirectionalEdgeInsets: DirectionalEdgesProtocol { }
 
+extension NSDirectionalEdgeInsets: Hashable { }
+
 public typealias DirectionalEdgeInsets = DirectionalEdges<CGFloat>
 
 extension DirectionalEdgesProtocol where AxisItem == NSLayoutConstraint {
@@ -25,6 +27,8 @@ extension DirectionalEdgesProtocol where AxisItem == NSLayoutConstraint {
 // MARK: Edges
 
 extension UIEdgeInsets: EdgesProtocol { }
+
+extension UIEdgeInsets: Hashable { }
 
 public typealias EdgeInsets = Edges<CGFloat>
 

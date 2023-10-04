@@ -72,6 +72,16 @@ extension DirectionalEdgesProtocol where AxisItem: Numeric {
   }
 }
 
+extension DirectionalEdgesProtocol where AxisItem: Hashable {
+
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(top)
+    hasher.combine(leading)
+    hasher.combine(bottom)
+    hasher.combine(trailing)
+  }
+}
+
 public struct DirectionalEdges<AxisItem>: DirectionalEdgesProtocol {
 
   public var top: AxisItem

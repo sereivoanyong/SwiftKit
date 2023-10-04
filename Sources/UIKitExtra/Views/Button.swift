@@ -1,242 +1,212 @@
 //
 //  Button.swift
 //
-//  Created by Sereivoan Yong on 5/18/21.
+//  Created by Sereivoan Yong on 11/5/23.
 //
 
 import UIKit
 
-@IBDesignable
-open class Button: UIButton {
+@available(iOS 13.0, *)
+@IBDesignable open class Button: UIButton {
 
-  open var contentAxis: NSLayoutConstraint.Axis = .horizontal {
+  open var bcConfiguration: BCConfiguration!
+
+  open var configurationStyle: BCConfiguration.Style = .plain
+  @IBInspectable public var configurationStyleRaw: Int {
+    get { return configurationStyle.rawValue }
+    set { configurationStyle = BCConfiguration.Style(rawValue: newValue) ?? .plain }
+  }
+
+  open var configurationSize: BCConfiguration.Size = .medium
+  @IBInspectable public var configurationSizeRaw: Int {
+    get { return configurationSize.rawValue }
+    set { configurationSize = BCConfiguration.Size(rawValue: newValue) ?? .medium }
+  }
+
+  open var configurationCornerStyle: BCConfiguration.CornerStyle = .dynamic
+  @IBInspectable public var configurationCornerStyleRaw: Int {
+    get { return configurationCornerStyle.rawValue }
+    set { configurationCornerStyle = BCConfiguration.CornerStyle(rawValue: newValue) ?? .dynamic }
+  }
+
+  open var configurationImagePlacement: NSDirectionalRectEdge = .leading // 1, 2, 4, 8
+  @IBInspectable public var configurationImagePlacementRaw: UInt {
+    get { return configurationImagePlacement.rawValue }
+    set { configurationImagePlacement = NSDirectionalRectEdge(rawValue: newValue) }
+  }
+
+  @IBInspectable open var configurationImagePadding: CGFloat = 0
+
+  open var overrideConfigurationWithBCConfiguration: Bool = true
+
+  private var frameObservationForCorner: NSKeyValueObservation?
+
+  private var backgroundView: BCBackgroundView!
+
+  private var highlights: Bool = false {
     didSet {
-      setNeedsLayout()
+      backgroundView?.setNeedsDisplay()
     }
   }
 
-  @IBInspectable
-  open var contentSpacing: CGFloat = 0 {
-    didSet {
-      invalidateIntrinsicContentSize()
-    }
+  open override func prepareForInterfaceBuilder() {
+    super.prepareForInterfaceBuilder()
+    configure()
   }
 
-  @IBInspectable
-  open var reversesContentPositioning: Bool = false {
-    didSet {
-      setNeedsLayout()
-    }
+  open override func awakeFromNib() {
+    super.awakeFromNib()
+    configure()
   }
 
-  open override var intrinsicContentSize: CGSize {
-    return intrinsicContentSize(within: CGSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude))
-  }
+  private func configure() {
+    var bcConfiguration = BCConfiguration(style: configurationStyle)
+    bcConfiguration.size = configurationSize
+    bcConfiguration.cornerStyle = configurationCornerStyle
+    bcConfiguration.imagePlacement = configurationImagePlacement
+    bcConfiguration.imagePadding = configurationImagePadding
 
-  private func intrinsicContentSize(within size: CGSize) -> CGSize {
-    // See: https://stackoverflow.com/a/44264499/11235826
-    var imageSize: CGSize?
-    if currentImage != nil, let imageView = imageView {
-      imageSize = imageView.sizeThatFits(size)
+    if #available(iOS 15.0, *), !overrideConfigurationWithBCConfiguration {
+      configuration = Configuration(bcConfiguration)
+      return
     }
-    var titleSize: CGSize?
-    if currentTitle != nil, let titleLabel = titleLabel {
-      titleSize = titleLabel.sizeThatFits(size)
+    self.bcConfiguration = bcConfiguration
+
+    if bcConfiguration.style == .filled {
+      setTitleColor(.white, for: .normal)
     }
-    switch (imageSize, titleSize) {
-    case (.some(let imageSize), .some(let titleSize)):
-      switch contentAxis {
-      case .vertical:
-        return CGSize(width: max(imageSize.width, titleSize.width), height: imageSize.height + contentSpacing + titleSize.height)
-      default:
-        if contentAxis != .horizontal {
-          print("Unsupported axis. `.horizontal` is used.")
-        }
-        return CGSize(width: imageSize.width + contentSpacing + titleSize.width, height: max(imageSize.height, titleSize.height))
+
+    backgroundView = BCBackgroundView(configuration: bcConfiguration.background)
+    backgroundView.configuration = bcConfiguration.background
+    backgroundView.frame = bounds
+    backgroundView.autoresizingMask = .flexibleSize
+    insertSubview(backgroundView, at: 0)
+
+    switch bcConfiguration.cornerStyle {
+    case .fixed:
+      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
+    case .dynamic:
+      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
+    case .small:
+      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
+    case .medium:
+      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
+    case .large:
+      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
+    case .capsule:
+      frameObservationForCorner = observe(\.frame, options: [.initial, .new]) { button, _ in
+        button.backgroundView.configuration.cornerRadius = button.frame.height / 2
       }
-    case (.some(let imageSize), .none):
-      return imageSize
-    case (.none, .some(let titleSize)):
-      return titleSize
-    case (.none, .none):
-      return CGSize(width: UIView.noIntrinsicMetric, height: UIView.noIntrinsicMetric)
     }
+
+    backgroundView.configuration.backgroundColorTransformer = .init { [unowned self] color in
+      switch bcConfiguration.style {
+      case .plain:
+        return .clear
+      case .gray:
+        if highlights {
+          if traitCollection.userInterfaceStyle == .dark {
+            return .systemGray.withAlphaComponent(0.35)
+          } else {
+            return .secondarySystemFill.withAlphaComponent(0.12)
+          }
+        }
+        return .secondarySystemFill
+      case .tinted:
+        if highlights {
+          return color.withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.18 : 0.12)
+        }
+        return color.withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.25 : 0.18)
+      case .filled:
+        if highlights {
+          return color.withAlphaComponent(0.75)
+        }
+        return color
+      }
+    }
+
+    // Create action events for all possible interactions with this control
+    addTarget(self, action: #selector(didTouchDownInside(_:)), for: [.touchDown, .touchDownRepeat])
+    addTarget(self, action: #selector(didTouchUpInside(_:)), for: .touchUpInside)
+    addTarget(self, action: #selector(didDragOutside(_:)), for: [.touchDragExit, .touchCancel])
+    addTarget(self, action: #selector(didDragInside(_:)), for: .touchDragEnter)
+  }
+
+  @objc private func didTouchDownInside(_ sender: Button) {
+    highlights = true
+  }
+
+  @objc private func didTouchUpInside(_ sender: Button) {
+    highlights = false
+  }
+
+  @objc private func didDragOutside(_ sender: Button) {
+    highlights = false
+  }
+
+  @objc private func didDragInside(_ sender: Button) {
+    highlights = true
   }
 
   open override func layoutSubviews() {
     super.layoutSubviews()
 
-    if contentAxis == .vertical && currentTitle != nil, let titleLabel = titleLabel, titleLabel.textAlignment != .center {
-      titleLabel.textAlignment = .center
+    guard let bcConfiguration else { return }
+
+    if subviews.first != backgroundView {
+      sendSubviewToBack(backgroundView)
     }
-  }
 
-  private enum HorizonalAlignmentSibling {
+    var insets = bcConfiguration.contentInsets.resolved(with: effectiveUserInterfaceLayoutDirection)
+    // insets.top += 4 - UIScreen.main.pointPerPixel
+    // insets.bottom += 4 - UIScreen.main.pointPerPixel
 
-    case left(width: CGFloat)
-    case right(width: CGFloat)
-  }
+    if let titleLabel, let imageView {
+      let imageSize = imageView.frame.size
+      let titleSize = titleLabel.frame.size
+      if imageSize != .zero && titleSize != .zero {
+        switch bcConfiguration.imagePlacement {
+        case .top:
+          let systemContentWidth = imageSize.width + titleSize.width
+          let contentHeight = imageSize.height + bcConfiguration.imagePadding + titleSize.height
 
-  private func horizontalAlignment(_ contentHorizontalAlignment: ContentHorizontalAlignment, contentRect: CGRect, alignmentSize: inout CGSize, sibling: HorizonalAlignmentSibling? = nil) -> CGFloat {
-    switch contentHorizontalAlignment {
-    case .center:
-      switch sibling {
-      case .left(let leftWidth):
-        let contentWidth = leftWidth + contentSpacing + alignmentSize.width
-        return contentRect.minX + (contentRect.width - contentWidth) / 2 + (leftWidth + contentSpacing)
-      case .right(let rightWidth):
-        let contentWidth = alignmentSize.width + contentSpacing + rightWidth
-        return contentRect.minX + (contentRect.width - contentWidth) / 2
-      case nil:
-        return contentRect.minX + (contentRect.width - alignmentSize.width) / 2
+          let hInset = (systemContentWidth - max(imageSize.width, titleSize.width)) / 2
+          insets.left -= hInset
+          insets.right -= hInset
+          insets.top += (contentHeight - max(imageSize.height, titleSize.height)) / 2
+          insets.bottom += (contentHeight - max(imageSize.height, titleSize.height)) / 2
+          imageEdgeInsets = UIEdgeInsets(top: -(contentHeight - imageSize.height), left: 0, bottom: 0, right: -titleSize.width)
+          titleEdgeInsets = UIEdgeInsets(top: 0, left: -imageSize.width, bottom: -(contentHeight - titleSize.height), right: 0)
+
+        case .bottom:
+          let systemContentWidth = imageSize.width + titleSize.width
+          let contentHeight = imageSize.height + bcConfiguration.imagePadding + titleSize.height
+
+          let hInset = (systemContentWidth - max(imageSize.width, titleSize.width)) / 2
+          insets.left -= hInset
+          insets.right -= hInset
+          insets.top += (contentHeight - max(imageSize.height, titleSize.height)) / 2
+          insets.bottom += (contentHeight - max(imageSize.height, titleSize.height)) / 2
+          titleEdgeInsets = UIEdgeInsets(top: -(contentHeight - titleSize.height), left: -imageSize.width, bottom: 0, right: 0)
+          imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: -(contentHeight - imageSize.height), right: -titleSize.width)
+
+        case .trailing:
+          let dx = bcConfiguration.imagePadding / 2
+          insets.left += dx
+          insets.right += dx
+          contentEdgeInsets = insets
+          titleEdgeInsets = UIEdgeInsets(top: 0, left: -(imageSize.width + dx), bottom: 0, right: imageSize.width + dx)
+          imageEdgeInsets = UIEdgeInsets(top: 0, left: titleSize.width + dx, bottom: 0, right: -(titleSize.width + dx))
+
+        default: // Leading
+          let dx = bcConfiguration.imagePadding / 2
+          insets.left += dx
+          insets.right += dx
+          imageEdgeInsets = UIEdgeInsets(top: 0, left: -dx, bottom: 0, right: dx)
+          titleEdgeInsets = UIEdgeInsets(top: 0, left: dx, bottom: 0, right: -dx)
+        }
       }
-    case .left:
-      if case .left(let leftWidth) = sibling {
-        return contentRect.minX + leftWidth + contentSpacing
-      } else {
-        return contentRect.minX
-      }
-    case .right:
-      if case .right(let rightWidth) = sibling {
-        let contentWidth = alignmentSize.width + contentSpacing + rightWidth
-        return contentRect.maxX - contentWidth
-      } else {
-        return contentRect.maxX - alignmentSize.width
-      }
-    case .fill:
-      alignmentSize.width = contentRect.width
-      return contentRect.minX
-    case .leading:
-      fatalError()
-    case .trailing:
-      fatalError()
-    @unknown default:
-      return horizontalAlignment(.center, contentRect: contentRect, alignmentSize: &alignmentSize, sibling: sibling)
     }
-  }
-
-  private enum VerticalAlignmentSibling {
-
-    case top(height: CGFloat)
-    case bottom(height: CGFloat)
-  }
-
-  private func verticalAlignment(_ contentVerticalAlignment: ContentVerticalAlignment, contentRect: CGRect, alignmentSize: inout CGSize, sibling: VerticalAlignmentSibling? = nil) -> CGFloat {
-    switch contentVerticalAlignment {
-    case .center:
-      switch sibling {
-      case .top(let topHeight):
-        let contentHeight = topHeight + contentSpacing + alignmentSize.height
-        return contentRect.minY + (contentRect.height - contentHeight) / 2 + (topHeight + contentSpacing)
-      case .bottom(let bottomHeight):
-        let contentHeight = alignmentSize.height + contentSpacing + bottomHeight
-        return contentRect.minY + (contentRect.height - contentHeight) / 2
-      case nil:
-        return contentRect.minY + (contentRect.height - alignmentSize.height) / 2
-      }
-    case .top:
-      if case .top(let topHeight) = sibling {
-        return contentRect.minY + topHeight + contentSpacing
-      } else {
-        return contentRect.minY
-      }
-    case .bottom:
-      if case .bottom(let bottomHeight) = sibling {
-        let contentHeight = alignmentSize.height + contentSpacing + bottomHeight
-        return contentRect.maxY - contentHeight
-      } else {
-        return contentRect.maxY - alignmentSize.height
-      }
-    case .fill:
-      alignmentSize.height = contentRect.height
-      return contentRect.minY
-    @unknown default:
-      return verticalAlignment(.center, contentRect: contentRect, alignmentSize: &alignmentSize, sibling: sibling)
-    }
-  }
-
-  open override func titleRect(forContentRect contentRect: CGRect) -> CGRect {
-    if value(forKey: "_titleView") == nil {
-      return .zero
-    }
-    assert(currentTitle != nil)
-    var titleSize = titleLabel!.sizeThatFits(contentRect.size)
-    let imageSize = currentImage != nil ? imageView!.sizeThatFits(contentRect.size) : nil
-    var x: CGFloat
-    var y: CGFloat
-    switch contentAxis {
-    case .horizontal:
-      if reversesContentPositioning {
-        // Title left, image right
-        x = horizontalAlignment(effectiveContentHorizontalAlignment, contentRect: contentRect, alignmentSize: &titleSize, sibling: imageSize.map { .right(width: $0.width) })
-      } else {
-        // Title right, image left
-        x = horizontalAlignment(effectiveContentHorizontalAlignment, contentRect: contentRect, alignmentSize: &titleSize, sibling: imageSize.map { .left(width: $0.width) })
-      }
-      y = verticalAlignment(contentVerticalAlignment, contentRect: contentRect, alignmentSize: &titleSize)
-
-    case .vertical:
-      x = horizontalAlignment(effectiveContentHorizontalAlignment, contentRect: contentRect, alignmentSize: &titleSize)
-      if reversesContentPositioning {
-        // Title top, image bottom
-        y = verticalAlignment(contentVerticalAlignment, contentRect: contentRect, alignmentSize: &titleSize, sibling: imageSize.map { .bottom(height: $0.height) })
-      } else {
-        // Title bottom, image top
-        y = verticalAlignment(contentVerticalAlignment, contentRect: contentRect, alignmentSize: &titleSize, sibling: imageSize.map { .top(height: $0.height) })
-      }
-
-    default:
-      fatalError()
-    }
-    return CGRect(origin: CGPoint(x: x, y: y), size: titleSize)
-  }
-
-  open override func imageRect(forContentRect contentRect: CGRect) -> CGRect {
-    if value(forKey: "_imageView") == nil {
-      return .zero
-    }
-    assert(currentImage != nil)
-    let titleSize = currentTitle != nil ? titleLabel!.sizeThatFits(contentRect.size) : nil
-    var imageSize = imageView!.sizeThatFits(contentRect.size)
-    var x: CGFloat
-    var y: CGFloat
-    switch contentAxis {
-    case .horizontal:
-      if reversesContentPositioning {
-        // Image right, title left
-        x = horizontalAlignment(effectiveContentHorizontalAlignment, contentRect: contentRect, alignmentSize: &imageSize, sibling: titleSize.map { .left(width: $0.width) })
-      } else {
-        // Image left, title right
-        x = horizontalAlignment(effectiveContentHorizontalAlignment, contentRect: contentRect, alignmentSize: &imageSize, sibling: titleSize.map { .right(width: $0.width) })
-      }
-      y = verticalAlignment(contentVerticalAlignment, contentRect: contentRect, alignmentSize: &imageSize)
-
-    case .vertical:
-      x = horizontalAlignment(effectiveContentHorizontalAlignment, contentRect: contentRect, alignmentSize: &imageSize)
-      if reversesContentPositioning {
-        // Image bottom, title top
-        y = verticalAlignment(contentVerticalAlignment, contentRect: contentRect, alignmentSize: &imageSize, sibling: titleSize.map { .top(height: $0.height) })
-      } else {
-        // Image Top, title bottom
-        y = verticalAlignment(contentVerticalAlignment, contentRect: contentRect, alignmentSize: &imageSize, sibling: titleSize.map { .bottom(height: $0.height) })
-      }
-
-    default:
-      fatalError()
-    }
-    return CGRect(origin: CGPoint(x: x, y: y), size: imageSize)
-  }
-}
-
-extension Button {
-
-  @IBInspectable
-  public var isVertical: Bool {
-    get { return contentAxis.isVertical }
-    set { contentAxis.isVertical = newValue }
-  }
-
-  public func setButtonType(_ buttonType: ButtonType) {
-    setValue(buttonType.rawValue, forKey: "buttonType")
+    contentEdgeInsets = insets
   }
 }
