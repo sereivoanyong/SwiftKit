@@ -9,9 +9,9 @@ import Foundation
 extension Locale {
 
   /// The selected locale based on the selected localization of `Bundle.main`. It is useful for formatters.
-  public fileprivate(set) static var selected = Locale(localization: Bundle.main.selectedLocalization) {
+  public fileprivate(set) static var selected: Locale! {
     didSet {
-      let selected = selected
+      let selected = selected!
       for (_, handler) in autoupdatingSelectedHandlers {
         handler(selected)
       }
@@ -52,53 +52,89 @@ extension Locale {
 
 extension Bundle {
 
+  public private(set) static var mainLocalized: Bundle!
+
   public static let selectedLocalizationsUserDefaultsKey = "BundleSelectedLocalizations"
+
+  public private(set) static var selectedLocalizations: [String: String] {
+    get { return UserDefaults.standard[Self.selectedLocalizationsUserDefaultsKey] as? [String: String] ?? [:] }
+    set { UserDefaults.standard[Self.selectedLocalizationsUserDefaultsKey] = newValue as NSDictionary }
+  }
 
   public static let selectedLocalizationDidChangeNotification = Notification.Name("BundleSelectedLocalizationDidChangeNotification")
 
-  private func setLocalization(_ localization: String, bundleIdentifier: String) {
-    let store = UserDefaults.standard
-    let selectedLocalizations = (store[Self.selectedLocalizationsUserDefaultsKey] as? NSDictionary ?? [:]).mutableCopy() as! NSMutableDictionary
-    selectedLocalizations[bundleIdentifier] = localization
-    store[Self.selectedLocalizationsUserDefaultsKey] = selectedLocalizations
-    if self == .main {
-      store["AppleLanguages"] = [localization]
-      Locale.selected = Locale(localization: localization)
-    }
-    selectedLocalizationBundle = nil
-    NotificationCenter.default.post(name: Self.selectedLocalizationDidChangeNotification, object: self)
-  }
-
-  /// Default is `preferredLocalizations.first`.
-  public var selectedLocalization: String! {
-    get {
-      guard let bundleIdentifier else { return nil }
-      if let selectedLocalization = (UserDefaults.standard[Self.selectedLocalizationsUserDefaultsKey] as? NSDictionary)?[bundleIdentifier] as? String {
-        return selectedLocalization
+  private var preferredLocalization: String {
+    for localization in preferredLocalizations {
+      if localization == "Base" {
+        continue
       }
-      let localization = preferredLocalizations.first ?? "en"
-      setLocalization(localization, bundleIdentifier: bundleIdentifier)
       return localization
     }
-    set {
-      guard let bundleIdentifier else { return }
-      let localization = newValue ?? preferredLocalizations.first ?? "en"
-      setLocalization(localization, bundleIdentifier: bundleIdentifier)
+    return "en"
+  }
+
+  private static var selectedLocalizationKey: Void?
+
+  public var selectedLocalization: String! {
+    get {
+      let localization: String?
+      if let bundleIdentifier {
+        localization = Self.selectedLocalizations[bundleIdentifier]
+      } else {
+        localization = associatedValue(forKey: &Self.selectedLocalizationKey, with: self)
+      }
+      if let localization {
+        if Locale.selected == nil {
+          Locale.selected = Locale(localization: localization)
+        }
+        return localization
+      }
+      if self == .main {
+        let localization = preferredLocalization
+        self.selectedLocalization = localization
+        return localization
+      } else {
+        return nil
+      }
+    }
+    set(localization) {
+      if let localization, localizations.contains(localization), let url = url(forResource: localization, withExtension: "lproj"), let bundle = Bundle(url: url) {
+        if let bundleIdentifier {
+          Self.selectedLocalizations[bundleIdentifier] = localization
+        }
+        setAssociatedValue(localization, forKey: &Self.selectedLocalizationKey, with: self)
+        selectedLocalizationBundle = bundle
+        if self == .main {
+          UserDefaults.standard["AppleLanguages"] = [localization]
+          Locale.selected = Locale(localization: localization)
+          Self.mainLocalized = bundle
+        }
+      } else {
+        if let bundleIdentifier {
+          Self.selectedLocalizations[bundleIdentifier] = nil
+        }
+        setAssociatedValue(nil as String?, forKey: &Self.selectedLocalizationKey, with: self)
+        selectedLocalizationBundle = nil
+        if self == .main {
+          UserDefaults.standard["AppleLanguages"] = ["en"]
+          Locale.selected = Locale(localization: "en")
+          Self.mainLocalized = nil
+        }
+      }
+      NotificationCenter.default.post(name: Self.selectedLocalizationDidChangeNotification, object: self)
     }
   }
 
   private static var selectedLocalizationBundleKey: Void?
-  // Set to nil to force reload
-  private var selectedLocalizationBundle: Bundle? {
+
+  public private(set) var selectedLocalizationBundle: Bundle? {
     get {
       if let bundle = associatedObject(forKey: &Self.selectedLocalizationBundleKey, with: self) as Bundle? {
         return bundle
       }
-      if let url = url(forResource: selectedLocalization, withExtension: "lproj"), let bundle = Bundle(url: url) {
-        setAssociatedObject(bundle, forKey: &Self.selectedLocalizationBundleKey, with: self)
-        return bundle
-      }
-      return nil
+      // Try again in case selectedLocalization is not accessed
+      _ = selectedLocalization
+      return associatedObject(forKey: &Self.selectedLocalizationBundleKey, with: self) as Bundle?
     }
     set {
       setAssociatedObject(newValue, forKey: &Self.selectedLocalizationBundleKey, with: self)
