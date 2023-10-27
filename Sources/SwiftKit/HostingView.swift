@@ -142,10 +142,38 @@ open class HostingView<RootView: UIView>: UIView, HostingViewProtocol {
 
 }
 
+@available(iOS 14.0, *)
+open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingViewProtocol {
+
+  public var targetViewForRootView: UIView {
+    return contentView
+  }
+
+  public override init(frame: CGRect) {
+    super.init(frame: frame)
+    preservesSuperviewLayoutMargins = true
+    contentView.preservesSuperviewLayoutMargins = true
+  }
+  
+  public required init?(coder: NSCoder) {
+    super.init(coder: coder)
+  }
+}
+
 open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingViewProtocol {
 
   public var targetViewForRootView: UIView {
     return contentView
+  }
+  
+  public override init(frame: CGRect) {
+    super.init(frame: frame)
+    preservesSuperviewLayoutMargins = true
+    contentView.preservesSuperviewLayoutMargins = true
+  }
+
+  public required init?(coder: NSCoder) {
+    super.init(coder: coder)
   }
 }
 
