@@ -75,8 +75,11 @@ extension UIViewController {
     showDetailViewController(detailViewController, sender: sender)
   }
 
+  public static var embeddingNavigationControllerClass: UINavigationController.Type?
+
   public func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
-    let navigationController = UINavigationController(rootViewController: self)
+    let navigationControllerClass = Self.embeddingNavigationControllerClass ?? UINavigationController.self
+    let navigationController = navigationControllerClass.init(rootViewController: self)
     configurationHandler?(navigationController)
     return navigationController
   }
