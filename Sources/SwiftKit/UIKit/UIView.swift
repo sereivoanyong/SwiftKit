@@ -20,6 +20,10 @@ extension UIView {
     return nil
   }
 
+  public var contentMargin: CGFloat {
+    return value(forKey: "_contentMargin") as? CGFloat ?? 20
+  }
+
   public func viewToResepectLayoutMargins() -> UIView {
     if preservesSuperviewLayoutMargins, let superview {
       return superview.viewToResepectLayoutMargins()
