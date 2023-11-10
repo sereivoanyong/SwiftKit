@@ -21,49 +21,45 @@ extension Action {
       self.rawValue = rawValue
     }
   }
-
-  public struct Attributes: OptionSet {
-
-    public let rawValue: UInt
-
-    public init(rawValue: UInt) {
-      self.rawValue = rawValue
-    }
-
-    public static let disabled = Attributes(rawValue: 1 << 0)
-
-    public static let destructive = Attributes(rawValue: 1 << 1)
-
-    public static let hidden = Attributes(rawValue: 1 << 2)
-  }
 }
 
-// https://developer.limneos.net/index.php?ios=14.4&framework=UIKitCore.framework&header=UIAction.h
-@objc open class Action: NSObject {
+public typealias ActionHandler = (Action) -> Void
 
-  open var handler: (Action) -> Void
-
-  /// The action's title.
-  open var title: String?
-
-  /// The action's image.
-  open var image: UIImage?
+/// A menu element that performs its action in a closure.
+///
+/// Create an `Action` object when you want a menu element that performs its action in a closure.
+open class Action: MenuElement {
 
   /// The unique identifier for the action.
-  open var identifier: Identifier
+  public let identifier: Identifier
+
+  open var attributedTitle: NSAttributedString?
 
   /// The attributes indicating the style of the action.
   open var attributes: Attributes
 
+  open var state: State
+
+  open var handler: ActionHandler
+
   /// The object responsible for the action handler.
   public private(set) var sender: Any?
 
-  public init(title: String? = nil, image: UIImage? = nil, identifier: Identifier? = nil, attributes: Attributes = [], handler: @escaping (Action) -> Void) {
-    self.title = title
-    self.image = image
+  public init(
+    title: String? = nil,
+    subtitle: String? = nil,
+    image: UIImage? = nil,
+    identifier: Identifier? = nil,
+    attributes: Attributes = [],
+    state: State = .off,
+    handler: @escaping ActionHandler
+  ) {
     self.identifier = identifier ?? Identifier(UUID().uuidString)
     self.attributes = attributes
+    self.state = state
     self.handler = handler
+    super.init(title: title, subtitle: subtitle, image: image)
+//    UIAction
   }
 
   @objc open func performAction(_ sender: Any) {

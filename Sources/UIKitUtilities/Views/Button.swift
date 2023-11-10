@@ -209,4 +209,83 @@ import UIKit
     }
     contentEdgeInsets = insets
   }
+
+  // MARK: Context Menu
+
+  private var contextMenuInteractionController: ContextMenuInteractionController? {
+    willSet {
+      if let contextMenuInteractionController {
+        removeTarget(self, action: #selector(presentContextMenu(_:)), for: .touchDown)
+        removeInteraction(contextMenuInteractionController.interaction)
+      }
+    }
+    didSet {
+      if let contextMenuInteractionController {
+        addTarget(self, action: #selector(presentContextMenu(_:)), for: .touchDown)
+        addInteraction(contextMenuInteractionController.interaction)
+      }
+    }
+  }
+
+  open var overrideMenuWithBCMenu: Bool = false
+
+  open var bcMenu: UIMenu? {
+    didSet {
+      if let bcMenu {
+        contextMenuInteractionController = ContextMenuInteractionController(menu: bcMenu)
+      } else {
+        contextMenuInteractionController = nil
+      }
+    }
+  }
+
+  open var menuIfAvailable: UIMenu? {
+    get {
+      if #available(iOS 14.0, *), !overrideMenuWithBCMenu {
+        return menu
+      } else {
+        return bcMenu
+      }
+    }
+    set {
+      if #available(iOS 14.0, *), !overrideMenuWithBCMenu {
+        if newValue != nil && !showsMenuAsPrimaryAction {
+          showsMenuAsPrimaryAction = true
+        }
+        menu = newValue
+      } else {
+        bcMenu = newValue
+      }
+    }
+  }
+
+  @objc private func presentContextMenu(_ sender: UIButton) {
+    guard let contextMenuInteractionController else { return }
+    contextMenuInteractionController.isEnabled = true
+    contextMenuInteractionController.interaction.presentMenu(at: .zero)
+    contextMenuInteractionController.isEnabled = false
+  }
+}
+
+@available(iOS 13.0, *)
+final private class ContextMenuInteractionController: NSObject, UIContextMenuInteractionDelegate {
+
+  var interaction: UIContextMenuInteraction!
+
+  var menu: UIMenu?
+
+  var isEnabled: Bool = false
+
+  init(menu: UIMenu? = nil) {
+    super.init()
+    self.interaction = UIContextMenuInteraction(delegate: self)
+    self.menu = menu
+  }
+
+  func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+    guard isEnabled else { return nil }
+    return UIContextMenuConfiguration(actionProvider:  { [unowned self] _ in
+      menu
+    })
+  }
 }
