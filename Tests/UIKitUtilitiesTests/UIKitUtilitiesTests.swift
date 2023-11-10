@@ -1,13 +1,13 @@
 //
-//  UIKitExtraTests.swift
+//  UIKitUtilitiesTests.swift
 //
 //  Created by Sereivoan Yong on 5/30/21.
 //
 
 import XCTest
-@testable import UIKitExtra
+@testable import UIKitUtilities
 
-class UIKitExtraTests: XCTestCase {
+class UIKitUtilitiesTests: XCTestCase {
 
   func testInitializerDefaults() {
     let textField = UITextField()
