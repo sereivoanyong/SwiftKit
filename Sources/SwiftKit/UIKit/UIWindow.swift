@@ -44,4 +44,11 @@ extension UIWindow {
     })
   }
   */
+
+  public func dismiss() {
+    isHidden = true
+    if #available(iOS 13.0, *) {
+      windowScene = nil
+    }
+  }
 }
