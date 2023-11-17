@@ -39,6 +39,8 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
     } else {
       view.backgroundColor = .white
     }
+
+    // Fix swipe gesture stopped working when setting `leftBarButtonItem`
     interactivePopGestureRecognizer?.delegate = self
     delegate = self
   }
@@ -54,6 +56,13 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
       return viewControllers.count > 1
     }
     return true
+  }
+
+  public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    if gestureRecognizer === interactivePopGestureRecognizer {
+      return true
+    }
+    return false
   }
 
   // MARK: UINavigationControllerDelegate
