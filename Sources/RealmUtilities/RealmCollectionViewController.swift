@@ -17,7 +17,7 @@ open class RealmCollectionViewController<Object: ObjectBase & RealmCollectionVal
     didSet {
       if isCollectionViewLoaded {
         observeObjects()
-        reloadCollectionViewDataForInitialChange()
+        collectionView.reloadData()
         objectsDidChange()
       }
     }
@@ -54,6 +54,8 @@ open class RealmCollectionViewController<Object: ObjectBase & RealmCollectionVal
     collectionView.emptyView = emptyView
 
     observeObjects()
+    collectionView.reloadData()
+    objectsDidChange()
   }
 
   // MARK: Objects
@@ -77,9 +79,6 @@ open class RealmCollectionViewController<Object: ObjectBase & RealmCollectionVal
 
   /// Call in `.initial(_:)` and `didSet` of `objects`
   open func reloadCollectionViewDataForInitialChange() {
-    guard isCollectionViewLoaded else {
-      return
-    }
     collectionView.reloadData()
   }
 
