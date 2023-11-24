@@ -6,98 +6,63 @@
 
 import UIKit
 
-public enum RootViewLayoutProvider<RootView: UIView> {
-
-  case pinToSuperview(NSDirectionalEdgeInsets = .zero)
-
-  case pinToSuperviewLayoutMargins(Axis, NSDirectionalEdgeInsets = .zero)
-
-  case custom((RootView, UIView) -> [NSLayoutConstraint])
-
-  public static var `default`: Self {
-    return pinToSuperview()
-  }
-
-  public func constraints(_ rootView: RootView, targetView: UIView) -> [NSLayoutConstraint] {
-    switch self {
-    case .pinToSuperview(let insets):
-      return [
-        rootView.topAnchor.constraint(equalTo: targetView.topAnchor, constant: insets.top),
-        rootView.leadingAnchor.constraint(equalTo: targetView.leadingAnchor, constant: insets.leading),
-        targetView.bottomAnchor.constraint(equalTo: rootView.bottomAnchor, constant: insets.bottom),
-        targetView.trailingAnchor.constraint(equalTo: rootView.trailingAnchor, constant: insets.trailing)
-      ]
-
-    case .pinToSuperviewLayoutMargins(let axis, let insets):
-      let xAxisLayoutGuide: LayoutGuide = axis.contains(.horizontal) ? targetView.layoutMarginsGuide : targetView
-      let yAxisLayoutGuide: LayoutGuide = axis.contains(.vertical) ? targetView.layoutMarginsGuide : targetView
-      return [
-        rootView.topAnchor.constraint(equalTo: yAxisLayoutGuide.topAnchor, constant: insets.top),
-        rootView.leadingAnchor.constraint(equalTo: xAxisLayoutGuide.leadingAnchor, constant: insets.leading),
-        yAxisLayoutGuide.bottomAnchor.constraint(equalTo: rootView.bottomAnchor, constant: insets.bottom),
-        xAxisLayoutGuide.trailingAnchor.constraint(equalTo: rootView.trailingAnchor, constant: insets.trailing)
-      ]
-
-    case .custom(let block):
-      return block(rootView, targetView)
-    }
-  }
-}
-
-extension RootViewLayoutProvider: Equatable {
-
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    switch (lhs, rhs) {
-    case (.pinToSuperview(let lhsInsets), .pinToSuperview(let rhsInsets)):
-      return lhsInsets == rhsInsets
-    case (.pinToSuperviewLayoutMargins(let lhsAxis, let lhsInsets), .pinToSuperviewLayoutMargins(let rhsAxis, let rhsInsets)):
-      return lhsAxis == rhsAxis && lhsInsets == rhsInsets
-    default:
-      return false
-    }
-  }
-}
-
 public protocol HostingViewProtocol<RootView>: UIView {
 
   associatedtype RootView: UIView
 
-  var rootView: RootView { get set }
+  var rootView: RootView! { get set }
 
-  var rootViewLayoutProvider: RootViewLayoutProvider<RootView> { get }
-
-  var targetViewForRootView: UIView { get }
+  var contentView: UIView { get }
 }
 
-private var rootViewKey: Void?
-private var rootViewLayoutProviderKey: Void?
 private var rootViewConstraintsKey: Void?
+private var rootViewInsetsKey: Void?
+private var rootViewAxesPinningContentViewLayoutMarginsKey: Void?
+private var rootViewKey: Void?
 
 extension HostingViewProtocol {
 
-  private var rootViewConstraints: [NSLayoutConstraint] {
+  public var rootViewConstraints: [NSLayoutConstraint] {
     get { return associatedValue(default: [], forKey: &rootViewConstraintsKey, with: self) }
     set { setAssociatedValue(newValue, forKey: &rootViewConstraintsKey, with: self) }
   }
 
-  private func setRootView(_ rootView: RootView) {
-    assert(!rootView.translatesAutoresizingMaskIntoConstraints)
-    setAssociatedObject(rootView, forKey: &rootViewKey, with: self)
-
-    let targetView = targetViewForRootView
-    targetView.addSubview(rootView)
-    reloadRootViewConstraints()
-  }
-
-  private func reloadRootViewConstraints() {
-    NSLayoutConstraint.deactivate(rootViewConstraints)
-    rootViewConstraints = rootViewLayoutProvider.constraints(rootView, targetView: targetViewForRootView)
-    NSLayoutConstraint.activate(rootViewConstraints)
-  }
-
-  public var rootView: RootView {
+  public var rootViewInsets: DirectionalEdges<CGFloat> {
     get {
-      if let rootView = associatedObject(forKey: &rootViewKey, with: self) as RootView? {
+      return associatedValue(default: .zero, forKey: &rootViewInsetsKey, with: self)
+    }
+    set {
+      setAssociatedValue(newValue, forKey: &rootViewInsetsKey, with: self)
+      if rootViewIfLoaded != nil {
+        let rootViewConstraints = rootViewConstraints
+        rootViewConstraints[0].constant = newValue.top
+        rootViewConstraints[1].constant = newValue.leading
+        rootViewConstraints[2].constant = newValue.bottom
+        rootViewConstraints[3].constant = newValue.trailing
+      }
+    }
+  }
+
+  public var rootViewAxesPinningContentViewLayoutMargins: Axis {
+    get {
+      return associatedValue(default: [], forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self)
+    }
+    set {
+      guard newValue != rootViewAxesPinningContentViewLayoutMargins else { return }
+      setAssociatedValue(newValue, forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self)
+      if rootViewIfLoaded != nil {
+        reloadRootViewConstraints()
+      }
+    }
+  }
+
+  public var rootViewIfLoaded: RootView? {
+    return associatedObject(forKey: &rootViewKey, with: self)
+  }
+
+  public var rootView: RootView! {
+    get {
+      if let rootView = rootViewIfLoaded {
         return rootView
       }
       let rootView: RootView
@@ -110,30 +75,50 @@ extension HostingViewProtocol {
       return rootView
     }
     set(newRootView) {
-      let rootView = rootView
-      guard newRootView != rootView else {
-        return
-      }
-      rootView.removeFromSuperview()
-      rootViewConstraints.removeAll()
-
       setRootView(newRootView)
     }
   }
 
-  public var rootViewLayoutProvider: RootViewLayoutProvider<RootView> {
-    get { return associatedValue(forKey: &rootViewLayoutProviderKey, with: self) ?? .default }
-    set {
-      let rootViewLayoutProvider = rootViewLayoutProvider
-      guard rootViewLayoutProvider != newValue else {
-        return
+  private func setRootView(_ newRootView: RootView?) {
+    let rootView = rootViewIfLoaded
+    if let newRootView {
+      if newRootView != rootView {
+        rootView?.removeFromSuperview()
+        rootViewConstraints.removeAll()
       }
-      setAssociatedValue(newValue, forKey: &rootViewLayoutProviderKey, with: self)
+      assert(!newRootView.translatesAutoresizingMaskIntoConstraints)
+      contentView.addSubview(newRootView)
+
+      setAssociatedObject(newRootView, forKey: &rootViewKey, with: self)
       reloadRootViewConstraints()
+    } else {
+      rootView?.removeFromSuperview()
+      rootViewConstraints.removeAll()
     }
   }
 
-  public var targetViewForRootView: UIView {
+  private func reloadRootViewConstraints() {
+    guard let rootView else { return }
+    NSLayoutConstraint.deactivate(rootViewConstraints)
+
+    let insets = rootViewInsets
+    let axis = rootViewAxesPinningContentViewLayoutMargins
+    let contentView = contentView
+
+    let horizontalLayoutGuide: LayoutGuide = axis.contains(.horizontal) ? contentView.layoutMarginsGuide : contentView
+    let verticalLayoutGuide: LayoutGuide = axis.contains(.vertical) ? contentView.layoutMarginsGuide : contentView
+
+    let newRootViewContraints = [
+      rootView.topAnchor.constraint(equalTo: verticalLayoutGuide.topAnchor, constant: insets.top),
+      rootView.leadingAnchor.constraint(equalTo: horizontalLayoutGuide.leadingAnchor, constant: insets.leading),
+      verticalLayoutGuide.bottomAnchor.constraint(equalTo: rootView.bottomAnchor, constant: insets.bottom),
+      horizontalLayoutGuide.trailingAnchor.constraint(equalTo: rootView.trailingAnchor, constant: insets.trailing)
+    ]
+    rootViewConstraints = newRootViewContraints
+    NSLayoutConstraint.activate(newRootViewContraints)
+  }
+
+  public var contentView: UIView {
     return self
   }
 }
@@ -142,32 +127,19 @@ open class HostingView<RootView: UIView>: UIView, HostingViewProtocol {
 
 }
 
+open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingViewProtocol {
+
+}
+
+// This cell is supposed to fill its container width
 @available(iOS 14.0, *)
 open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingViewProtocol {
 
-  public var targetViewForRootView: UIView {
-    return contentView
-  }
+  open var isSeparatorConfigured: Bool = false
 
   public override init(frame: CGRect) {
     super.init(frame: frame)
-    preservesSuperviewLayoutMargins = true
-    contentView.preservesSuperviewLayoutMargins = true
-  }
-  
-  public required init?(coder: NSCoder) {
-    super.init(coder: coder)
-  }
-}
 
-open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingViewProtocol {
-
-  public var targetViewForRootView: UIView {
-    return contentView
-  }
-  
-  public override init(frame: CGRect) {
-    super.init(frame: frame)
     preservesSuperviewLayoutMargins = true
     contentView.preservesSuperviewLayoutMargins = true
   }
@@ -179,7 +151,20 @@ open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, Ho
 
 open class HostingTableViewCell<RootView: UIView>: UITableViewCell, HostingViewProtocol {
 
-  public var targetViewForRootView: UIView {
-    return contentView
+}
+
+extension HostingViewProtocol where RootView: ContentConfiguring {
+
+  public func configure(_ content: RootView.Content) {
+    rootView.configure(content)
   }
 }
+
+extension HostingView: ContentConfiguring where RootView: ContentConfiguring { }
+
+extension HostingCollectionViewCell: ContentConfiguring where RootView: ContentConfiguring { }
+
+@available(iOS 14.0, *)
+extension HostingCollectionViewListCell: ContentConfiguring where RootView: ContentConfiguring { }
+
+extension HostingTableViewCell: ContentConfiguring where RootView: ContentConfiguring { }
