@@ -121,6 +121,20 @@ extension UICollectionView {
   }
 
   @inlinable
+  public func dequeueConfigured<Cell: UICollectionViewCell & ContentConfiguring>( _ cellClass: Cell.Type, for indexPath: IndexPath, with content: Cell.Content) -> Cell {
+    let cell = dequeue(cellClass, for: indexPath)
+    cell.configure(content)
+    return cell
+  }
+
+  @inlinable
+  public func dequeueConfigured<Cell: UICollectionViewCell & Reusable & ContentConfiguring>(_ cellClass: Cell.Type, for indexPath: IndexPath, with content: Cell.Content) -> Cell {
+    let cell = dequeue(cellClass, for: indexPath)
+    cell.configure(content)
+    return cell
+  }
+
+  @inlinable
   public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String = String(describing: View.self), ofKind kind: String, for indexPath: IndexPath) -> View {
     dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
   }
