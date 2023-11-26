@@ -4,6 +4,8 @@
 //  Created by Sereivoan Yong on 1/24/20.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 extension UIViewController {
@@ -48,14 +50,7 @@ extension UIViewController {
     return tapGestureRecognizer
   }
 
-  @objc
-  public var topMostViewController: UIViewController? {
-    if let navigationController = self as? UINavigationController, let visibleViewController = navigationController.visibleViewController {
-      return visibleViewController.topMostViewController
-    }
-    if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
-      return selectedViewController.topMostViewController
-    }
+  @objc public var topMostViewController: UIViewController? {
     if let presentedViewController {
       return presentedViewController.topMostViewController
     }
@@ -70,9 +65,13 @@ extension UIViewController {
     UIApplication.shared.keyWindow?.rootViewController?.present(self, animated: animated, completion: completion)
   }
 
-  @inlinable
   public func showDetail(_ detailViewController: UIViewController, sender: Any?) {
     showDetailViewController(detailViewController, sender: sender)
+  }
+
+  public func showAlert(title: String?, message: String?, cancelActionTitle: String?, cancelActionHandler: ((UIAlertAction) -> Void)? = nil) {
+    let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert, cancelActionTitle: cancelActionTitle)
+    present(alertController, animated: true)
   }
 
   public static var embeddingNavigationControllerClass: UINavigationController.Type?
@@ -84,3 +83,5 @@ extension UIViewController {
     return navigationController
   }
 }
+
+#endif
