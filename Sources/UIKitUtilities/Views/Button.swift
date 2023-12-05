@@ -59,7 +59,7 @@ import UIKit
     configure()
   }
 
-  private func configure() {
+  open func configure() {
     var bcConfiguration = BCConfiguration(style: configurationStyle)
     bcConfiguration.size = configurationSize
     bcConfiguration.cornerStyle = configurationCornerStyle
