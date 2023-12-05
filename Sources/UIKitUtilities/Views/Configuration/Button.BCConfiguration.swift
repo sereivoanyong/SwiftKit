@@ -76,7 +76,7 @@ extension Button {
       self.style = style
     }
 
-    public let style: Style
+    public var style: Style
 
     public var background: BCBackgroundConfiguration = .init(cornerRadius: 5.95)
 

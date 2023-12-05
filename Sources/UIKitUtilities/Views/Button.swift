@@ -9,9 +9,29 @@ import UIKit
 @available(iOS 13.0, *)
 @IBDesignable open class Button: UIButton {
 
-  open var bcConfiguration: BCConfiguration!
+  open var bcConfiguration: BCConfiguration! {
+    didSet {
+      guard let bcConfiguration else { return }
+      if let backgroundView, bcConfiguration.cornerStyle == .fixed {
+        backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
+      }
+    }
+  }
 
-  open var configurationStyle: BCConfiguration.Style = .plain
+  open var configurationStyle: BCConfiguration.Style = .plain {
+    didSet {
+      guard needsBCConfiguration && bcConfiguration != nil else { return }
+      bcConfiguration.style = configurationStyle
+      if configurationStyle == .filled {
+        setTitleColor(.white, for: .normal)
+      } else {
+        setTitleColor(nil, for: .normal)
+      }
+      if let backgroundView {
+        backgroundView.setNeedsDisplay()
+      }
+    }
+  }
   @IBInspectable public var configurationStyleRaw: Int {
     get { return configurationStyle.rawValue }
     set { configurationStyle = BCConfiguration.Style(rawValue: newValue) ?? .plain }
@@ -43,7 +63,34 @@ import UIKit
 
   private var backgroundView: BCBackgroundView!
 
-  private var highlights: Bool = false {
+  private var needsBCConfiguration: Bool {
+    if #available(iOS 15.0, *), !overrideConfigurationWithBCConfiguration {
+      return false
+    }
+    return true
+  }
+
+  open override var isEnabled: Bool {
+    didSet {
+      if needsBCConfiguration && bcConfiguration != nil {
+        if let backgroundView {
+          backgroundView.setNeedsDisplay()
+        }
+      }
+    }
+  }
+
+  open override var isSelected: Bool {
+    didSet {
+      if needsBCConfiguration && bcConfiguration != nil {
+        if let backgroundView {
+          backgroundView.setNeedsDisplay()
+        }
+      }
+    }
+  }
+
+  private var _isHighlights: Bool = false {
     didSet {
       backgroundView?.setNeedsDisplay()
     }
@@ -60,25 +107,26 @@ import UIKit
   }
 
   open func configure() {
-    var bcConfiguration = BCConfiguration(style: configurationStyle)
-    bcConfiguration.size = configurationSize
-    bcConfiguration.cornerStyle = configurationCornerStyle
-    bcConfiguration.imagePlacement = configurationImagePlacement
-    bcConfiguration.imagePadding = configurationImagePadding
+    var newBCConfiguration = BCConfiguration(style: configurationStyle)
+    newBCConfiguration.size = configurationSize
+    newBCConfiguration.cornerStyle = configurationCornerStyle
+    newBCConfiguration.imagePlacement = configurationImagePlacement
+    newBCConfiguration.imagePadding = configurationImagePadding
 
     if #available(iOS 15.0, *), !overrideConfigurationWithBCConfiguration {
-      configuration = Configuration(bcConfiguration)
+      configuration = Configuration(newBCConfiguration)
       return
     }
-    self.bcConfiguration = bcConfiguration
+    bcConfiguration = newBCConfiguration
 
-    if bcConfiguration.style == .filled {
+    if configurationStyle == .filled {
       setTitleColor(.white, for: .normal)
+    } else {
+      setTitleColor(nil, for: .normal)
     }
+    setTitleColor(.tertiaryLabel, for: .disabled)
 
-    backgroundView = BCBackgroundView(configuration: bcConfiguration.background)
-    backgroundView.configuration = bcConfiguration.background
-    backgroundView.frame = bounds
+    backgroundView = BCBackgroundView(frame: bounds, configuration: bcConfiguration.background)
     backgroundView.autoresizingMask = .flexibleSize
     insertSubview(backgroundView, at: 0)
 
@@ -94,17 +142,29 @@ import UIKit
     case .large:
       backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
     case .capsule:
-      frameObservationForCorner = observe(\.frame, options: [.initial, .new]) { button, _ in
-        button.backgroundView.configuration.cornerRadius = button.frame.height / 2
+      frameObservationForCorner = backgroundView.observe(\.frame, options: [.initial, .new]) { backgroundView, _ in
+        backgroundView.configuration.cornerRadius = backgroundView.frame.height / 2
       }
     }
 
     backgroundView.configuration.backgroundColorTransformer = .init { [unowned self] color in
+      guard isEnabled else {
+        switch bcConfiguration.style {
+        case .plain:
+          return .clear
+        case .gray:
+          return .tertiarySystemFill
+        case .tinted:
+          return .tertiarySystemFill
+        case .filled:
+          return .tertiarySystemFill
+        }
+      }
       switch bcConfiguration.style {
       case .plain:
         return .clear
       case .gray:
-        if highlights {
+        if _isHighlights {
           if traitCollection.userInterfaceStyle == .dark {
             return .systemGray.withAlphaComponent(0.35)
           } else {
@@ -113,12 +173,12 @@ import UIKit
         }
         return .secondarySystemFill
       case .tinted:
-        if highlights {
+        if _isHighlights {
           return color.withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.18 : 0.12)
         }
         return color.withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.25 : 0.18)
       case .filled:
-        if highlights {
+        if _isHighlights {
           return color.withAlphaComponent(0.75)
         }
         return color
@@ -133,19 +193,19 @@ import UIKit
   }
 
   @objc private func didTouchDownInside(_ sender: Button) {
-    highlights = true
+    _isHighlights = true
   }
 
   @objc private func didTouchUpInside(_ sender: Button) {
-    highlights = false
+    _isHighlights = false
   }
 
   @objc private func didDragOutside(_ sender: Button) {
-    highlights = false
+    _isHighlights = false
   }
 
   @objc private func didDragInside(_ sender: Button) {
-    highlights = true
+    _isHighlights = true
   }
 
   open override func layoutSubviews() {

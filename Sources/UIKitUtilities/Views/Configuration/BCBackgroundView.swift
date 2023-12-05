@@ -14,9 +14,9 @@ open class BCBackgroundView: UIView {
     }
   }
 
-  public init(configuration: BCBackgroundConfiguration) {
+  public init(frame: CGRect = .zero, configuration: BCBackgroundConfiguration) {
     self.configuration = configuration
-    super.init(frame: .zero)
+    super.init(frame: frame)
     isUserInteractionEnabled = false
     clipsToBounds = true
     isOpaque = false
