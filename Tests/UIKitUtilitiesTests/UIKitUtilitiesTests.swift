@@ -29,4 +29,36 @@ class UIKitUtilitiesTests: XCTestCase {
     XCTAssertEqual(textField.textColor, decimalTextField.textColor)
     XCTAssertEqual(textField.placeholder, decimalTextField.placeholder)
   }
+
+  @available(iOS 15.0, *)
+  func testButtonDefaults() {
+    var configuration = UIButton.Configuration.plain()
+    print("Corner Radius | Size & Corner Style")
+    for size in UIButton.Configuration.Size.allCases {
+      configuration.buttonSize = size
+      for cornerStyle in UIButton.Configuration.CornerStyle.allCases {
+        configuration.cornerStyle = cornerStyle
+        print(size, cornerStyle, configuration.background.cornerRadius)
+      }
+    }
+
+    print("Content Insets | Size & Corner Style")
+    for size in UIButton.Configuration.Size.allCases {
+      configuration.buttonSize = size
+      configuration.setDefaultContentInsets()
+      print(size, configuration.contentInsets)
+    }
+  }
+}
+
+@available(iOS 15.0, *)
+extension UIButton.Configuration.Size: CaseIterable {
+
+  public static let allCases: [Self] = [.mini, .small, .medium, .large]
+}
+
+@available(iOS 15.0, *)
+extension UIButton.Configuration.CornerStyle: CaseIterable {
+
+  public static let allCases: [Self] = [.fixed, .dynamic, .small, .medium, .large, .capsule]
 }

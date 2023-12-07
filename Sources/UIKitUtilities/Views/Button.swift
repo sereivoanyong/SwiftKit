@@ -5,63 +5,17 @@
 //
 
 import UIKit
+import SwiftKit
 
 @available(iOS 13.0, *)
 @IBDesignable open class Button: UIButton {
 
-  open var bcConfiguration: BCConfiguration! {
-    didSet {
-      guard let bcConfiguration else { return }
-      if let backgroundView, bcConfiguration.cornerStyle == .fixed {
-        backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
-      }
-    }
-  }
-
-  open var configurationStyle: BCConfiguration.Style = .plain {
-    didSet {
-      guard needsBCConfiguration && bcConfiguration != nil else { return }
-      bcConfiguration.style = configurationStyle
-      if configurationStyle == .filled {
-        setTitleColor(.white, for: .normal)
-      } else {
-        setTitleColor(nil, for: .normal)
-      }
-      if let backgroundView {
-        backgroundView.setNeedsDisplay()
-      }
-    }
-  }
-  @IBInspectable public var configurationStyleRaw: Int {
-    get { return configurationStyle.rawValue }
-    set { configurationStyle = BCConfiguration.Style(rawValue: newValue) ?? .plain }
-  }
-
-  open var configurationSize: BCConfiguration.Size = .medium
-  @IBInspectable public var configurationSizeRaw: Int {
-    get { return configurationSize.rawValue }
-    set { configurationSize = BCConfiguration.Size(rawValue: newValue) ?? .medium }
-  }
-
-  open var configurationCornerStyle: BCConfiguration.CornerStyle = .dynamic
-  @IBInspectable public var configurationCornerStyleRaw: Int {
-    get { return configurationCornerStyle.rawValue }
-    set { configurationCornerStyle = BCConfiguration.CornerStyle(rawValue: newValue) ?? .dynamic }
-  }
-
-  open var configurationImagePlacement: NSDirectionalRectEdge = .leading // 1, 2, 4, 8
-  @IBInspectable public var configurationImagePlacementRaw: UInt {
-    get { return configurationImagePlacement.rawValue }
-    set { configurationImagePlacement = NSDirectionalRectEdge(rawValue: newValue) }
-  }
-
-  @IBInspectable open var configurationImagePadding: CGFloat = 0
-
-  open var overrideConfigurationWithBCConfiguration: Bool = true
-
-  private var frameObservationForCorner: NSKeyValueObservation?
-
-  private var backgroundView: BCBackgroundView!
+  lazy private var backgroundView: BCBackgroundView = {
+    let backgroundView = BCBackgroundView(frame: bounds, configuration: bcConfiguration.background)
+    backgroundView.autoresizingMask = .flexibleSize
+    insertSubview(backgroundView, at: 0)
+    return backgroundView
+  }()
 
   private var needsBCConfiguration: Bool {
     if #available(iOS 15.0, *), !overrideConfigurationWithBCConfiguration {
@@ -70,29 +24,166 @@ import UIKit
     return true
   }
 
+  open var overrideConfigurationWithBCConfiguration: Bool = true
+
+  open var bcConfiguration: BCConfiguration = .init() {
+    didSet {
+      guard needsBCConfiguration else { return }
+
+      if bcConfiguration.style != oldValue.style {
+        reloadColorsForImageAndTitle()
+        reloadColorForImageAndTitleForCurrentState()
+        reloadBackgroundBackgroundColorForCurrentState()
+      }
+      if bcConfiguration.size != oldValue.size || bcConfiguration.cornerStyle != oldValue.cornerStyle {
+        reloadBackgroundCornerRadius()
+      }
+      if bcConfiguration.background != oldValue.background {
+        backgroundView.configuration = bcConfiguration.background
+      }
+      if bcConfiguration.contentInsets != oldValue.contentInsets {
+        setNeedsLayout()
+      }
+    }
+  }
+
+  /// Default is `.plain`.
+  open var configurationStyle: BCConfiguration.Style {
+    get { return bcConfiguration.style }
+    set { bcConfiguration.style = newValue }
+  }
+  @IBInspectable public var configurationStyleRaw: Int {
+    get { return bcConfiguration.style.rawValue }
+    set { bcConfiguration.style = BCConfiguration.Style(rawValue: newValue) ?? .plain }
+  }
+
+  /// Default is `.medium`.
+  open var configurationSize: BCConfiguration.Size {
+    get { return bcConfiguration.size }
+    set { bcConfiguration.size = newValue }
+  }
+  @IBInspectable public var configurationSizeRaw: Int {
+    get { return bcConfiguration.size.rawValue }
+    set { bcConfiguration.size = BCConfiguration.Size(rawValue: newValue) ?? .medium }
+  }
+
+  /// Default is `.dynamic`.
+  open var configurationCornerStyle: BCConfiguration.CornerStyle {
+    get { return bcConfiguration.cornerStyle }
+    set { bcConfiguration.cornerStyle = newValue }
+  }
+  @IBInspectable public var configurationCornerStyleRaw: Int {
+    get { return bcConfiguration.cornerStyle.rawValue }
+    set { bcConfiguration.cornerStyle = BCConfiguration.CornerStyle(rawValue: newValue) ?? .dynamic }
+  }
+
+  /// Default is `nil`.
+  @IBInspectable open var configurationBaseForegroundColor: UIColor? {
+    get { return bcConfiguration.baseForegroundColor }
+    set { bcConfiguration.baseForegroundColor = newValue }
+  }
+
+  /// Default is `nil`.
+  @IBInspectable open var configurationBaseBackgroundColor: UIColor? {
+    get { return bcConfiguration.baseBackgroundColor }
+    set { bcConfiguration.baseBackgroundColor = newValue }
+  }
+
+  /// Default is `leading`.
+  open var configurationImagePlacement: NSDirectionalRectEdge {
+    get { return bcConfiguration.imagePlacement }
+    set { bcConfiguration.imagePlacement = newValue }
+  }
+  @IBInspectable public var configurationImagePlacementRaw: UInt { // top=1, leading=2 (default), bottom=4, trailing=8
+    get { return bcConfiguration.imagePlacement.rawValue }
+    set { bcConfiguration.imagePlacement = NSDirectionalRectEdge(rawValue: newValue) }
+  }
+
+  /// Default is 0.
+  @IBInspectable open var configurationImagePadding: CGFloat {
+    get { return bcConfiguration.imagePadding }
+    set { bcConfiguration.imagePadding = newValue }
+  }
+
+  open override var frame: CGRect {
+    didSet {
+      reloadBackgroundCornerRadius()
+    }
+  }
+
   open override var isEnabled: Bool {
     didSet {
-      if needsBCConfiguration && bcConfiguration != nil {
-        if let backgroundView {
-          backgroundView.setNeedsDisplay()
-        }
-      }
+      reloadState()
     }
   }
 
   open override var isSelected: Bool {
     didSet {
-      if needsBCConfiguration && bcConfiguration != nil {
-        if let backgroundView {
-          backgroundView.setNeedsDisplay()
-        }
-      }
+      reloadState()
     }
   }
 
-  private var _isHighlights: Bool = false {
+  open override var isHighlighted: Bool {
     didSet {
-      backgroundView?.setNeedsDisplay()
+      reloadState()
+    }
+  }
+
+  var currentState: State = .normal {
+    didSet {
+      reloadColorForImageAndTitleForCurrentState()
+      reloadBackgroundBackgroundColorForCurrentState()
+    }
+  }
+
+  var colorForImageAndTitleForState: [State.RawValue: UIColor] = [:]
+
+  // MARK: Override Size
+
+  /// If this value is set to non-nil, `contentEdgeInsets`, `titleEdgeInsets`, and `imageEdgeInsets` will be ignored.
+  /// Must be set before `configure()`
+  open var overrideSize: CGSize?
+
+  open override var intrinsicContentSize: CGSize {
+    return overrideSize ?? super.intrinsicContentSize
+  }
+
+  open override func sizeThatFits(_ size: CGSize) -> CGSize {
+    return overrideSize ?? super.sizeThatFits(size)
+  }
+
+  // MARK: Init
+
+  public override init(frame: CGRect) {
+    super.init(frame: frame)
+    adjustsImageWhenHighlighted = false
+    adjustsImageWhenDisabled = false
+    check()
+    reloadState()
+  }
+  
+  public required init?(coder: NSCoder) {
+    super.init(coder: coder)
+  }
+
+  open override func awakeFromNib() {
+    super.awakeFromNib()
+    check()
+    reloadState()
+    configure()
+  }
+
+  private func check() {
+    if buttonType != .custom {
+      printIfDEBUG("`buttonType` must be `.custom`")
+    }
+    if adjustsImageWhenHighlighted {
+      printIfDEBUG("`adjustsImageWhenHighlighted` should be `false`")
+      adjustsImageWhenHighlighted = false
+    }
+    if adjustsImageWhenDisabled {
+      printIfDEBUG("`adjustsImageWhenDisabled` should be `false`")
+      adjustsImageWhenDisabled = false
     }
   }
 
@@ -101,120 +192,248 @@ import UIKit
     configure()
   }
 
-  open override func awakeFromNib() {
-    super.awakeFromNib()
-    configure()
-  }
-
   open func configure() {
-    var newBCConfiguration = BCConfiguration(style: configurationStyle)
-    newBCConfiguration.size = configurationSize
-    newBCConfiguration.cornerStyle = configurationCornerStyle
-    newBCConfiguration.imagePlacement = configurationImagePlacement
-    newBCConfiguration.imagePadding = configurationImagePadding
-
     if #available(iOS 15.0, *), !overrideConfigurationWithBCConfiguration {
-      configuration = Configuration(newBCConfiguration)
+      configuration = Configuration(bcConfiguration)
       return
     }
-    bcConfiguration = newBCConfiguration
 
-    if configurationStyle == .filled {
-      setTitleColor(.white, for: .normal)
+    reloadColorsForImageAndTitle()
+    reloadColorForImageAndTitleForCurrentState()
+    reloadBackgroundBackgroundColorForCurrentState()
+  }
+
+  private func reloadState() {
+    if isEnabled {
+      if isHighlighted {
+        if isSelected {
+          currentState = [.highlighted, .selected]
+        } else {
+          currentState = [.highlighted]
+        }
+      } else {
+        if isSelected {
+          currentState = .selected
+        } else {
+          currentState = .normal
+        }
+      }
     } else {
-      setTitleColor(nil, for: .normal)
+      currentState = .disabled
     }
-    setTitleColor(.tertiaryLabel, for: .disabled)
+  }
 
-    backgroundView = BCBackgroundView(frame: bounds, configuration: bcConfiguration.background)
-    backgroundView.autoresizingMask = .flexibleSize
-    insertSubview(backgroundView, at: 0)
+  func colorForImageAndTitle(for state: State) -> UIColor {
+    return colorForImageAndTitleForState[state.rawValue] ?? tintColor
+  }
 
+  func setColorForImageAndTitle(_ color: UIColor?, for state: State) {
+    colorForImageAndTitleForState[state.rawValue] = color
+  }
+
+  private func reloadColorsForImageAndTitle() {
+    guard needsBCConfiguration else { return }
+
+    let titleColor: UIColor
+    let highlightedTitleColor: UIColor
+    var selectedTitleColor: UIColor?
+    let highlightedSelectedTitleColor: UIColor
+    switch configurationStyle {
+    case .plain:
+      titleColor = configurationBaseForegroundColor ?? tintColor
+      highlightedTitleColor = UIColor { traitCollection in
+        let resolvedColor = titleColor.resolvedColor(with: traitCollection)
+        if traitCollection.userInterfaceStyle == .dark {
+          let color = resolvedColor.withAlphaComponent(0.8)
+          return color.opaque(on: .white) ?? color
+        } else {
+          return resolvedColor.withAlphaComponent(0.75)
+        }
+      }
+      highlightedSelectedTitleColor = UIColor { traitCollection in
+        let resolvedColor = titleColor.resolvedColor(with: traitCollection)
+        if traitCollection.userInterfaceStyle == .dark {
+          let color = resolvedColor.withAlphaComponent(0.9)
+          return color.opaque(on: .white) ?? color
+        } else {
+          return resolvedColor.withAlphaComponent(0.75)
+        }
+      }
+    case .gray:
+      titleColor = configurationBaseForegroundColor ?? tintColor
+      highlightedTitleColor = UIColor { traitCollection in
+        let resolvedColor = titleColor.resolvedColor(with: traitCollection)
+        if traitCollection.userInterfaceStyle == .dark {
+          let color = resolvedColor.withAlphaComponent(0.9)
+          return color.opaque(on: .white) ?? color
+        } else {
+          return resolvedColor.withAlphaComponent(0.75)
+        }
+      }
+      highlightedSelectedTitleColor = UIColor { traitCollection in
+        let resolvedColor = titleColor.resolvedColor(with: traitCollection)
+        if traitCollection.userInterfaceStyle == .dark {
+          let color = resolvedColor.withAlphaComponent(0.9)
+          return color.opaque(on: .white) ?? color
+        } else {
+          return resolvedColor.withAlphaComponent(0.75)
+        }
+      }
+    case .tinted:
+      titleColor = configurationBaseForegroundColor ?? tintColor
+      highlightedTitleColor = UIColor { traitCollection in
+        let resolvedColor = titleColor.resolvedColor(with: traitCollection)
+        if traitCollection.userInterfaceStyle == .dark {
+          let color = resolvedColor.withAlphaComponent(0.9)
+          return color.opaque(on: .white) ?? color
+        } else {
+          return resolvedColor.withAlphaComponent(0.75)
+        }
+      }
+      selectedTitleColor = .white
+      highlightedSelectedTitleColor = .white.withAlphaComponent(0.75)
+    case .filled:
+      titleColor = configurationBaseForegroundColor ?? .white
+      highlightedTitleColor = UIColor { traitCollection in
+        let resolvedColor = titleColor.resolvedColor(with: traitCollection)
+        return resolvedColor.withAlphaComponent(0.75)
+      }
+      selectedTitleColor = .white
+      highlightedSelectedTitleColor = .white.withAlphaComponent(0.75)
+    }
+    setColorForImageAndTitle(titleColor, for: .normal)
+    setColorForImageAndTitle(highlightedTitleColor, for: .highlighted)
+    setColorForImageAndTitle(selectedTitleColor, for: .selected)
+    setColorForImageAndTitle(highlightedSelectedTitleColor, for: [.highlighted, .selected])
+    setColorForImageAndTitle(.tertiaryLabel, for: .disabled)
+  }
+
+  private func reloadColorForImageAndTitleForCurrentState() {
+    guard needsBCConfiguration else { return }
+
+    let color = colorForImageAndTitle(for: currentState)
+    imageView?.tintColor = color
+    setTitleColor(color, for: .normal)
+  }
+
+  /// Based on `frame`, `size` and `cornerStyle`. Currently all `cornerStyle`s are not fully supported.
+  private func reloadBackgroundCornerRadius() {
+    guard needsBCConfiguration else { return }
+
+    let cornerRadius: CGFloat
     switch bcConfiguration.cornerStyle {
     case .fixed:
-      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
-    case .dynamic:
-      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
-    case .small:
-      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
-    case .medium:
-      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
-    case .large:
-      backgroundView.configuration.cornerRadius = bcConfiguration.background.cornerRadius
+      return
     case .capsule:
-      frameObservationForCorner = backgroundView.observe(\.frame, options: [.initial, .new]) { backgroundView, _ in
-        backgroundView.configuration.cornerRadius = backgroundView.frame.height / 2
+      cornerRadius = frame.size.height / 2
+    default:
+      switch bcConfiguration.size {
+      case .mini:   cornerRadius = 14
+      case .small:  cornerRadius = 14
+      case .medium: cornerRadius = 5.95
+      case .large:  cornerRadius = 8.75
       }
     }
+    backgroundView.configuration.cornerRadius = cornerRadius
+  }
 
-    backgroundView.configuration.backgroundColorTransformer = .init { [unowned self] color in
-      guard isEnabled else {
-        switch bcConfiguration.style {
-        case .plain:
-          return .clear
-        case .gray:
-          return .tertiarySystemFill
-        case .tinted:
-          return .tertiarySystemFill
-        case .filled:
-          return .tertiarySystemFill
-        }
-      }
+  /// Based on `currentState` and `style`.
+  private func reloadBackgroundBackgroundColorForCurrentState() {
+    guard needsBCConfiguration else { return }
+
+    let backgroundColor: UIColor
+    if !isEnabled {
       switch bcConfiguration.style {
       case .plain:
-        return .clear
+        backgroundColor = .clear
       case .gray:
-        if _isHighlights {
+        backgroundColor = .tertiarySystemFill
+      case .tinted:
+        backgroundColor = .tertiarySystemFill
+      case .filled:
+        backgroundColor = .tertiarySystemFill
+      }
+    } else if isSelected {
+      if isHighlighted {
+        switch bcConfiguration.style {
+        case .plain:
+          backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.18 : 0.12)
+        case .gray:
+          backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.18 : 0.12)
+        case .tinted:
           if traitCollection.userInterfaceStyle == .dark {
-            return .systemGray.withAlphaComponent(0.35)
+            let color = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(0.8)
+            backgroundColor = color.opaque(on: .white) ?? color
           } else {
-            return .secondarySystemFill.withAlphaComponent(0.12)
+            backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(0.75)
+          }
+        case .filled:
+          if traitCollection.userInterfaceStyle == .dark {
+            let color = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(0.8)
+            backgroundColor = color.opaque(on: .white) ?? color
+          } else {
+            backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(0.75)
           }
         }
-        return .secondarySystemFill
+      } else {
+        switch bcConfiguration.style {
+        case .plain:
+          backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.25 : 0.18)
+        case .gray:
+          backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.25 : 0.18)
+        case .tinted:
+          backgroundColor = configurationBaseBackgroundColor ?? tintColor
+        case .filled:
+          backgroundColor = configurationBaseBackgroundColor ?? tintColor
+        }
+      }
+    } else if isHighlighted {
+      switch bcConfiguration.style {
+      case .plain:
+        backgroundColor = configurationBaseBackgroundColor ?? .clear
+      case .gray:
+        // R:0.55 G:0.55 B:0.57 A:0.35
+        backgroundColor = traitCollection.userInterfaceStyle == .dark ? (configurationBaseBackgroundColor ?? UIColor(red: 140/255.0, green: 140/255.0, blue: 147/255.0, alpha: 0.35)) : (configurationBaseBackgroundColor ?? .secondarySystemFill).withAlphaComponent(0.12)
       case .tinted:
-        if _isHighlights {
-          return color.withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.18 : 0.12)
-        }
-        return color.withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.25 : 0.18)
+        backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.18 : 0.12)
       case .filled:
-        if _isHighlights {
-          return color.withAlphaComponent(0.75)
+        if traitCollection.userInterfaceStyle == .dark {
+          let color = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(0.8)
+          backgroundColor = color.opaque(on: .white) ?? color
+        } else {
+          backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(0.75)
         }
-        return color
+      }
+    } else {
+      switch bcConfiguration.style {
+      case .plain:
+        backgroundColor = configurationBaseBackgroundColor ?? .clear
+      case .gray:
+        backgroundColor = configurationBaseBackgroundColor ?? .secondarySystemFill
+      case .tinted:
+        backgroundColor = (configurationBaseBackgroundColor ?? tintColor).withAlphaComponent(traitCollection.userInterfaceStyle == .dark ? 0.25 : 0.18)
+      case .filled:
+        backgroundColor = (configurationBaseBackgroundColor ?? tintColor)
       }
     }
 
-    // Create action events for all possible interactions with this control
-    addTarget(self, action: #selector(didTouchDownInside(_:)), for: [.touchDown, .touchDownRepeat])
-    addTarget(self, action: #selector(didTouchUpInside(_:)), for: .touchUpInside)
-    addTarget(self, action: #selector(didDragOutside(_:)), for: [.touchDragExit, .touchCancel])
-    addTarget(self, action: #selector(didDragInside(_:)), for: .touchDragEnter)
-  }
-
-  @objc private func didTouchDownInside(_ sender: Button) {
-    _isHighlights = true
-  }
-
-  @objc private func didTouchUpInside(_ sender: Button) {
-    _isHighlights = false
-  }
-
-  @objc private func didDragOutside(_ sender: Button) {
-    _isHighlights = false
-  }
-
-  @objc private func didDragInside(_ sender: Button) {
-    _isHighlights = true
+    backgroundView.configuration.backgroundColor = backgroundColor
   }
 
   open override func layoutSubviews() {
     super.layoutSubviews()
 
-    guard let bcConfiguration else { return }
+    guard needsBCConfiguration else { return }
 
     if subviews.first != backgroundView {
       sendSubviewToBack(backgroundView)
+    }
+
+    if overrideSize != nil {
+      contentEdgeInsets = .zero
+      titleEdgeInsets = .zero
+      imageEdgeInsets = .zero
+      return
     }
 
     var insets = bcConfiguration.contentInsets.resolved(with: effectiveUserInterfaceLayoutDirection)
@@ -268,6 +487,15 @@ import UIKit
       }
     }
     contentEdgeInsets = insets
+  }
+
+  open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+
+    if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+      reloadColorForImageAndTitleForCurrentState()
+      reloadBackgroundBackgroundColorForCurrentState()
+    }
   }
 
   // MARK: Context Menu

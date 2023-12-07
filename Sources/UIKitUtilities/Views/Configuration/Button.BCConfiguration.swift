@@ -68,15 +68,28 @@ extension Button.BCConfiguration {
 }
 
 @available(iOS 13.0, *)
+extension Button.BCConfiguration {
+
+  func cornerRadius(frame: CGRect) -> CGFloat {
+    switch size {
+    case .mini:   return 14
+    case .small:  return 14
+    case .medium: return 5.95
+    case .large:  return 8.75
+    }
+  }
+}
+
+@available(iOS 13.0, *)
 extension Button {
 
   public struct BCConfiguration: Hashable {
 
-    public init(style: Style) {
+    public init(style: Style = .plain) {
       self.style = style
     }
 
-    public var style: Style
+    public var style: Style = .plain
 
     public var background: BCBackgroundConfiguration = .init(cornerRadius: 5.95)
 
@@ -84,24 +97,28 @@ extension Button {
 
     public var size: Size = .medium {
       didSet {
-        switch size {
-        case .mini:
-          background.cornerRadius = 14
-          contentInsets = .init(top: 5, leading: 10, bottom: 5, trailing: 10)
-        case .small:
-          background.cornerRadius = 14
-          contentInsets = .init(top: 5, leading: 10, bottom: 5, trailing: 10)
-        case .medium:
-          background.cornerRadius = 5.95
-          contentInsets = .init(top: 7, leading: 12, bottom: 7, trailing: 12)
-        case .large:
-          background.cornerRadius = 8.75
-          contentInsets = .init(top: 15, leading: 20, bottom: 15, trailing: 20)
-        }
+        setDefaultContentInsets()
       }
     }
 
+    public var baseForegroundColor: UIColor?
+
+    public var baseBackgroundColor: UIColor?
+
     public var contentInsets: NSDirectionalEdgeInsets = NSDirectionalEdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12)
+
+    public mutating func setDefaultContentInsets() {
+      switch size {
+      case .mini:
+        contentInsets = .init(top: 5, leading: 10, bottom: 5, trailing: 10)
+      case .small:
+        contentInsets = .init(top: 5, leading: 10, bottom: 5, trailing: 10)
+      case .medium:
+        contentInsets = .init(top: 7, leading: 12, bottom: 7, trailing: 12)
+      case .large:
+        contentInsets = .init(top: 15, leading: 20, bottom: 15, trailing: 20)
+      }
+    }
 
     /// The edge against which the button places the image.
     public var imagePlacement: NSDirectionalRectEdge = .leading
@@ -149,6 +166,8 @@ extension UIButton.Configuration {
     case .capsule:
       cornerStyle = .capsule
     }
+    baseForegroundColor = bcConfiguration.baseForegroundColor
+    baseBackgroundColor = bcConfiguration.baseBackgroundColor
     imagePlacement = bcConfiguration.imagePlacement
     imagePadding = bcConfiguration.imagePadding
   }
