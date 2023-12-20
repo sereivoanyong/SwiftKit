@@ -1,10 +1,11 @@
 //
-//  HostingView.swift
+//  HostingViewProtocol.swift
 //
-//  Created by Sereivoan Yong on 10/26/22.
+//  Created by Sereivoan Yong on 12/20/23.
 //
 
 import UIKit
+import SwiftKit
 
 public protocol HostingViewProtocol<RootView>: UIView {
 
@@ -13,6 +14,8 @@ public protocol HostingViewProtocol<RootView>: UIView {
   var rootView: RootView! { get set }
 
   var contentView: UIView { get }
+
+  func loadRootView() -> RootView
 }
 
 private var rootViewConstraintsKey: Void?
@@ -65,17 +68,20 @@ extension HostingViewProtocol {
       if let rootView = rootViewIfLoaded {
         return rootView
       }
-      let rootView: RootView
-      if let rootViewClass = RootView.self as? (UIView & NibLoadable).Type {
-        rootView = rootViewClass.loadFromNib() as! RootView
-      } else {
-        rootView = RootView()
-      }
+      let rootView = loadRootView()
       setRootView(rootView)
       return rootView
     }
     set(newRootView) {
       setRootView(newRootView)
+    }
+  }
+
+  public func loadRootView() -> RootView {
+    if let rootViewClass = RootView.self as? (UIView & NibLoadable).Type {
+      return rootViewClass.loadFromNib() as! RootView
+    } else {
+      return RootView()
     }
   }
 
@@ -123,48 +129,9 @@ extension HostingViewProtocol {
   }
 }
 
-open class HostingView<RootView: UIView>: UIView, HostingViewProtocol {
-
-}
-
-open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingViewProtocol {
-
-}
-
-// This cell is supposed to fill its container width
-@available(iOS 14.0, *)
-open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingViewProtocol {
-
-  open var isSeparatorConfigured: Bool = false
-
-  public override init(frame: CGRect) {
-    super.init(frame: frame)
-
-    preservesSuperviewLayoutMargins = true
-    contentView.preservesSuperviewLayoutMargins = true
-  }
-
-  public required init?(coder: NSCoder) {
-    super.init(coder: coder)
-  }
-}
-
-open class HostingTableViewCell<RootView: UIView>: UITableViewCell, HostingViewProtocol {
-
-}
-
 extension HostingViewProtocol where RootView: ContentConfiguring {
 
   public func configure(_ content: RootView.Content) {
     rootView.configure(content)
   }
 }
-
-extension HostingView: ContentConfiguring where RootView: ContentConfiguring { }
-
-extension HostingCollectionViewCell: ContentConfiguring where RootView: ContentConfiguring { }
-
-@available(iOS 14.0, *)
-extension HostingCollectionViewListCell: ContentConfiguring where RootView: ContentConfiguring { }
-
-extension HostingTableViewCell: ContentConfiguring where RootView: ContentConfiguring { }
