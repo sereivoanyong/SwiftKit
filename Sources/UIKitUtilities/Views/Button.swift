@@ -430,6 +430,9 @@ import SwiftKit
     }
 
     if overrideSize != nil {
+      if bcConfiguration.cornerStyle == .capsule {
+        backgroundView.configuration.cornerRadius = frame.size.height / 2
+      }
       contentEdgeInsets = .zero
       titleEdgeInsets = .zero
       imageEdgeInsets = .zero
