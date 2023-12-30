@@ -7,15 +7,20 @@
 import UIKit
 import SwiftKit
 
+public protocol HostingCollectionViewCellProtocol<RootView>: HostingViewProtocol, UICollectionViewCell {
+
+}
+
 public protocol HostingViewProtocol<RootView>: UIView {
 
   associatedtype RootView: UIView
 
   var rootView: RootView! { get set }
 
-  var contentView: UIView { get }
+  func makeRootView() -> RootView
 
-  func loadRootView() -> RootView
+  /// Called before it is added to `self` or `contentView` (if comform to `HostingCollectionViewCellProtocol`). Not called if `rootView` is set manually.
+  func rootViewDidLoad()
 }
 
 private var rootViewConstraintsKey: Void?
@@ -31,9 +36,7 @@ extension HostingViewProtocol {
   }
 
   public var rootViewInsets: DirectionalEdges<CGFloat> {
-    get {
-      return associatedValue(default: .zero, forKey: &rootViewInsetsKey, with: self)
-    }
+    get { return associatedValue(default: .zero, forKey: &rootViewInsetsKey, with: self) }
     set {
       setAssociatedValue(newValue, forKey: &rootViewInsetsKey, with: self)
       if rootViewIfLoaded != nil {
@@ -47,37 +50,52 @@ extension HostingViewProtocol {
   }
 
   public var rootViewAxesPinningContentViewLayoutMargins: Axis {
-    get {
-      return associatedValue(default: [], forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self)
-    }
+    get { return associatedValue(default: [], forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self) }
     set {
       guard newValue != rootViewAxesPinningContentViewLayoutMargins else { return }
       setAssociatedValue(newValue, forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self)
-      if rootViewIfLoaded != nil {
-        reloadRootViewConstraints()
+      if let rootViewIfLoaded {
+        reloadConstraints(rootView: rootViewIfLoaded)
       }
     }
   }
 
-  public var rootViewIfLoaded: RootView? {
-    return associatedObject(forKey: &rootViewKey, with: self)
+  public private(set) var rootViewIfLoaded: RootView? {
+    get { return associatedObject(forKey: &rootViewKey, with: self) }
+    set { setAssociatedObject(newValue, forKey: &rootViewKey, with: self) }
   }
 
   public var rootView: RootView! {
     get {
-      if let rootView = rootViewIfLoaded {
-        return rootView
+      if let rootViewIfLoaded {
+        return rootViewIfLoaded
       }
-      let rootView = loadRootView()
-      setRootView(rootView)
+      let rootView = makeRootView()
+      rootViewIfLoaded = rootView
+      rootViewDidLoad()
+      targetView.addSubview(rootView)
+      reloadConstraints(rootView: rootView)
       return rootView
     }
     set(newRootView) {
-      setRootView(newRootView)
+      let rootView = rootViewIfLoaded
+      if let newRootView {
+        rootViewIfLoaded = newRootView
+        if newRootView != rootView {
+          rootViewConstraints.removeAll()
+          rootView?.removeFromSuperview()
+        }
+        targetView.addSubview(newRootView)
+        reloadConstraints(rootView: newRootView)
+      } else {
+        rootViewIfLoaded = nil
+        rootViewConstraints.removeAll()
+        rootView?.removeFromSuperview()
+      }
     }
   }
 
-  public func loadRootView() -> RootView {
+  public func makeRootView() -> RootView {
     if let rootViewClass = RootView.self as? (UIView & NibLoadable).Type {
       return rootViewClass.loadFromNib() as! RootView
     } else {
@@ -85,34 +103,19 @@ extension HostingViewProtocol {
     }
   }
 
-  private func setRootView(_ newRootView: RootView?) {
-    let rootView = rootViewIfLoaded
-    if let newRootView {
-      if newRootView != rootView {
-        rootView?.removeFromSuperview()
-        rootViewConstraints.removeAll()
-      }
-      assert(!newRootView.translatesAutoresizingMaskIntoConstraints)
-      contentView.addSubview(newRootView)
-
-      setAssociatedObject(newRootView, forKey: &rootViewKey, with: self)
-      reloadRootViewConstraints()
-    } else {
-      rootView?.removeFromSuperview()
-      rootViewConstraints.removeAll()
-    }
+  public func rootViewDidLoad() {
   }
 
-  private func reloadRootViewConstraints() {
-    guard let rootView else { return }
+  private func reloadConstraints(rootView: RootView) {
+    assert(!rootView.translatesAutoresizingMaskIntoConstraints)
     NSLayoutConstraint.deactivate(rootViewConstraints)
 
     let insets = rootViewInsets
     let axis = rootViewAxesPinningContentViewLayoutMargins
-    let contentView = contentView
+    let targetView = targetView
 
-    let horizontalLayoutGuide: LayoutGuide = axis.contains(.horizontal) ? contentView.layoutMarginsGuide : contentView
-    let verticalLayoutGuide: LayoutGuide = axis.contains(.vertical) ? contentView.layoutMarginsGuide : contentView
+    let horizontalLayoutGuide: LayoutGuide = axis.contains(.horizontal) ? targetView.layoutMarginsGuide : targetView
+    let verticalLayoutGuide: LayoutGuide = axis.contains(.vertical) ? targetView.layoutMarginsGuide : targetView
 
     let newRootViewContraints = [
       rootView.topAnchor.constraint(equalTo: verticalLayoutGuide.topAnchor, constant: insets.top),
@@ -124,7 +127,10 @@ extension HostingViewProtocol {
     NSLayoutConstraint.activate(newRootViewContraints)
   }
 
-  public var contentView: UIView {
+  private var targetView: UIView {
+    if let self = self as? any HostingCollectionViewCellProtocol {
+      return self.contentView
+    }
     return self
   }
 }

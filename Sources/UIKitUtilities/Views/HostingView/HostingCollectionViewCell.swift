@@ -7,7 +7,7 @@
 import UIKit
 import SwiftKit
 
-open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingViewProtocol {
+open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingCollectionViewCellProtocol {
 
   open override func layoutSubviews() {
     super.layoutSubviews()
@@ -18,6 +18,6 @@ open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, Ho
   }
 }
 
-extension HostingCollectionViewCell: ContentConfiguring where RootView: ContentConfiguring { 
+extension HostingCollectionViewCell: ContentConfiguring where RootView: ContentConfiguring {
 
 }

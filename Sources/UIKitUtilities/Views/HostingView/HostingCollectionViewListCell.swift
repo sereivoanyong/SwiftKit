@@ -8,7 +8,7 @@ import UIKit
 import SwiftKit
 
 @available(iOS 14.0, *)
-open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingViewProtocol {
+open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingCollectionViewCellProtocol {
 
   open var isSeparatorConfigured: Bool = false
 
@@ -22,6 +22,6 @@ open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewList
 }
 
 @available(iOS 14.0, *)
-extension HostingCollectionViewListCell: ContentConfiguring where RootView: ContentConfiguring { 
+extension HostingCollectionViewListCell: ContentConfiguring where RootView: ContentConfiguring {
 
 }

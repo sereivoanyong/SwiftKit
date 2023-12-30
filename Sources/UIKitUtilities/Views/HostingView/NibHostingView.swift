@@ -12,7 +12,7 @@ open class NibHostingView: UIView, HostingViewProtocol {
 
   open var rootViewBundle: Bundle?
 
-  open func loadRootView() -> UIView {
+  open func makeRootView() -> UIView {
     return UINib(nibName: rootViewNibName, bundle: rootViewBundle).instantiate(withOwner: nil)[0] as! UIView
   }
 
