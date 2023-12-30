@@ -15,7 +15,7 @@ let package = Package(
     .library(name: "WebKitUtilities", targets: ["WebKitUtilities"])
   ],
   dependencies: [
-    .package(url: "https://github.com/realm/realm-swift", .upToNextMajor(from: "10.44.0"))
+    .package(url: "https://github.com/realm/realm-swift", .upToNextMajor(from: "10.45.2"))
   ],
   targets: [
     .target(name: "SwiftKit", dependencies: []),
