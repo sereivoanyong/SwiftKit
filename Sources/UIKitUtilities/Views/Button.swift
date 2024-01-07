@@ -105,6 +105,8 @@ import SwiftKit
     set { bcConfiguration.imagePadding = newValue }
   }
 
+  open var imageTintColorTransform: (UIColor) -> UIColor = { $0 }
+
   open override var frame: CGRect {
     didSet {
       reloadBackgroundCornerRadius()
@@ -312,7 +314,7 @@ import SwiftKit
     guard needsBCConfiguration else { return }
 
     let color = colorForImageAndTitle(for: currentState)
-    imageView?.tintColor = color
+    imageView?.tintColor = imageTintColorTransform(color)
     setTitleColor(color, for: .normal)
   }
 
