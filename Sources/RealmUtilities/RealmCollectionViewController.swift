@@ -5,6 +5,7 @@
 //
 
 import UIKitUtilities
+import EmptyUIKit
 import RealmSwift
 
 open class RealmCollectionViewController<Object: ObjectBase & RealmCollectionValue>: CollectionViewController, UICollectionViewDataSource, UICollectionViewDelegate, EmptyViewStateProviding, EmptyViewDataSource {

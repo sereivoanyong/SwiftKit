@@ -5,6 +5,7 @@
 //
 
 import UIKitUtilities
+import EmptyUIKit
 import RealmSwift
 
 open class RealmSectionedResultsViewController<Key: _Persistable & Hashable, Object: ObjectBase & RealmCollectionValue>: CollectionViewController, UICollectionViewDataSource, UICollectionViewDelegate, EmptyViewStateProviding, EmptyViewDataSource {
