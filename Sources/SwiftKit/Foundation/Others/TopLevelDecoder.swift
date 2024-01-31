@@ -4,6 +4,8 @@
 //  Created by Sereivoan Yong on 1/25/20.
 //
 
+#if canImport(Foundation)
+
 import Foundation
 
 public protocol TopLevelDecoder: AnyObject {
@@ -25,20 +27,26 @@ extension TopLevelDecoder {
   }
 }
 
+// MARK: JSONDecoder
+
 extension JSONDecoder: TopLevelDecoder { }
 
-extension PropertyListDecoder: TopLevelDecoder { }
+extension TopLevelDecoder {
 
-extension TopLevelDecoder where Self == JSONDecoder {
-
-  public static func json() -> Self {
+  public static func json() -> Self where Self == JSONDecoder {
     return JSONDecoder()
   }
 }
 
-extension TopLevelDecoder where Self == PropertyListDecoder {
+// MARK: PropertyListDecoder
 
-  public static func propertyList() -> Self {
+extension PropertyListDecoder: TopLevelDecoder { }
+
+extension TopLevelDecoder {
+
+  public static func propertyList() -> Self where Self == PropertyListDecoder {
     return PropertyListDecoder()
   }
 }
+
+#endif

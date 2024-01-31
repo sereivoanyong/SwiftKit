@@ -4,6 +4,8 @@
 //  Created by Sereivoan Yong on 2/22/21.
 //
 
+#if canImport(Foundation)
+
 import Foundation
 
 @_marker
@@ -25,3 +27,5 @@ extension NSDate: PropertyListObject { }
 extension NSData: PropertyListObject { }
 extension NSArray: PropertyListObject { }
 extension NSDictionary: PropertyListObject { }
+
+#endif
