@@ -35,6 +35,10 @@ extension Label {
 @IBDesignable
 open class Label: UILabel {
 
+  private var isBeingDecoded: Bool
+
+  private var initialClipsToBounds: Bool?
+
   // Setting text color or background color (via nib) to default will not call the setters.
   // We use them to store initial values (required when creating via nib) and restore when their respective configurations are nil-out.
   private var _textColor: UIColor?
@@ -71,6 +75,22 @@ open class Label: UILabel {
 
   // MARK: Overriden
 
+  // clipsToBounds is called twice, overriding the value set by IB. We allows only first call while being decoded.
+  open override var clipsToBounds: Bool {
+    get { return super.clipsToBounds }
+    set {
+      if isBeingDecoded {
+        // We only set for the first call
+        if initialClipsToBounds == nil {
+          initialClipsToBounds = newValue
+          super.clipsToBounds = newValue
+        }
+        return
+      }
+      super.clipsToBounds = newValue
+    }
+  }
+
   open override var textColor: UIColor! {
     get {
       contentConfiguration?.color ?? super.textColor
@@ -99,6 +119,17 @@ open class Label: UILabel {
         super.backgroundColor = newValue
       }
     }
+  }
+
+  public override init(frame: CGRect = .zero) {
+    isBeingDecoded = false
+    super.init(frame: frame)
+  }
+
+  public required init?(coder: NSCoder) {
+    isBeingDecoded = true
+    super.init(coder: coder)
+    isBeingDecoded = false
   }
 
   open override func tintColorDidChange() {
