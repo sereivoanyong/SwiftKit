@@ -7,11 +7,23 @@
 import Foundation
 
 extension CharacterSet {
-  
+
+  // @see: https://stackoverflow.com/a/53176850/11235826
+  public static let urlAllowed: CharacterSet = {
+    var set = CharacterSet(charactersIn: "#")
+    set.formUnion(urlUserAllowed)
+    set.formUnion(urlPasswordAllowed)
+    set.formUnion(urlHostAllowed)
+    set.formUnion(urlPathAllowed)
+    set.formUnion(urlQueryAllowed)
+    set.formUnion(urlFragmentAllowed)
+    return set
+  }()
+
   public func characters() -> [Character] {
     return unicodeScalars().map(Character.init)
   }
-  
+
   // @see: https://stackoverflow.com/a/52133647/11235826
   public func unicodeScalars() -> String.UnicodeScalarView {
     var unicodeScalars: [UnicodeScalar] = []
