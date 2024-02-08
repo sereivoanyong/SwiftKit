@@ -8,97 +8,57 @@
 
 import Foundation
 
-public protocol StorageDataTransforming<T> {
+public struct StorageDataTransforming<T> {
 
-  associatedtype T
+  public let value: (Data) throws -> T?
+  public let data: (T) throws -> Data?
 
-  func value(from data: Data) throws -> T?
-  func data(from value: T) throws -> Data
-}
-
-// MARK: StorageCoding
-
-public struct StorageCoding<T: Codable>: StorageDataTransforming {
-
-  public let decoder: TopLevelDecoder
-  public let encoder: TopLevelEncoder
-
-  public init(_ decoder: TopLevelDecoder, _ encoder: TopLevelEncoder) {
-    self.decoder = decoder
-    self.encoder = encoder
+  public init(value: @escaping (Data) throws -> T?, data: @escaping (T) throws -> Data?) {
+    self.value = value
+    self.data = data
   }
 
   public func value(from data: Data) throws -> T? {
-    return try decoder.decode(T.self, from: data)
+    return try value(data)
   }
 
-  public func data(from value: T) throws -> Data {
-    return try encoder.encode(value)
-  }
-}
-
-extension StorageDataTransforming {
-
-  public static func jsonCoding<T>(_ decoder: JSONDecoder = .init(), _ encoder: JSONEncoder = .init()) -> Self where Self == StorageCoding<T>, T: Codable {
-    return Self(decoder, encoder)
+  public func data(from value: T) throws -> Data? {
+    return try data(value)
   }
 
-  public static func propertyListCoding<T>(_ decoder: PropertyListDecoder = .init(), _ encoder: PropertyListEncoder = .init()) -> Self where Self == StorageCoding<T>, T: Codable {
-    return Self(decoder, encoder)
-  }
-}
-
-// MARK: StorageKeyedArchiving
-
-public struct StorageKeyedArchiving<T: NSObject & NSCoding>: StorageDataTransforming {
-
-  public let requiringSecureCoding: Bool
-
-  public init(requiringSecureCoding: Bool = true) {
-    self.requiringSecureCoding = requiringSecureCoding
+  public static func encoding(_ encoding: String.Encoding) -> Self where T == String {
+    return Self(
+      value: { data in String(data: data, encoding: encoding) },
+      data: { value in value.data(using: encoding) }
+    )
   }
 
-  public func value(from data: Data) throws -> T? {
-    return try NSKeyedUnarchiver.unarchivedObject(ofClass: T.self, from: data)
+  public static func jsonSerializing(readingOptions: JSONSerialization.ReadingOptions = [], writingOptions: JSONSerialization.WritingOptions = []) -> Self {
+    return Self(
+      value: { data in try JSONSerialization.jsonObject(with: data, options: readingOptions) as? T },
+      data: { value in try JSONSerialization.data(withJSONObject: value, options: writingOptions) }
+    )
   }
 
-  public func data(from value: T) throws -> Data {
-    return try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: requiringSecureCoding)
-  }
-}
-
-extension StorageDataTransforming {
-
-  public static func keyedArchiving<T>(requiringSecureCoding: Bool = true) -> Self where Self == StorageKeyedArchiving<T>, T: NSObject & NSCoding {
-    return Self(requiringSecureCoding: requiringSecureCoding)
-  }
-}
-
-// MARK: StorageJSONSerializating
-
-public struct StorageJSONSerializating<T>: StorageDataTransforming {
-
-  public let readingOptions: JSONSerialization.ReadingOptions
-  public let writingOptions: JSONSerialization.WritingOptions
-
-  public init(readingOptions: JSONSerialization.ReadingOptions = [], writingOptions: JSONSerialization.WritingOptions = []) {
-    self.readingOptions = readingOptions
-    self.writingOptions = writingOptions
+  public static func jsonCoding(_ decoder: JSONDecoder = .init(), _ encoder: JSONEncoder = .init()) -> Self where T: Codable {
+    return Self(
+      value: { data in try decoder.decode(T.self, from: data) },
+      data: { value in try encoder.encode(value) }
+    )
   }
 
-  public func value(from data: Data) throws -> T? {
-    return try JSONSerialization.jsonObject(with: data, options: readingOptions) as? T
+  public static func propertyListCoding(_ decoder: PropertyListDecoder = .init(), _ encoder: PropertyListEncoder = .init()) -> Self where T: Codable {
+    return Self(
+      value: { data in try decoder.decode(T.self, from: data) },
+      data: { value in try encoder.encode(value) }
+    )
   }
 
-  public func data(from value: T) throws -> Data {
-    return try JSONSerialization.data(withJSONObject: value, options: writingOptions)
-  }
-}
-
-extension StorageDataTransforming {
-
-  public static func jsonSerializing<T>(readingOptions: JSONSerialization.ReadingOptions = [], writingOptions: JSONSerialization.WritingOptions = []) -> Self where Self == StorageJSONSerializating<T> {
-    return Self(readingOptions: readingOptions, writingOptions: writingOptions)
+  public static func keyedArchiving(requiringSecureCoding: Bool = true) -> Self where T: NSObject & NSCoding {
+    return Self(
+      value: { data in try NSKeyedUnarchiver.unarchivedObject(ofClass: T.self, from: data) },
+      data: { value in try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: requiringSecureCoding) }
+    )
   }
 }
 
