@@ -52,7 +52,6 @@ extension UIViewController {
       view.trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor),
       view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: layoutGuide.bottomAnchor)
     ])
-    updateViewKeyboardLayoutGuideConstraints()
     return layoutGuide
   }
 
