@@ -7,100 +7,104 @@
 import Foundation
 
 /// Represents a version aligning to [SemVer 2.0.0](http://semver.org).
-public struct Version {
-  
+public struct Version: RawRepresentable {
+
   public let major: Int
-  public let minor: Int?
-  public let patch: Int?
-  
-  public init(major: Int = 0, minor: Int? = nil, patch: Int? = nil) {
+
+  public let minor: Int
+
+  public let patch: Int
+
+  public let rawValue: String
+
+  public init(major: Int, minor: Int = 0, patch: Int = 0) {
     self.major = major
     self.minor = minor
     self.patch = patch
+    self.rawValue = "\(major).\(minor).\(patch)"
   }
-  
-  public init(string: String) {
-    let components = string.split(separator: ".").map { Int($0)! }
-    major = components[0]
-    minor = components.indices.contains(1) ? components[1] : nil
-    patch = components.indices.contains(2) ? components[2] : nil
+
+  public init?(rawValue: String) {
+    let components = rawValue.split(separator: ".")
+    let count = components.count
+    guard count > 0, let major = Int(components[0]) else { return nil }
+
+    let minor: Int
+    if count > 1 {
+      if let intComponent = Int(components[1]) {
+        minor = intComponent
+      } else {
+        return nil
+      }
+    } else {
+      minor = 0
+    }
+
+    let patch: Int
+    if count > 2 {
+      if let intComponent = Int(components[2]) {
+        patch = intComponent
+      } else {
+        return nil
+      }
+    } else {
+      patch = 0
+    }
+
+    self.init(major: major, minor: minor, patch: patch)
+  }
+
+  public init?(_ rawValue: String) {
+    self.init(rawValue: rawValue)
   }
 }
 
 extension Version: Equatable {
-  
+
   public static func == (lhs: Version, rhs: Version) -> Bool {
-    return lhs.major == rhs.major && (lhs.minor ?? 0) == (rhs.minor ?? 0) && (lhs.patch ?? 0) == (rhs.patch ?? 0)
+    return lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.patch == rhs.patch
   }
 }
 
 extension Version: Comparable {
-  
-  private static func compare(lhs: Int, rhs: Int) -> ComparisonResult {
-    if lhs < rhs {
-      return .orderedAscending
-    } else if lhs > rhs {
-      return .orderedDescending
-    } else {
-      return .orderedSame
-    }
-  }
-  
+
   public static func < (lhs: Version, rhs: Version) -> Bool {
-    let majorComparison = Version.compare(lhs: lhs.major, rhs: rhs.major)
-    if majorComparison != .orderedSame {
-      return majorComparison == .orderedAscending
+    guard lhs.major == rhs.major else {
+      return lhs.major < rhs.major
     }
-    let minorComparison = Version.compare(lhs: lhs.minor ?? 0, rhs: rhs.minor ?? 0)
-    if minorComparison != .orderedSame {
-      return minorComparison == .orderedAscending
+    guard lhs.minor == rhs.minor else {
+      return lhs.minor < rhs.minor
     }
-    let patchComparison = Version.compare(lhs: lhs.patch ?? 0, rhs: rhs.patch ?? 0)
-    if patchComparison != .orderedSame {
-      return patchComparison == .orderedAscending
+    guard lhs.patch == rhs.patch else {
+      return lhs.patch < rhs.patch
     }
     return false
   }
 }
 
 extension Version: Hashable {
-  
+
   public func hash(into hasher: inout Hasher) {
     hasher.combine(major)
-    hasher.combine(minor ?? 0)
-    hasher.combine(patch ?? 0)
+    hasher.combine(minor)
+    hasher.combine(patch)
   }
 }
 
 extension Version: CustomStringConvertible {
-  
+
   public var description: String {
-    var string = "\(major)"
-    if let minor {
-      string += ".\(minor)"
-      if let patch {
-        string += ".\(patch)"
-      }
+    var string = "\(major).\(minor)"
+    if patch > 0 {
+      string += ".\(patch)"
     }
     return string
   }
 }
 
-extension Version: Codable {
-  
-  public init(from decoder: Decoder) throws {
-    try self.init(string: decoder.singleValueContainer().decode(String.self))
-  }
-  
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try container.encode(description)
-  }
-}
-
 extension Bundle {
-  
+
   public var shortVersion: Version {
-    return Version(string: infoDictionary!["CFBundleShortVersionString"] as! String)
+    return Version(infoDictionary!["CFBundleShortVersionString"] as! String)!
   }
 }
