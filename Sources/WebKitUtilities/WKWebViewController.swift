@@ -10,6 +10,7 @@ import WebKit
 
 open class WKWebViewController: UIViewController {
 
+  private var webViewEstimatedProgressObservation: NSKeyValueObservation?
   private var webViewTitleObservation: NSKeyValueObservation?
 
   private var _webView: WKWebView!
@@ -37,10 +38,9 @@ open class WKWebViewController: UIViewController {
     return _webViewConfiguration
   }
 
-  lazy private var activityIndicatorView: UIActivityIndicatorView = {
-    var activityIndicator = UIActivityIndicatorView(style: .grayOrMedium)
-    activityIndicator.sizeToFit()
-    return activityIndicator
+  lazy private var progressView: UIProgressView = {
+    let progressView = UIProgressView(progressViewStyle: .bar)
+    return progressView
   }()
 
   open var usesWebViewTitleAsNavigationTitle: Bool = false {
@@ -81,7 +81,6 @@ open class WKWebViewController: UIViewController {
   open func makeWebViewConfiguration() -> WKWebViewConfiguration {
     let configuration = WKWebViewConfiguration()
     configuration.userContentController = WKUserContentController()
-    configuration.websiteDataStore = WKWebsiteDataStore.nonPersistent()
     return configuration
   }
 
@@ -113,13 +112,18 @@ open class WKWebViewController: UIViewController {
     webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     view.addSubview(webView)
 
-    activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-    view.addSubview(activityIndicatorView)
+    view.addSubview(progressView)
 
+    progressView.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
-      activityIndicatorView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-      activityIndicatorView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor)
+      progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      view.trailingAnchor.constraint(equalTo: progressView.trailingAnchor),
+      progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
     ])
+
+    webViewEstimatedProgressObservation = webView.observe(\.estimatedProgress, options: [.initial, .new]) { [unowned self] _, _ in
+      progressView.setProgress(Float(webView.estimatedProgress), animated: true)
+    }
 
     if usesWebViewTitleAsNavigationTitle {
       webViewTitleObservation = webView.observe(\.title, options: [.initial, .new]) { [unowned self] webView, _ in
@@ -145,10 +149,25 @@ open class WKWebViewController: UIViewController {
 extension WKWebViewController: WKNavigationDelegate {
 
   open func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-    activityIndicatorView.startAnimating()
+    if progressView.isHidden {
+      progressView.isHidden = false
+    }
+    UIView.animate(withDuration: 0.2) {
+      self.progressView.alpha = 1
+    }
   }
 
   open func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-    activityIndicatorView.stopAnimating()
+    UIView.animate(
+      withDuration: 0.2,
+      animations: {
+        self.progressView.alpha = 0
+      },
+      completion: { isFinished in
+        // Update `isHidden` flag accordingly:
+        //  - set to `true` in case animation was completly finished.
+        //  - set to `false` in case animation was interrupted, e.g. due to starting of another animation.
+        self.progressView.isHidden = isFinished
+      })
   }
 }
