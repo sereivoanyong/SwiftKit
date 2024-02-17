@@ -76,10 +76,17 @@ extension UIViewController {
 
   public static var embeddingNavigationControllerClass: UINavigationController.Type?
 
-  public func embeddingInNavigationController(configurationHandler: ((UINavigationController) -> Void)? = nil) -> UINavigationController {
+  public func embeddingInNavigationController(inheritModalBehavior: Bool = true) -> UINavigationController {
     let navigationControllerClass = Self.embeddingNavigationControllerClass ?? UINavigationController.self
     let navigationController = navigationControllerClass.init(rootViewController: self)
-    configurationHandler?(navigationController)
+    if inheritModalBehavior {
+      navigationController.modalTransitionStyle = modalTransitionStyle
+      navigationController.modalPresentationStyle = modalPresentationStyle
+      navigationController.modalPresentationCapturesStatusBarAppearance = modalPresentationCapturesStatusBarAppearance
+      if #available(iOS 13.0, *) {
+        navigationController.isModalInPresentation = isModalInPresentation
+      }
+    }
     return navigationController
   }
 }
