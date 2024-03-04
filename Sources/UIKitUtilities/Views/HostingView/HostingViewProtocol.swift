@@ -107,7 +107,6 @@ extension HostingViewProtocol {
   }
 
   private func reloadConstraints(rootView: RootView) {
-    assert(!rootView.translatesAutoresizingMaskIntoConstraints)
     NSLayoutConstraint.deactivate(rootViewConstraints)
 
     let insets = rootViewInsets
