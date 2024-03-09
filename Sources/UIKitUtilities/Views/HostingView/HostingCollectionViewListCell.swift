@@ -19,6 +19,14 @@ open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewList
       _ = rootView
     }
   }
+
+  open override func prepareForReuse() {
+    super.prepareForReuse()
+
+    if let rootView = rootViewIfLoaded as? Reusable {
+      rootView.prepareForReuse()
+    }
+  }
 }
 
 @available(iOS 14.0, *)

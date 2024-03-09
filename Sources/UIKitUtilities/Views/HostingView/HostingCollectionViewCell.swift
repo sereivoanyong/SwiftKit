@@ -16,6 +16,14 @@ open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, Ho
       _ = rootView
     }
   }
+
+  open override func prepareForReuse() {
+    super.prepareForReuse()
+
+    if let rootView = rootViewIfLoaded as? Reusable {
+      rootView.prepareForReuse()
+    }
+  }
 }
 
 extension HostingCollectionViewCell: ContentConfiguring where RootView: ContentConfiguring {
