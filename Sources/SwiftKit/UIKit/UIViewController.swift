@@ -69,11 +69,6 @@ extension UIViewController {
     showDetailViewController(detailViewController, sender: sender)
   }
 
-  public func showAlert(title: String?, message: String?, cancelActionTitle: String?, cancelActionHandler: ((UIAlertAction) -> Void)? = nil) {
-    let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert, cancelActionTitle: cancelActionTitle)
-    present(alertController, animated: true)
-  }
-
   public static var embeddingNavigationControllerClass: UINavigationController.Type?
 
   public func embeddingInNavigationController(inheritModalBehavior: Bool = true) -> UINavigationController {

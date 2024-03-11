@@ -110,7 +110,7 @@ extension UIViewController {
   }
 
   @inlinable
-  public func presentAlert(title: String?, message: String?, cancelActionTitle: String, cancelActionHandler: ((UIAlertAction) -> Void)? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
+  public func showAlert(title: String?, message: String?, cancelActionTitle: String, cancelActionHandler: ((UIAlertAction) -> Void)? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
     let alertController = type(of: self).alertControllerProvider(title, message)
     alertController.addAction(title: cancelActionTitle, style: .cancel, handler: cancelActionHandler)
     present(alertController, animated: animated, completion: completion)
