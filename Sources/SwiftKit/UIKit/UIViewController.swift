@@ -57,8 +57,8 @@ extension UIViewController {
     return self
   }
 
-  public func show(on viewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
-    viewController.present(self, animated: animated, completion: completion)
+  public func show(on presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+    presentingViewController.present(self, animated: animated, completion: completion)
   }
 
   public func show(animated: Bool, completion: (() -> Void)?) {
@@ -70,6 +70,14 @@ extension UIViewController {
   }
 
   public static var embeddingNavigationControllerClass: UINavigationController.Type?
+
+  public func dismissOrPopFromNavigationStack(animated: Bool, completion: (() -> Void)? = nil) {
+    if let navigationController, navigationController.viewControllers.first !== self {
+      navigationController.popViewController(animated: animated, completion: completion)
+    } else {
+      dismiss(animated: animated, completion: completion)
+    }
+  }
 
   public func embeddingInNavigationController(inheritModalBehavior: Bool = true) -> UINavigationController {
     let navigationControllerClass = Self.embeddingNavigationControllerClass ?? UINavigationController.self
