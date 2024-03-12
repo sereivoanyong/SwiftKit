@@ -10,30 +10,11 @@ import SwiftKit
 @IBDesignable
 open class TextView: UITextView {
 
-  private var cachedFont: UIFont!
-  open override var font: UIFont! {
-    get {
-      if let font = super.font {
-        return font
-      }
-      if cachedFont == nil {
-        let textBefore = text
-        text = " "
-        let font = super.font
-        text = textBefore
-        cachedFont = font
-      }
-      return cachedFont
-    }
-    set { super.font = newValue }
-  }
-
   private var placeholderTextViewBindings: [NSKeyValueObservation] = []
 
   private var _placeholderTextView: UITextView?
   lazy open private(set) var placeholderTextView: UITextView = {
-    let textView = UITextView(frame: bounds)
-    textView.autoresizingMask = .flexibleSize
+    let textView = UITextView()
     textView.backgroundColor = .clear
     if #available(iOS 13.0, *) {
       textView.textColor = .placeholderText
@@ -46,26 +27,44 @@ open class TextView: UITextView {
     textView.showsHorizontalScrollIndicator = false
     textView.showsVerticalScrollIndicator = false
 
-    bind(\.font, to: textView).store(in: &placeholderTextViewBindings)
-    bind(\.textAlignment, to: textView).store(in: &placeholderTextViewBindings)
-    bind(\.textContainer.layoutManager!.usesFontLeading, to: textView).store(in: &placeholderTextViewBindings)
-    bind(\.textContainer.exclusionPaths, to: textView).store(in: &placeholderTextViewBindings)
-    bind(\.textContainer.lineFragmentPadding, to: textView).store(in: &placeholderTextViewBindings)
-    bind(\.textContainerInset, to: textView).store(in: &placeholderTextViewBindings)
+    bind(\.font, to: textView)
+    bind(\.textAlignment, to: textView)
+    bind(\.textContainer.exclusionPaths, to: textView)
+    bind(\.textContainer.lineFragmentPadding, to: textView)
+    bind(\.textContainerInset, to: textView)
+    bind(\.layoutManager.usesFontLeading, to: textView)
 
-    NotificationCenter.default.addObserver(self, selector: #selector(updatePlaceholderTextView), name: UITextView.textDidChangeNotification, object: self)
-
-    if text.isNilOrEmpty {
+    _placeholderTextView = textView
+    if text.isEmpty {
       insertSubview(textView, at: 0)
     }
-    _placeholderTextView = textView
     return textView
   }()
 
   open override var text: String! {
     didSet {
+      guard isFontLoaded else { return }
       updatePlaceholderTextView()
     }
+  }
+
+  private var isFontLoaded: Bool = false
+  open override var font: UIFont! {
+    get {
+      if let font = super.font {
+        return font
+      }
+      var font: UIFont!
+      if !isFontLoaded {
+        let textBefore = text
+        text = " "
+        font = super.font
+        text = textBefore
+        isFontLoaded = true
+      }
+      return font
+    }
+    set { super.font = newValue }
   }
 
   @IBInspectable
@@ -86,22 +85,64 @@ open class TextView: UITextView {
   }
 
   @IBInspectable
-  open var minimumNumberOfLinesToDisplay: Int = 0 {
+  open var minimumNumberOfLinesToDisplay: Int = 1 {
+    didSet {
+      if allowsSelfSizing {
+        invalidateIntrinsicContentSize()
+      }
+    }
+  }
+
+  @IBInspectable
+  open var allowsSelfSizing: Bool = false {
     didSet {
       invalidateIntrinsicContentSize()
     }
   }
 
+  open var selfSizingUpdateHandler: (() -> Void)?
+
   open override var intrinsicContentSize: CGSize {
     var intrinsicContentSize = super.intrinsicContentSize
-    if minimumNumberOfLinesToDisplay > 0 {
-      let minimumHeight = textContainerInset.top + textContainerInset.bottom + font!.lineHeight * CGFloat(minimumNumberOfLinesToDisplay)
+    if allowsSelfSizing {
+      let textHeight = (font.lineHeight * CGFloat(max(minimumNumberOfLinesToDisplay, 1))).ceiledToPixel(scale: traitCollection.displayScale)
+      let minimumHeight = textContainerInset.top + textHeight + textContainerInset.bottom
       intrinsicContentSize.height = max(minimumHeight, intrinsicContentSize.height)
     }
     return intrinsicContentSize
   }
 
-  @objc private func updatePlaceholderTextView() {
+  // MARK: Init
+
+  public override init(frame: CGRect, textContainer: NSTextContainer?) {
+    super.init(frame: frame, textContainer: textContainer)
+    commonInit()
+  }
+
+  public required init?(coder: NSCoder) {
+    super.init(coder: coder)
+    commonInit()
+  }
+
+  private func commonInit() {
+    NotificationCenter.default.addObserver(self, selector: #selector(textDidChange(_:)), name: Self.textDidChangeNotification, object: self)
+  }
+
+  open override func layoutSubviews() {
+    super.layoutSubviews()
+
+    placeholderTextView.frame = bounds
+  }
+
+  @objc open func textDidChange(_ notification: Notification) {
+    updatePlaceholderTextView()
+    if allowsSelfSizing {
+      invalidateIntrinsicContentSize()
+      selfSizingUpdateHandler?()
+    }
+  }
+
+  private func updatePlaceholderTextView() {
     if text.isEmpty {
       insertSubview(placeholderTextView, at: 0)
     } else {
@@ -109,22 +150,10 @@ open class TextView: UITextView {
     }
   }
 
-//  func bind<Target, Value>(_ keyPath: KeyPath<TextView, Value>, to target: Target, at targetKeyPath: ReferenceWritableKeyPath<Target, Value>) -> NSKeyValueObservation {
-//    observe(keyPath, options: [.initial, .new]) { source, _ in
-//      target[keyPath: targetKeyPath] = source[keyPath: keyPath]
-//    }
-//  }
-
-  func bind<Value>(_ keyPath: ReferenceWritableKeyPath<UITextView, Value>, to target: UITextView) -> NSKeyValueObservation {
-    (self as UITextView).observe(keyPath, options: [.initial, .new]) { source, _ in
+  private func bind<Value>(_ keyPath: ReferenceWritableKeyPath<UITextView, Value>, to target: UITextView) {
+    let binding = (self as UITextView).observe(keyPath, options: [.initial, .new]) { [unowned target] source, _ in
       target[keyPath: keyPath] = source[keyPath: keyPath]
     }
-  }
-}
-
-extension NSKeyValueObservation {
-
-  final func store<C>(in collection: inout C) where C: RangeReplaceableCollection, C.Element == NSKeyValueObservation {
-    collection.append(self)
+    placeholderTextViewBindings.append(binding)
   }
 }
