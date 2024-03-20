@@ -18,17 +18,6 @@ extension UINavigationItem {
 
 open class NavigationController: UINavigationController, UIGestureRecognizerDelegate, UINavigationControllerDelegate {
 
-  private var _tabBarItem: UITabBarItem?
-  open override var tabBarItem: UITabBarItem! {
-    get {
-      return _tabBarItem ?? viewControllers.first?.tabBarItem ?? super.tabBarItem
-    }
-    set {
-      _tabBarItem = newValue
-      super.tabBarItem = newValue
-    }
-  }
-
   // MARK: View Lifecycle
 
   open override func viewDidLoad() {
