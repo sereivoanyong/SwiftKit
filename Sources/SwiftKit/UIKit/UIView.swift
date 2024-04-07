@@ -62,10 +62,9 @@ extension UIView {
   }
 
   @discardableResult
-  public func addTapGestureRecognizer(handler: @escaping (UITapGestureRecognizer) -> Void, configurationHandler: (UITapGestureRecognizer) -> Void = { _ in }) -> UITapGestureRecognizer {
+  public func addTapGestureRecognizer(configurationHandler: (UITapGestureRecognizer) -> Void = { _ in }, handler: @escaping (UITapGestureRecognizer) -> Void) -> UITapGestureRecognizer {
     isUserInteractionEnabled = true
     let tapGestureRecognizer = UITapGestureRecognizer(handler: handler)
-    tapGestureRecognizer.cancelsTouchesInView = false
     configurationHandler(tapGestureRecognizer)
     addGestureRecognizer(tapGestureRecognizer)
     return tapGestureRecognizer
