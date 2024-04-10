@@ -6,6 +6,19 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
+extension UICollectionViewDiffableDataSource {
+
+  @inlinable
+  func _sectionIdentifier(for index: Int) -> SectionIdentifierType? {
+    if #available(iOS 15.0, *) {
+      return sectionIdentifier(for: index)
+    } else {
+      return snapshot().sectionIdentifiers[index]
+    }
+  }
+}
+
 @available(iOS 14.0, *)
 open class CollectionListViewController: CollectionViewController {
 
@@ -14,7 +27,7 @@ open class CollectionListViewController: CollectionViewController {
   public typealias Snapshot = NSDiffableDataSourceSnapshot<CollectionListSection, CollectionListItem>
 
   lazy public private(set) var supplementaryHeaderRegistration: UICollectionView.SupplementaryRegistration<UICollectionViewListCell> = .init(elementKind: UICollectionView.elementKindSectionHeader) { [unowned self] cell, elementKind, indexPath in
-    if let section = dataSource.sectionIdentifier(for: indexPath.section), let content = section.header.content {
+    if let section = dataSource._sectionIdentifier(for: indexPath.section), let content = section.header.content {
       var configuration = cell.defaultContentConfiguration()
       content.apply(to: &configuration)
       cell.contentConfiguration = configuration
@@ -24,7 +37,7 @@ open class CollectionListViewController: CollectionViewController {
   }
 
   lazy public private(set) var supplementaryFooterRegistration: UICollectionView.SupplementaryRegistration<UICollectionViewListCell> = .init(elementKind: UICollectionView.elementKindSectionFooter) { [unowned self] cell, elementKind, indexPath in
-    if let section = dataSource.sectionIdentifier(for: indexPath.section), let content = section.footer.content {
+    if let section = dataSource._sectionIdentifier(for: indexPath.section), let content = section.footer.content {
       var configuration = cell.defaultContentConfiguration()
       content.apply(to: &configuration)
       cell.contentConfiguration = configuration
@@ -65,7 +78,7 @@ open class CollectionListViewController: CollectionViewController {
   open override func makeCollectionViewLayout() -> UICollectionViewLayout {
     let configuration = UICollectionViewCompositionalLayoutConfiguration()
     let layout = UICollectionViewCompositionalLayout(sectionProvider: { [unowned self] sectionIndex, layoutEnvironment in
-      guard let sectionIdentifier = dataSource.sectionIdentifier(for: sectionIndex) else { fatalError()}
+      guard let sectionIdentifier = dataSource._sectionIdentifier(for: sectionIndex) else { fatalError()}
       var configuration = UICollectionLayoutListConfiguration(appearance: appearance)
       switch sectionIdentifier.header {
       case .none:
