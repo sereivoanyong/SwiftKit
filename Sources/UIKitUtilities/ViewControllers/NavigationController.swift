@@ -56,6 +56,18 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
 
   // MARK: UINavigationControllerDelegate
 
+  open func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+
+  }
+
+  open func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+
+  }
+
+  open func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    return nil
+  }
+
   open func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
     switch operation {
     case .none:
