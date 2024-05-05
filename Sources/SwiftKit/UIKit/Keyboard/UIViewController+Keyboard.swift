@@ -17,21 +17,18 @@ extension UIViewController {
   private static var keyboardWillChangeFrameNotificationKey: Void?
   public private(set) var keyboardWillChangeFrameNotification: KeyboardNotification? {
     get { return associatedValue(forKey: &Self.keyboardWillChangeFrameNotificationKey, with: self) }
-    set {
-      setAssociatedValue(newValue, forKey: &Self.keyboardWillChangeFrameNotificationKey, with: self)
-      updateViewKeyboardLayoutGuideConstraints()
-      if let newValue {
-        newValue.animate {
-          self.view.layoutIfNeeded()
-        }
-      }
-    }
-  }
+    set { setAssociatedValue(newValue, forKey: &Self.keyboardWillChangeFrameNotificationKey, with: self) } }
 
   private static var viewKeyboardLayoutGuideIfLoadedKey: Void?
   public private(set) var viewKeyboardLayoutGuideIfLoaded: KeyboardLayoutGuide? {
     get { return associatedObject(forKey: &Self.viewKeyboardLayoutGuideIfLoadedKey, with: self) }
     set { setAssociatedObject(newValue, forKey: &Self.viewKeyboardLayoutGuideIfLoadedKey, with: self) }
+  }
+
+  private static var viewKeyboardIntersectionRectKey: Void?
+  public private(set) var viewKeyboardIntersectionRect: CGRect {
+    get { return associatedValue(forKey: &Self.viewKeyboardIntersectionRectKey, with: self) ?? .zero }
+    set { setAssociatedValue(newValue, forKey: &Self.viewKeyboardIntersectionRectKey, with: self) }
   }
 
   /// Accessing this property will also call `loadViewIfNeeded()`
@@ -57,7 +54,7 @@ extension UIViewController {
 
   /// Must be called in `viewDidLayoutSubviews()` and `viewSafeAreaInsetsDidChange()` (if `viewKeyboardLayoutGuide.usesSafeArea` is `true`).
   /// It's automatically called when `keyboardWillChangeFrameNotification` changes.
-  public func updateViewKeyboardLayoutGuideConstraints() {
+  public func reloadViewKeyboardIntersectionRect() {
     let frame: CGRect
     if viewKeyboardLayoutGuide.usesSafeArea {
       frame = view.bounds.inset(by: view.safeAreaInsets)
@@ -73,11 +70,12 @@ extension UIViewController {
       intersectionRect.origin.y = frame.maxY
       intersectionRect.size.height = 0
     }
+    viewKeyboardIntersectionRect = intersectionRect
     viewKeyboardIntersectionRectDidChange(intersectionRect)
   }
 
-  @objc open func viewKeyboardIntersectionRectDidChange(_ rect: CGRect) {
-    viewKeyboardLayoutGuideHeightConstraint.constant = rect.height
+  @objc open func viewKeyboardIntersectionRectDidChange(_ intersectionRect: CGRect) {
+    viewKeyboardLayoutGuideHeightConstraint.constant = intersectionRect.height
   }
 
   // MARK: Observation
@@ -89,9 +87,17 @@ extension UIViewController {
   public func unobserveKeyboard() {
     NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     keyboardWillChangeFrameNotification = nil
+    reloadViewKeyboardIntersectionRect()
   }
 
   @objc private func keyboardWillChangeFrame(_ notification: Notification) {
-    keyboardWillChangeFrameNotification = KeyboardNotification(notification)
+    let notification = KeyboardNotification(notification)
+    keyboardWillChangeFrameNotification = notification
+    reloadViewKeyboardIntersectionRect()
+    if let notification {
+      notification.animate {
+        self.view.layoutIfNeeded()
+      }
+    }
   }
 }
