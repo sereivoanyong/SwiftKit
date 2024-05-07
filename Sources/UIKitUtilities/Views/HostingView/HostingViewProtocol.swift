@@ -11,6 +11,10 @@ public protocol HostingCollectionViewCellProtocol<RootView>: HostingViewProtocol
 
 }
 
+public protocol HostingTableViewCellProtocol<RootView>: HostingViewProtocol, UITableViewCell {
+
+}
+
 public protocol HostingViewProtocol<RootView>: UIView {
 
   associatedtype RootView: UIView
@@ -19,7 +23,7 @@ public protocol HostingViewProtocol<RootView>: UIView {
 
   func makeRootView() -> RootView
 
-  /// Called before it is added to `self` or `contentView` (if comform to `HostingCollectionViewCellProtocol`). Not called if `rootView` is set manually.
+  /// Called before it is added to `self` or `contentView` (if comform to `HostingCollectionViewCellProtocol` or `HostingTableViewCellProtocol`). Not called if `rootView` is set manually.
   func rootViewDidLoad()
 }
 
@@ -129,6 +133,9 @@ extension HostingViewProtocol {
 
   private var targetView: UIView {
     if let self = self as? any HostingCollectionViewCellProtocol {
+      return self.contentView
+    }
+    if let self = self as? any HostingTableViewCellProtocol {
       return self.contentView
     }
     return self
