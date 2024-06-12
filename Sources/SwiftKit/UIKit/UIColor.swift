@@ -151,7 +151,7 @@ extension UIColor {
     )
   }
 
-  @available(iOS 13.0, *)
+  @available(iOS 13.0, macCatalyst 13.1, *)
   public func dynamicReversed() -> UIColor {
     let anyColor = resolvedColor(with: UITraitCollection(userInterfaceStyle: .unspecified))
     let darkColor = resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))

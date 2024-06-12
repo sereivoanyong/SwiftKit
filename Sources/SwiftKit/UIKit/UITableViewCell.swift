@@ -21,7 +21,6 @@ extension UITableViewCell {
     set { setValue(newValue, forKey: "_accessoryTintColor") }
   }
 
-  @available(iOS 7.0, *)
   public var topSeparatorView: UIView? { // For top-most cell in grouped table view.
     return value(forKey: "_topSeparatorView") as? UIView
   }
@@ -35,7 +34,6 @@ extension UITableViewCell {
     set { setValue(newValue, forKey: "separatorColor") }
   }
 
-  @available(iOS 7.0, *)
   public var isSeparatorHidden: Bool {
     get { return performIfResponds(Selector(("_separatorHidden")))?.takeUnretainedValue() as? Bool ?? false }
     set { performIfResponds(Selector(("_setSeparatorHidden:")), with: newValue as NSNumber) }

@@ -12,7 +12,7 @@ extension UIVisualEffectView {
     self.init(effect: UIBlurEffect(style: blurEffectStyle))
   }
   
-  @available(iOS 13.0, *)
+  @available(iOS 13.0, macCatalyst 13.1, *)
   public convenience init(blurEffectStyle: UIBlurEffect.Style, vibrancyEffectStyle: UIVibrancyEffectStyle, view: UIView) {
     let blurEffect = UIBlurEffect(style: blurEffectStyle)
     self.init(blurEffect: blurEffect, vibrancyEffect: UIVibrancyEffect(blurEffect: blurEffect, style: vibrancyEffectStyle), view: view)

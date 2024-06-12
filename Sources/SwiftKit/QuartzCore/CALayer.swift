@@ -28,7 +28,7 @@ extension CALayer {
     continuousCorners = continuous
   }
 
-  @available(iOS 13.0, *)
+  @available(iOS 13.0, macCatalyst 13.1, *)
   public func setCorner(radius: CGFloat = 0, masks: CACornerMask = .all, curve: CALayerCornerCurve = .circular) {
     cornerRadius = radius
     maskedCorners = masks

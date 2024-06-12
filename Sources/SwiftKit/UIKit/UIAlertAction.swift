@@ -29,19 +29,16 @@ extension UIAlertAction {
     set { setValue(newValue, forKey: "image") }
   }
 
-  @available(iOS 9.0, *)
   public var imageTintColor: UIColor? {
     get { return value(forKey: "_imageTintColor") as? UIColor }
     set { setValue(newValue, forKey: "_imageTintColor") }
   }
 
-  @available(iOS 9.0, *)
   public var titleTextAlignment: NSTextAlignment {
     get { return NSTextAlignment(rawValue: value(forKey: "_titleTextAlignment") as! Int)! }
     set { setValue(newValue.rawValue as NSNumber, forKey: "_titleTextAlignment") }
   }
 
-  @available(iOS 9.0, *)
   public var titleTextColor: UIColor? {
     get { return value(forKey: "_titleTextColor") as? UIColor }
     set { setValue(newValue, forKey: "_titleTextColor") }
