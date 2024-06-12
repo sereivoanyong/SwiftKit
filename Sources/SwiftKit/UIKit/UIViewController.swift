@@ -50,7 +50,7 @@ extension UIViewController {
     return tapGestureRecognizer
   }
 
-  @objc public var topMostViewController: UIViewController? {
+  @objc open var topMostViewController: UIViewController? {
     if let presentedViewController {
       return presentedViewController.topMostViewController
     }

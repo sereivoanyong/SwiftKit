@@ -10,18 +10,12 @@ let package = Package(
   products: [
     .library(name: "SwiftKit", targets: ["SwiftKit"]),
     .library(name: "PropertyWrapperKit", targets: ["PropertyWrapperKit"]),
-    .library(name: "RealmUtilities", targets: ["RealmUtilities"]),
     .library(name: "UIKitUtilities", targets: ["UIKitUtilities"]),
     .library(name: "WebKitUtilities", targets: ["WebKitUtilities"])
-  ],
-  dependencies: [
-    .package(url: "https://github.com/sereivoanyong/EmptyUIKit", branch: "main"),
-    .package(url: "https://github.com/realm/realm-swift", .upToNextMajor(from: "10.46.0"))
   ],
   targets: [
     .target(name: "SwiftKit", dependencies: []),
     .target(name: "PropertyWrapperKit", dependencies: ["SwiftKit"]),
-    .target(name: "RealmUtilities", dependencies: [.product(name: "RealmSwift", package: "realm-swift"), "EmptyUIKit", "UIKitUtilities"]),
     .target(name: "UIKitUtilities", dependencies: ["SwiftKit"]),
     .target(name: "WebKitUtilities", dependencies: ["SwiftKit"]),
     .testTarget(name: "SwiftKitTests", dependencies: ["SwiftKit"]),

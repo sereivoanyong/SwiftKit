@@ -84,7 +84,6 @@ final public class MarkFormatter {
     default:
       format = "%@ %@"
     }
-    var strings = strings
     var iterator = strings.makeIterator()
     var result = iterator.next()!
     while let string = iterator.next() {
