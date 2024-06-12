@@ -7,7 +7,7 @@
 import UIKit
 import SwiftKit
 
-open class HostingTableViewCell<RootView: UIView>: UITableViewCell, HostingTableViewCellProtocol {
+open class HostingTableViewCell<RootView: UIView>: UITableViewCell, HostingViewCell {
 
   open override func layoutSubviews() {
     super.layoutSubviews()

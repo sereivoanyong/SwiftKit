@@ -7,12 +7,9 @@
 import UIKit
 import SwiftKit
 
-public protocol HostingCollectionViewCellProtocol<RootView>: HostingViewProtocol, UICollectionViewCell {
+public protocol HostingViewCell<RootView>: HostingViewProtocol, UIView {
 
-}
-
-public protocol HostingTableViewCellProtocol<RootView>: HostingViewProtocol, UITableViewCell {
-
+  var contentView: UIView { get }
 }
 
 public protocol HostingViewProtocol<RootView>: UIView {
@@ -33,6 +30,13 @@ private var rootViewAxesPinningContentViewLayoutMarginsKey: Void?
 private var rootViewKey: Void?
 
 extension HostingViewProtocol {
+
+  private var contentView: UIView {
+    if let self = self as? any HostingViewCell {
+      return self.contentView
+    }
+    return self
+  }
 
   public var rootViewConstraints: [NSLayoutConstraint] {
     get { return associatedValue(default: [], forKey: &rootViewConstraintsKey, with: self) }
@@ -77,7 +81,7 @@ extension HostingViewProtocol {
       let rootView = makeRootView()
       rootViewIfLoaded = rootView
       rootViewDidLoad()
-      targetView.addSubview(rootView)
+      contentView.addSubview(rootView)
       reloadConstraints(rootView: rootView)
       return rootView
     }
@@ -89,7 +93,7 @@ extension HostingViewProtocol {
           rootViewConstraints.removeAll()
           rootView?.removeFromSuperview()
         }
-        targetView.addSubview(newRootView)
+        contentView.addSubview(newRootView)
         reloadConstraints(rootView: newRootView)
       } else {
         rootViewIfLoaded = nil
@@ -114,12 +118,12 @@ extension HostingViewProtocol {
     rootView.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.deactivate(rootViewConstraints)
 
-    let insets = rootViewInsets
+    let contentView = contentView
     let axis = rootViewAxesPinningContentViewLayoutMargins
-    let targetView = targetView
+    let insets = rootViewInsets
 
-    let horizontalLayoutGuide: LayoutGuide = axis.contains(.horizontal) ? targetView.layoutMarginsGuide : targetView
-    let verticalLayoutGuide: LayoutGuide = axis.contains(.vertical) ? targetView.layoutMarginsGuide : targetView
+    let horizontalLayoutGuide: LayoutGuide = axis.contains(.horizontal) ? contentView.layoutMarginsGuide : contentView
+    let verticalLayoutGuide: LayoutGuide = axis.contains(.vertical) ? contentView.layoutMarginsGuide : contentView
 
     let newRootViewContraints = [
       rootView.topAnchor.constraint(equalTo: verticalLayoutGuide.topAnchor, constant: insets.top),
@@ -129,16 +133,6 @@ extension HostingViewProtocol {
     ]
     rootViewConstraints = newRootViewContraints
     NSLayoutConstraint.activate(newRootViewContraints)
-  }
-
-  private var targetView: UIView {
-    if let self = self as? any HostingCollectionViewCellProtocol {
-      return self.contentView
-    }
-    if let self = self as? any HostingTableViewCellProtocol {
-      return self.contentView
-    }
-    return self
   }
 }
 

@@ -8,7 +8,7 @@ import UIKit
 import SwiftKit
 
 @available(iOS 14.0, *)
-open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingCollectionViewCellProtocol {
+open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingViewCell {
 
   open var isSeparatorConfigured: Bool = false
 
