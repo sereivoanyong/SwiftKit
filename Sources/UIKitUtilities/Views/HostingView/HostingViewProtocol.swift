@@ -22,6 +22,8 @@ public protocol HostingViewProtocol<RootView>: UIView {
 
   /// Called before it is added to `self` or `contentView` (if comform to `HostingCollectionViewCellProtocol` or `HostingTableViewCellProtocol`). Not called if `rootView` is set manually.
   func rootViewDidLoad()
+
+  func rootViewDidMoveToContentView()
 }
 
 private var rootViewConstraintsKey: Void?
@@ -83,6 +85,7 @@ extension HostingViewProtocol {
       rootViewDidLoad()
       contentView.addSubview(rootView)
       reloadConstraints(rootView: rootView)
+      rootViewDidMoveToContentView()
       return rootView
     }
     set(newRootView) {
@@ -112,6 +115,9 @@ extension HostingViewProtocol {
   }
 
   public func rootViewDidLoad() {
+  }
+
+  public func rootViewDidMoveToContentView() {
   }
 
   private func reloadConstraints(rootView: RootView) {
