@@ -8,39 +8,45 @@ import UIKit
 
 open class CollectionViewController: UIViewController {
 
+  open class var collectionViewClass: UICollectionView.Type {
+    return UICollectionView.self
+  }
+
   /// If this property is `true`, `collectionView` and `view` are the same.
   open var isCollectionViewRoot: Bool = false
 
   open var invalidatesLayoutOnViewWillTransition: Bool = true
 
-  private var _collectionView: UICollectionView!
+  open private(set) var collectionViewIfLoaded: UICollectionView?
 
-  open weak var collectionView: UICollectionView! {
+  weak open var collectionView: UICollectionView! {
     get {
-      if _collectionView == nil {
-        loadCollectionView()
-        collectionViewDidLoad()
+      if let collectionViewIfLoaded {
+        return collectionViewIfLoaded
       }
-      return _collectionView
+      loadCollectionView()
+      return collectionViewIfLoaded
     }
     set {
-      precondition(_collectionView == nil, "Collection view can only be set before it is loaded.")
-      _collectionView = newValue
+      precondition(collectionViewIfLoaded == nil, "Collection view can only be set before it is loaded.")
+      collectionViewIfLoaded = newValue
       collectionViewDidLoad()
     }
   }
 
-  private var _collectionViewLayout: UICollectionViewLayout!
+  open private(set) var collectionViewLayoutIfLoaded: UICollectionViewLayout?
   open var collectionViewLayout: UICollectionViewLayout {
-    if let _collectionViewLayout {
-      return _collectionViewLayout
+    if let collectionViewLayoutIfLoaded {
+      return collectionViewLayoutIfLoaded
     }
-    if let _collectionView {
-      _collectionViewLayout = _collectionView.collectionViewLayout
+    let collectionViewLayout: UICollectionViewLayout
+    if let collectionViewIfLoaded {
+      collectionViewLayout = collectionViewIfLoaded.collectionViewLayout
     } else {
-      _collectionViewLayout = makeCollectionViewLayout()
+      collectionViewLayout = makeCollectionViewLayout()
     }
-    return _collectionViewLayout
+    collectionViewLayoutIfLoaded = collectionViewLayout
+    return collectionViewLayout
   }
 
   // MARK: Collection View Lifecycle
@@ -50,7 +56,7 @@ open class CollectionViewController: UIViewController {
   }
 
   open func loadCollectionView() {
-    let collectionView = UICollectionView(frame: UIScreen.main.bounds, collectionViewLayout: collectionViewLayout)
+    let collectionView = Self.collectionViewClass.init(frame: UIScreen.main.bounds, collectionViewLayout: collectionViewLayout)
     collectionView.backgroundColor = .clear
     collectionView.preservesSuperviewLayoutMargins = true
     collectionView.alwaysBounceHorizontal = false
@@ -65,15 +71,11 @@ open class CollectionViewController: UIViewController {
     self.collectionView = collectionView
   }
 
-  open var collectionViewIfLoaded: UICollectionView? {
-    return _collectionView
-  }
-
   open func collectionViewDidLoad() {
   }
 
   open var isCollectionViewLoaded: Bool {
-    return _collectionView != nil
+    return collectionViewIfLoaded != nil
   }
 
   // MARK: View Lifecycle
