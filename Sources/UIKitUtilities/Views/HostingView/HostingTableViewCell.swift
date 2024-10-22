@@ -20,7 +20,7 @@ open class HostingTableViewCell<RootView: UIView>: UITableViewCell, HostingViewC
   open override func prepareForReuse() {
     super.prepareForReuse()
 
-    if let rootView = rootViewIfLoaded as? Reusable {
+    if let rootView = rootViewIfLoaded as? ReusableView {
       rootView.prepareForReuse()
     }
   }

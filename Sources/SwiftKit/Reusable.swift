@@ -4,6 +4,10 @@
 //  Created by Sereivoan Yong on 4/13/21.
 //
 
+import UIKit
+
+public typealias ReusableView = Reusable & UIView
+
 public protocol Reusable: AnyObject {
 
   static var reuseIdentifier: String { get }
@@ -16,7 +20,13 @@ extension Reusable {
   public static var reuseIdentifier: String {
     return String(describing: self)
   }
+}
 
-  public func prepareForReuse() {
-  }
+extension UICollectionReusableView: Reusable {
+}
+
+extension UITableViewCell: Reusable {
+}
+
+extension UITableViewHeaderFooterView: Reusable {
 }

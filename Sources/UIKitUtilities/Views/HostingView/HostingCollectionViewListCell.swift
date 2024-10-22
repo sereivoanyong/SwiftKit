@@ -23,7 +23,7 @@ open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewList
   open override func prepareForReuse() {
     super.prepareForReuse()
 
-    if let rootView = rootViewIfLoaded as? Reusable {
+    if let rootView = rootViewIfLoaded as? ReusableView {
       rootView.prepareForReuse()
     }
   }

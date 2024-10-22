@@ -108,81 +108,51 @@ extension UITableView {
   // Register
 
   @inlinable
-  public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
+  public func register<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(cellClass, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  public func register<Cell: UITableViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
-    register(cellClass, forCellReuseIdentifier: identifier)
-  }
-
-  @inlinable
-  public func register<Cell: UITableViewCell & NibReusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
+  public func register<Cell: UITableViewCell & NibLoadable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(cellClass.nib, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
+  public func register<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
     register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   @inlinable
-  public func register<View: UITableViewHeaderFooterView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
-    register(viewClass, forHeaderFooterViewReuseIdentifier: identifier)
-  }
-
-  @inlinable
-  public func register<View: UITableViewHeaderFooterView & NibReusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
+  public func register<View: UITableViewHeaderFooterView & NibLoadable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
     register(viewClass.nib, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   // Unregister
 
   @inlinable
-  public func unregister<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self)) {
+  public func unregister<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
     register(nil as AnyClass?, forCellReuseIdentifier: identifier)
   }
 
   @inlinable
-  public func unregister<Cell: UITableViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
-    register(nil as AnyClass?, forCellReuseIdentifier: identifier)
-  }
-
-  @inlinable
-  public func unregister<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) {
-    register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
-  }
-
-  @inlinable
-  public func unregister<View: UITableViewHeaderFooterView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
+  public func unregister<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
     register(nil as AnyClass?, forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   // Dequeue
 
   @inlinable
-  public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, style: UITableViewCell.CellStyle = .default, identifier: String = String(describing: Cell.self)) -> Cell {
+  public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, style: UITableViewCell.CellStyle, identifier: String = Cell.reuseIdentifier) -> Cell {
     return dequeueReusableCell(withIdentifier: identifier) as! Cell? ?? Cell(style: style, reuseIdentifier: identifier)
   }
 
   @inlinable
-  public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = String(describing: Cell.self), for indexPath: IndexPath) -> Cell {
+  public func dequeue<Cell: UITableViewCell>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell {
     return dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! Cell
   }
 
   @inlinable
-  public func dequeue<Cell: UITableViewCell & Reusable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier, for indexPath: IndexPath) -> Cell {
-    return dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! Cell
-  }
-
-  @inlinable
-  public func dequeue<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = String(describing: View.self)) -> View {
-    return dequeueReusableHeaderFooterView(withIdentifier: identifier) as! View
-  }
-
-  @inlinable
-  public func dequeue<View: UITableViewHeaderFooterView & Reusable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) -> View {
+  public func dequeue<View: UITableViewHeaderFooterView>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) -> View {
     return dequeueReusableHeaderFooterView(withIdentifier: identifier) as! View
   }
 }

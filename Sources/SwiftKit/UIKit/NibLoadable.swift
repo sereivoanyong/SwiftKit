@@ -6,8 +6,6 @@
 
 import UIKit
 
-public typealias NibReusable = NibLoadable & Reusable
-
 public protocol NibLoadable: AnyObject {
 
   static var nibName: String { get }
