@@ -50,7 +50,11 @@ public struct Storage<Value, Store: DataStore> {
     self.key = key
     self.store = store
     self.get = { store, key in
-      return store.data(forKey: key) ?? `default`
+      if let data = store.data(forKey: key) {
+        return data
+      }
+      store.set(`default`, forKey: key)
+      return `default`
     }
     self.set = { store, key, newValue in
       store.set(newValue, forKey: key)
@@ -109,6 +113,12 @@ public struct Storage<Value, Store: DataStore> {
           printIfDEBUG(error)
         }
       }
+      do {
+        let data = try transforming.data(from: `default`)
+        store.set(data, forKey: key)
+      } catch {
+        printIfDEBUG(error)
+      }
       return `default`
     }
     self.set = { store, key, value in
@@ -141,9 +151,9 @@ extension Storage where Store: PropertyListStore {
     }
     self.set = { store, key, value in
       if let value {
-        store[key] = value
+        store.set(value, forKey: key)
       } else {
-        store[key] = nil
+        store.set(nil, forKey: key)
       }
     }
   }
@@ -159,10 +169,11 @@ extension Storage where Store: PropertyListStore {
       if let value = store[key] as? Value {
         return value
       }
+      store.set(`default`, forKey: key)
       return `default`
     }
     self.set = { store, key, value in
-      store[key] = value
+      store.set(value, forKey: key)
     }
   }
 
@@ -182,9 +193,9 @@ extension Storage where Store: PropertyListStore {
     }
     self.set = { store, key, value in
       if let value {
-        store[key] = value.rawValue
+        store.set(value.rawValue, forKey: key)
       } else {
-        store[key] = nil
+        store.set(nil, forKey: key)
       }
     }
   }
@@ -200,10 +211,11 @@ extension Storage where Store: PropertyListStore {
       if let rawValue = store[key] as? Value.RawValue, let value = Value(rawValue: rawValue) {
         return value
       }
+      store.set(`default`.rawValue, forKey: key)
       return `default`
     }
     self.set = { store, key, value in
-      store[key] = value.rawValue
+      store.set(value.rawValue, forKey: key)
     }
   }
 }
