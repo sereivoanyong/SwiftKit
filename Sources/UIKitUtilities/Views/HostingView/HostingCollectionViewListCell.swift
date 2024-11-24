@@ -8,7 +8,15 @@ import UIKit
 import SwiftKit
 
 @available(iOS 14.0, *)
-open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingViewCell {
+open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewListCell, HostingViewCell, AppearingCollectionReusableView {
+
+  open var appearanceState: AppearanceState = .none {
+    didSet {
+      if let rootView = rootView as? AppearingCollectionReusableViewSubview {
+        rootView.parentReusableViewAppearanceStateDidChange(self)
+      }
+    }
+  }
 
   open var isSeparatorConfigured: Bool = false
 
@@ -23,6 +31,7 @@ open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewList
   open override func prepareForReuse() {
     super.prepareForReuse()
 
+    appearanceState = .none
     if let rootView = rootViewIfLoaded as? ReusableView {
       rootView.prepareForReuse()
     }

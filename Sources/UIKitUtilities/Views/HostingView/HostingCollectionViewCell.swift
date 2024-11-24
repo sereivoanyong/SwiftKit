@@ -7,7 +7,15 @@
 import UIKit
 import SwiftKit
 
-open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingViewCell {
+open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, HostingViewCell, AppearingCollectionReusableView {
+
+  open var appearanceState: AppearanceState = .none {
+    didSet {
+      if let rootView = rootView as? AppearingCollectionReusableViewSubview {
+        rootView.parentReusableViewAppearanceStateDidChange(self)
+      }
+    }
+  }
 
   open override func layoutSubviews() {
     super.layoutSubviews()
@@ -20,6 +28,7 @@ open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, Ho
   open override func prepareForReuse() {
     super.prepareForReuse()
 
+    appearanceState = .none
     if let rootView = rootViewIfLoaded as? ReusableView {
       rootView.prepareForReuse()
     }
