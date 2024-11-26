@@ -48,3 +48,51 @@ extension UIFont {
     return CTFontCopyTable(CTFontCreateWithName(fontName as CFString, pointSize, nil), CTFontTableTag(kCTFontTableCFF), []) as Data?
   }
 }
+
+// https://gist.github.com/sebjvidal/013fc653dfbda4290ac35bbbad8dcfb1
+extension UIFont.TextStyle {
+
+  public static var emphasizedLargeTitle: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedTitle0")
+  }
+
+  public static var emphasizedTitle1: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedTitle1")
+  }
+
+  public static var emphasizedTitle2: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedTitle2")
+  }
+
+  public static var emphasizedTitle3: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedTitle3")
+  }
+
+  public static var emphasizedHeadline: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedHeadline")
+  }
+
+  public static var emphasizedBody: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedBody")
+  }
+
+  public static var emphasizedCallout: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedCallout")
+  }
+
+  public static var emphasizedSubheadline: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedSubhead")
+  }
+
+  public static var emphasizedFootnote: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedFootnote")
+  }
+
+  public static var emphasizedCaption1: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedCaption1")
+  }
+
+  public static var emphasizedCaption2: UIFont.TextStyle {
+    return UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedCaption2")
+  }
+}
