@@ -20,6 +20,8 @@ open class CollectionViewListCell: UICollectionViewListCell, AppearingCollection
     }
   }
 
+  open var overrideHeight: CGFloat?
+
   public override init(frame: CGRect) {
     super.init(frame: frame)
     commonInit()
@@ -52,5 +54,13 @@ open class CollectionViewListCell: UICollectionViewListCell, AppearingCollection
         primaryContentAnchors.trailing.constraint(equalTo: separatorLayoutGuide.trailingAnchor),
       ])
     }
+  }
+
+  open override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+    var size = super.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: horizontalFittingPriority, verticalFittingPriority: verticalFittingPriority)
+    if let overrideHeight {
+      size.height = overrideHeight
+    }
+    return size
   }
 }
