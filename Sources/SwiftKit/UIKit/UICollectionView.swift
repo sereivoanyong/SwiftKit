@@ -1,5 +1,6 @@
 //
 //  UICollectionView.swift
+//  SwiftKit
 //
 //  Created by Sereivoan Yong on 8/2/17.
 //
@@ -15,7 +16,7 @@ extension UICollectionView {
 
   public typealias CellProvider<Item> = (UICollectionView, IndexPath, Item) -> UICollectionViewCell?
 
-  public static let elementKindSectionBackground = "UICollectionElementKindSectionBackground"
+  public static let elementKindSectionBackground: String = "UICollectionElementKindSectionBackground"
 
   @inlinable
   public convenience init(collectionViewLayout: UICollectionViewLayout) {
@@ -65,7 +66,7 @@ extension UICollectionView {
     set { setAssociatedValue(newValue, forKey: &registeredCellsKey, with: self) }
   }
 
-  public private(set) var registeredSupplementaryViews: [String: (viewClass: UICollectionReusableView.Type, isNib: Bool, kind: String)] {
+  public private(set) var registeredSupplementaryViews: [String: (viewClass: UICollectionReusableView.Type, isNib: Bool, kind: ElementKind)] {
     get { return associatedValue(default: [:], forKey: &registeredSupplementaryViewsKey, with: self) }
     set { setAssociatedValue(newValue, forKey: &registeredSupplementaryViewsKey, with: self) }
   }
@@ -89,17 +90,17 @@ extension UICollectionView {
 #endif
   }
 
-  public func register<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: String) {
+  public func register<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: ElementKind) {
     let identifier = identifier ?? viewClass.reuseIdentifier
-    register(viewClass, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
+    register(viewClass, forSupplementaryViewOfKind: kind.rawValue, withReuseIdentifier: identifier)
 #if DEBUG
     registeredSupplementaryViews[identifier] = (viewClass, false, kind)
 #endif
   }
 
-  public func register<View: UICollectionReusableView & NibLoadable>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: String) {
+  public func register<View: UICollectionReusableView & NibLoadable>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: ElementKind) {
     let identifier = identifier ?? viewClass.reuseIdentifier
-    register(viewClass.nib, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
+    register(viewClass.nib, forSupplementaryViewOfKind: kind.rawValue, withReuseIdentifier: identifier)
 #if DEBUG
     registeredSupplementaryViews[identifier] = (viewClass, true, kind)
 #endif
@@ -132,15 +133,21 @@ extension UICollectionView {
   }
 
   @inlinable
-  public func dequeueConfigured<Cell: UICollectionViewCell & ContentConfiguring>( _ cellClass: Cell.Type, for indexPath: IndexPath, with content: Cell.Content) -> Cell {
-    let cell = dequeue(cellClass, for: indexPath)
-    cell.configure(content)
-    return cell
+  public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: ElementKind, for indexPath: IndexPath) -> View {
+    let identifier = identifier ?? viewClass.reuseIdentifier
+    return dequeueReusableSupplementaryView(ofKind: kind.rawValue, withReuseIdentifier: identifier, for: indexPath) as! View
+  }
+}
+
+extension UICollectionViewLayout {
+
+  @inlinable
+  public func register(_ viewClass: UICollectionReusableView.Type?, forDecorationViewOfKind kind: UICollectionView.ElementKind) {
+    register(viewClass, forDecorationViewOfKind: kind.rawValue)
   }
 
   @inlinable
-  public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: String, for indexPath: IndexPath) -> View {
-    let identifier = identifier ?? viewClass.reuseIdentifier
-    return dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! View
+  public func register<View: UICollectionReusableView & NibLoadable>(_ viewClass: View.Type?, forDecorationViewOfKind kind: UICollectionView.ElementKind) {
+    register(viewClass?.nib, forDecorationViewOfKind: kind.rawValue)
   }
 }
