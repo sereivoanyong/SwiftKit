@@ -1,42 +1,29 @@
 //
 //  ObjectContentView.swift
+//  SwiftKit
 //
 //  Created by Sereivoan Yong on 9/16/24.
 //
 
 import UIKit
+import SwiftKit
 
 @available(iOS 14.0, *)
-public protocol ObjectContentView: UIView, UIContentView {
+@MainActor public protocol ObjectContentView<Object>: ContentView where Configuration == ObjectContentConfiguration<Object> {
 
-  associatedtype Object
+  associatedtype Object: AnyObject
 
-  var objectConfiguration: AnyObjectContentConfiguration<Object>! { get set }
-
-  func configure(_ object: Object)
+  @MainActor func configure(_ object: Object)
 }
-
-private var _configurationKey: Void?
 
 @available(iOS 14.0, *)
 extension ObjectContentView {
 
-  public typealias Configuration = ObjectContentConfiguration<Self>
-
-  public var configuration: UIContentConfiguration {
-    get { return objectConfiguration }
-    set { objectConfiguration = newValue as? AnyObjectContentConfiguration<Object> }
+  public var configurationObject: Object! {
+    return _configurationIfSet?.object
   }
 
-  public var objectConfiguration: AnyObjectContentConfiguration<Object>! {
-    get { return associatedObject(forKey: &_configurationKey, with: self) }
-    set {
-      setAssociatedObject(newValue, forKey: &_configurationKey, with: self)
-      configure(newValue.object)
-    }
-  }
-
-  public func supports(_ configuration: UIContentConfiguration) -> Bool {
-    return configuration is AnyObjectContentConfiguration<Object>
+  @MainActor public func configure(_ configuration: ObjectContentConfiguration<Object>) {
+    configure(configuration.object)
   }
 }

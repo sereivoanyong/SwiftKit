@@ -1,30 +1,29 @@
 //
 //  ViewModelContentView.swift
+//  SwiftKit
 //
 //  Created by Sereivoan Yong on 9/9/24.
 //
 
 import UIKit
+import SwiftKit
 
 @available(iOS 14.0, *)
-public protocol ViewModelContentView: UIView, UIContentView {
+@MainActor public protocol ViewModelContentView<ViewModel>: ContentView where Configuration == ViewModelContentConfiguration<ViewModel> {
 
-  associatedtype ViewModel
+  associatedtype ViewModel: AnyObject
 
-  var viewModelConfiguration: AnyViewModelContentConfiguration<ViewModel>! { get set }
+  @MainActor func configure(_ viewModel: ViewModel)
 }
 
 @available(iOS 14.0, *)
 extension ViewModelContentView {
 
-  public typealias Configuration = ViewModelContentConfiguration<Self>
-
-  public var configuration: UIContentConfiguration {
-    get { return viewModelConfiguration }
-    set { viewModelConfiguration = newValue as? AnyViewModelContentConfiguration<ViewModel> }
+  public var configurationViewModel: ViewModel! {
+    return _configurationIfSet?.viewModel
   }
 
-  public func supports(_ configuration: UIContentConfiguration) -> Bool {
-    return configuration is AnyViewModelContentConfiguration<ViewModel>
+  @MainActor public func configure(_ configuration: ViewModelContentConfiguration<ViewModel>) {
+    configure(configuration.viewModel)
   }
 }
