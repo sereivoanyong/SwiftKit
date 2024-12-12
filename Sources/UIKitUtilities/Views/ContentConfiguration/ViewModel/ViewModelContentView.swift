@@ -24,6 +24,11 @@ extension ViewModelContentView {
     set { viewModelConfiguration = newValue as? AnyViewModelContentConfiguration<ViewModel> }
   }
 
+  @inlinable
+  public var viewModel: ViewModel! {
+    return viewModelConfiguration?.viewModel
+  }
+
   public func supports(_ configuration: UIContentConfiguration) -> Bool {
     return configuration is AnyViewModelContentConfiguration<ViewModel>
   }
