@@ -6,6 +6,5 @@
 
 import UIKit
 
-extension UIRectCorner: Hashable {
-
+extension UIRectCorner: @retroactive Hashable {
 }

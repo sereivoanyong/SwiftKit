@@ -20,8 +20,14 @@ extension XAxisEdgesProtocol where XAxisItem: AdditiveArithmetic {
     return left + right
   }
 
+  @inlinable
   public var withoutHorizontal: Self {
     return withHorizontal(left: .zero, right: .zero)
+  }
+
+  @inlinable
+  public func withHorizontal(_ edges: any XAxisEdgesProtocol<XAxisItem>) -> Self {
+    return withHorizontal(left: edges.left, right: edges.right)
   }
 
   public func withHorizontal(left: XAxisItem, right: XAxisItem) -> Self {

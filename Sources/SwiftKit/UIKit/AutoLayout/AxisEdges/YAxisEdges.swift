@@ -20,8 +20,14 @@ extension YAxisEdgesProtocol where YAxisItem: AdditiveArithmetic {
     return top + bottom
   }
 
+  @inlinable
   public var withoutVertical: Self {
     return withVertical(top: .zero, bottom: .zero)
+  }
+
+  @inlinable
+  public func withVertical(_ edges: any YAxisEdgesProtocol<YAxisItem>) -> Self {
+    return withVertical(top: edges.top, bottom: edges.bottom)
   }
 
   public func withVertical(top: YAxisItem, bottom: YAxisItem) -> Self {

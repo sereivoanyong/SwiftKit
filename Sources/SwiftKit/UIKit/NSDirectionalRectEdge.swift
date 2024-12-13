@@ -7,6 +7,5 @@
 import UIKit
 
 @available(iOS 13.0, *)
-extension NSDirectionalRectEdge: Hashable {
-
+extension NSDirectionalRectEdge: @retroactive Hashable {
 }
