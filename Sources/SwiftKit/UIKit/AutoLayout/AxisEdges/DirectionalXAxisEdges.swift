@@ -20,8 +20,14 @@ extension DirectionalXAxisEdgesProtocol where XAxisItem: AdditiveArithmetic {
     return leading + trailing
   }
 
+  @inlinable
   public var withoutHorizontal: Self {
     return withHorizontal(leading: .zero, trailing: .zero)
+  }
+
+  @inlinable
+  public func withHorizontal(_ edges: any DirectionalXAxisEdgesProtocol<XAxisItem>) -> Self {
+    return withHorizontal(leading: edges.leading, trailing: edges.trailing)
   }
 
   public func withHorizontal(leading: XAxisItem, trailing: XAxisItem) -> Self {
