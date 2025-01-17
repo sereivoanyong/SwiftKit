@@ -18,6 +18,8 @@ extension UINavigationItem {
 
 open class NavigationController: UINavigationController, UIGestureRecognizerDelegate, UINavigationControllerDelegate {
 
+  private var overrideUserInterfaceStyleObservation: NSKeyValueObservation?
+
   // MARK: View Lifecycle
 
   open override func viewDidLoad() {
@@ -38,6 +40,14 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
     return topViewController
   }
 
+  open func updateProperties(from topViewController: UIViewController) {
+    if #available(iOS 13.0, *) {
+      overrideUserInterfaceStyleObservation = topViewController.observe(\.overrideUserInterfaceStyle, options: [.initial, .new]) { [unowned self] topViewController, _ in
+        overrideUserInterfaceStyle = topViewController.overrideUserInterfaceStyle
+      }
+    }
+  }
+
   // MARK: UIGestureRecognizerDelegate
 
   open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -47,7 +57,7 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
     return true
   }
 
-  public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+  open func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     if gestureRecognizer === interactivePopGestureRecognizer {
       return true
     }
@@ -57,11 +67,11 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
   // MARK: UINavigationControllerDelegate
 
   open func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-
+    updateProperties(from: viewController)
   }
 
   open func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-
+    updateProperties(from: viewController)
   }
 
   open func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
