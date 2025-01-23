@@ -1,35 +1,58 @@
 //
 //  ViewModelContentView.swift
+//  SwiftKit
 //
 //  Created by Sereivoan Yong on 9/9/24.
 //
 
 import UIKit
+import SwiftKit
 
 @available(iOS 14.0, *)
-public protocol ViewModelContentView: UIView, UIContentView {
+@MainActor public protocol ViewModelContentView<ViewModel>: UIView, UIContentView {
 
   associatedtype ViewModel
 
-  var viewModelConfiguration: AnyViewModelContentConfiguration<ViewModel>! { get set }
+  @MainActor var viewModelConfiguration: ViewModelContentConfiguration<ViewModel> { get set }
+
+  @MainActor func configure(_ viewModel: ViewModel)
 }
+
+private var __configurationKey: Void?
 
 @available(iOS 14.0, *)
 extension ViewModelContentView {
 
-  public typealias Configuration = ViewModelContentConfiguration<Self>
+  @MainActor public var __configuration: UIContentConfiguration? {
+    get { return associatedValue(forKey: &__configurationKey, with: self) }
+    set { setAssociatedValue(newValue, forKey: &__configurationKey, with: self) }
+  }
 
-  public var configuration: UIContentConfiguration {
-    get { return viewModelConfiguration }
-    set { viewModelConfiguration = newValue as? AnyViewModelContentConfiguration<ViewModel> }
+  @MainActor public var configuration: UIContentConfiguration {
+    get { return __configuration! }
+    set {
+      __configuration = newValue
+      if let newValue = newValue as? ViewModelContentConfiguration<ViewModel> {
+        configure(newValue.viewModel)
+      }
+    }
   }
 
   @inlinable
-  public var viewModel: ViewModel! {
-    return viewModelConfiguration?.viewModel
+  @MainActor public var viewModelConfiguration: ViewModelContentConfiguration<ViewModel> {
+    get { return __configuration as! ViewModelContentConfiguration<ViewModel> }
+    set {
+      __configuration = newValue
+      configure(newValue.viewModel)
+    }
   }
 
-  public func supports(_ configuration: UIContentConfiguration) -> Bool {
-    return configuration is AnyViewModelContentConfiguration<ViewModel>
+  @inlinable
+  public var viewModel: ViewModel {
+    return viewModelConfiguration.viewModel
+  }
+
+  @MainActor public func supports(_ configuration: UIContentConfiguration) -> Bool {
+    return configuration is ViewModelContentConfiguration<ViewModel>
   }
 }
