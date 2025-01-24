@@ -15,6 +15,14 @@ extension KeyedDecodingContainerProtocol {
   public func decodeIfPresent<T: Decodable>(forKey key: Key) throws -> T? {
     return try decodeIfPresent(T.self, forKey: key)
   }
+
+  public func isNil(forKey key: Key) -> Bool {
+    do {
+      return try decodeNil(forKey: key)
+    } catch {
+      return true
+    }
+  }
 }
 
 extension SingleValueDecodingContainer {
