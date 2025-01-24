@@ -5,7 +5,14 @@
 //  Created by Sereivoan Yong on 1/23/25.
 //
 
-open class ObjectViewModel<Object> {
+public protocol ObjectViewModelProtocol<Object>: AnyObject {
+
+  associatedtype Object
+
+  var object: Object { get set }
+}
+
+open class ObjectViewModel<Object>: ObjectViewModelProtocol {
 
   open var object: Object
 

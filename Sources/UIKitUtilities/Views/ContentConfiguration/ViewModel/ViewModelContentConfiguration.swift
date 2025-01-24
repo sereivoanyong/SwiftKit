@@ -38,6 +38,7 @@ public struct ViewModelContentConfiguration<ViewModel>: UIContentConfiguration {
       assert(contentView.supports(self))
     }
     contentView.configuration = self
+    handler(contentView)
     return contentView
   }
 
