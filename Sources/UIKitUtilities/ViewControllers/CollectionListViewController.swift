@@ -5,52 +5,14 @@
 //
 
 import UIKit
+import SwiftKit
 
-@available(iOS 13.0, *)
-extension UICollectionViewDiffableDataSource {
-
-  @inlinable
-  func _sectionIdentifier(for index: Int) -> SectionIdentifierType? {
-    if #available(iOS 15.0, *) {
-      return sectionIdentifier(for: index)
-    } else {
-      return snapshot().sectionIdentifiers[index]
-    }
-  }
-}
-
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 open class CollectionListViewController: CollectionViewController {
 
-  public typealias DataSource = UICollectionViewDiffableDataSource<CollectionListSection, CollectionListItem>
+  public typealias DataSource = UICollectionViewDiffableDataSource<CollectionSection, CollectionItem>
 
-  public typealias Snapshot = NSDiffableDataSourceSnapshot<CollectionListSection, CollectionListItem>
-
-  lazy public private(set) var supplementaryHeaderRegistration: UICollectionView.SupplementaryRegistration<UICollectionViewListCell> = .init(elementKind: UICollectionView.elementKindSectionHeader) { [unowned self] cell, elementKind, indexPath in
-    if let section = dataSource._sectionIdentifier(for: indexPath.section), let content = section.header.content {
-      var configuration = cell.defaultContentConfiguration()
-      content.apply(to: &configuration)
-      cell.contentConfiguration = configuration
-    } else {
-      cell.contentConfiguration = nil
-    }
-  }
-
-  lazy public private(set) var supplementaryFooterRegistration: UICollectionView.SupplementaryRegistration<UICollectionViewListCell> = .init(elementKind: UICollectionView.elementKindSectionFooter) { [unowned self] cell, elementKind, indexPath in
-    if let section = dataSource._sectionIdentifier(for: indexPath.section), let content = section.footer.content {
-      var configuration = cell.defaultContentConfiguration()
-      content.apply(to: &configuration)
-      cell.contentConfiguration = configuration
-    } else {
-      cell.contentConfiguration = nil
-    }
-  }
-
-  lazy public private(set) var itemRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, CollectionListItem> = .init { cell, indexPath, item in
-    var configuration = cell.defaultContentConfiguration()
-    item.content.apply(to: &configuration)
-    cell.contentConfiguration = configuration
-  }
+  public typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<CollectionSection, CollectionItem>
 
   open private(set) var dataSource: DataSource!
 
@@ -58,9 +20,9 @@ open class CollectionListViewController: CollectionViewController {
 
   // MARK: Init / Deinit
 
-  public init(appearance: UICollectionLayoutListConfiguration.Appearance) {
+  public init(appearance: UICollectionLayoutListConfiguration.Appearance, nibName: String? = nil, bundle: Bundle? = nil) {
     self.appearance = appearance
-    super.init(nibName: nil, bundle: nil)
+    super.init(nibName: nibName, bundle: bundle)
   }
 
   public override init(nibName: String?, bundle: Bundle?) {
@@ -78,50 +40,98 @@ open class CollectionListViewController: CollectionViewController {
   open override func makeCollectionViewLayout() -> UICollectionViewLayout {
     let configuration = UICollectionViewCompositionalLayoutConfiguration()
     let layout = UICollectionViewCompositionalLayout(sectionProvider: { [unowned self] sectionIndex, layoutEnvironment in
-      guard let sectionIdentifier = dataSource._sectionIdentifier(for: sectionIndex) else { fatalError()}
-      var configuration = UICollectionLayoutListConfiguration(appearance: appearance)
-      switch sectionIdentifier.header {
-      case .none:
-        configuration.headerMode = .none
-      case .supplementary:
-        configuration.headerMode = .supplementary
-      case .firstItemInSection:
-        configuration.headerMode = .firstItemInSection
-      }
-      switch sectionIdentifier.footer {
-      case .none:
-        configuration.headerMode = .none
-      case .supplementary:
-        configuration.footerMode = .supplementary
-      }
-      configureListConfiguration(&configuration, for: sectionIdentifier)
-      let layoutSection = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
-      return layoutSection
+      guard let section = dataSource.sectionIdentifier(for: sectionIndex) else { fatalError()}
+      return makeCollectionViewLayoutSection(at: sectionIndex, section: section, layoutEnvironment: layoutEnvironment)
     }, configuration: configuration)
     return layout
+  }
+
+  // MARK: LayoutConfiguration
+
+  open func makeCollectionViewLayoutSection(at sectionIndex: Int, section: CollectionSection, layoutEnvironment: any NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
+    let layoutSection: NSCollectionLayoutSection
+    switch section.content {
+    case .list(let header, let footer):
+      var listConfiguration = UICollectionLayoutListConfiguration(appearance: appearance)
+      listConfiguration.headerMode = header.mode
+      listConfiguration.footerMode = footer.mode
+      configure(&listConfiguration, forSectionAt: sectionIndex, layoutEnvironment: layoutEnvironment, section: section)
+      layoutSection = .list(using: listConfiguration, layoutEnvironment: layoutEnvironment)
+    case .custom(let customLayoutSection):
+      layoutSection = customLayoutSection
+    }
+    return layoutSection
+  }
+
+  open func configure(_ listConfiguration: inout UICollectionLayoutListConfiguration, forSectionAt sectionIndex: Int, layoutEnvironment: any NSCollectionLayoutEnvironment, section: CollectionSection) {
   }
 
   open override func collectionViewDidLoad() {
     super.collectionViewDidLoad()
 
-    _ = itemRegistration
+    collectionView.register(UICollectionViewListCell.self)
+    collectionView.register(UICollectionViewListCell.self, of: .sectionHeader)
+    collectionView.register(UICollectionViewListCell.self, of: .sectionFooter)
     dataSource = DataSource(collectionView: collectionView) { [unowned self] collectionView, indexPath, item in
-      return collectionView.dequeueConfiguredReusableCell(using: itemRegistration, for: indexPath, item: item)
+      guard let item = dataSource.itemIdentifier(for: indexPath) else { fatalError() }
+      return dequeueConfiguredCell(forItemAt: indexPath, item: item, in: collectionView)
     }
-    _ = supplementaryHeaderRegistration
-    _ = supplementaryFooterRegistration
-    dataSource.supplementaryViewProvider = { [unowned self] collectionView, elementKind, indexPath in
-      switch elementKind {
-      case UICollectionView.elementKindSectionHeader:
-        return collectionView.dequeueConfiguredReusableSupplementary(using: supplementaryHeaderRegistration, for: indexPath)
-      case UICollectionView.elementKindSectionFooter:
-        return collectionView.dequeueConfiguredReusableSupplementary(using: supplementaryFooterRegistration, for: indexPath)
-      default:
-        fatalError()
-      }
+    dataSource.supplementaryViewProvider = { [unowned self] collectionView, kind, indexPath in
+      let kind = UICollectionView.ElementKind(kind)
+      return dequeueConfiguredSupplementaryView(of: kind, at: indexPath, in: collectionView)
     }
   }
 
-  open func configureListConfiguration(_ configuration: inout UICollectionLayoutListConfiguration, for sectionIdentifier: CollectionListSection) {
+  // MARK: Cell
+
+  open func dequeueConfiguredCell(forItemAt indexPath: IndexPath, item: CollectionItem, in collectionView: UICollectionView) -> UICollectionViewListCell {
+    let cell = collectionView.dequeue(UICollectionViewListCell.self, for: indexPath)
+    configure(cell, forItemAt: indexPath, item: item)
+    return cell
+  }
+
+  open func configure(_ cell: UICollectionViewListCell, forItemAt indexPath: IndexPath, item: CollectionItem) {
+    var configuration = cell.defaultContentConfiguration()
+    configuration.apply(item.content)
+    cell.contentConfiguration = configuration
+  }
+
+  // MARK: Supplementary View
+
+  open func dequeueConfiguredSupplementaryView(of kind: UICollectionView.ElementKind, at indexPath: IndexPath, in collectionView: UICollectionView) -> UICollectionReusableView {
+    switch kind {
+    case .sectionHeader:
+      guard let section = dataSource.sectionIdentifier(for: indexPath.section) else { fatalError() }
+      let cell = collectionView.dequeue(UICollectionViewListCell.self, of: kind, for: indexPath)
+      configureHeader(cell, forSectionAt: indexPath.section, section: section)
+      return cell
+
+    case .sectionFooter:
+      guard let section = dataSource.sectionIdentifier(for: indexPath.section) else { fatalError() }
+      let cell = collectionView.dequeue(UICollectionViewListCell.self, of: kind, for: indexPath)
+      configureFooter(cell, forSectionAt: indexPath.section, section: section)
+      return cell
+
+    default:
+      fatalError()
+    }
+  }
+
+  // MARK: Header
+
+  open func configureHeader(_ headerView: UICollectionReusableView, forSectionAt sectionIndex: Int, section: CollectionSection) {
+    guard let cell = headerView as? UICollectionViewListCell, case .list(let header, _) = section.content, let content = header.content else { return }
+    var configuration = cell.defaultContentConfiguration()
+    configuration.apply(content)
+    cell.contentConfiguration = configuration
+  }
+
+  // MARK: Footer
+
+  open func configureFooter(_ footerView: UICollectionReusableView, forSectionAt sectionIndex: Int, section: CollectionSection) {
+    guard let cell = footerView as? UICollectionViewListCell, case .list(_, let footer) = section.content, let content = footer.content else { return }
+    var configuration = cell.defaultContentConfiguration()
+    configuration.apply(content)
+    cell.contentConfiguration = configuration
   }
 }

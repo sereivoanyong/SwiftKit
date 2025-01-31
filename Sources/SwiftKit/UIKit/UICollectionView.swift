@@ -90,7 +90,7 @@ extension UICollectionView {
 #endif
   }
 
-  public func register<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: ElementKind) {
+  public func register<SupplementaryView: UICollectionReusableView>(_ viewClass: SupplementaryView.Type, identifier: String? = nil, of kind: ElementKind) {
     let identifier = identifier ?? viewClass.reuseIdentifier
     register(viewClass, forSupplementaryViewOfKind: kind.rawValue, withReuseIdentifier: identifier)
 #if DEBUG
@@ -98,7 +98,7 @@ extension UICollectionView {
 #endif
   }
 
-  public func register<View: UICollectionReusableView & NibLoadable>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: ElementKind) {
+  public func register<SupplementaryView: UICollectionReusableView & NibLoadable>(_ viewClass: SupplementaryView.Type, identifier: String? = nil, of kind: ElementKind) {
     let identifier = identifier ?? viewClass.reuseIdentifier
     register(viewClass.nib, forSupplementaryViewOfKind: kind.rawValue, withReuseIdentifier: identifier)
 #if DEBUG
@@ -116,7 +116,7 @@ extension UICollectionView {
 #endif
   }
 
-  public func unregister<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: String) {
+  public func unregister<SupplementaryView: UICollectionReusableView>(_ viewClass: SupplementaryView.Type, identifier: String? = nil, of kind: String) {
     let identifier = identifier ?? viewClass.reuseIdentifier
     register(nil as AnyClass?, forSupplementaryViewOfKind: kind, withReuseIdentifier: identifier)
 #if DEBUG
@@ -133,21 +133,26 @@ extension UICollectionView {
   }
 
   @inlinable
-  public func dequeue<View: UICollectionReusableView>(_ viewClass: View.Type, identifier: String? = nil, ofKind kind: ElementKind, for indexPath: IndexPath) -> View {
+  public func dequeue<SupplementaryView: UICollectionReusableView>(_ viewClass: SupplementaryView.Type, identifier: String? = nil, of kind: ElementKind, for indexPath: IndexPath) -> SupplementaryView {
     let identifier = identifier ?? viewClass.reuseIdentifier
-    return dequeueReusableSupplementaryView(ofKind: kind.rawValue, withReuseIdentifier: identifier, for: indexPath) as! View
+    return dequeueReusableSupplementaryView(ofKind: kind.rawValue, withReuseIdentifier: identifier, for: indexPath) as! SupplementaryView
   }
 }
 
 extension UICollectionViewLayout {
 
   @inlinable
-  public func register(_ viewClass: UICollectionReusableView.Type?, forDecorationViewOfKind kind: UICollectionView.ElementKind) {
+  public func register<DecorationView: UICollectionReusableView>(_ viewClass: DecorationView.Type, of kind: UICollectionView.ElementKind) {
     register(viewClass, forDecorationViewOfKind: kind.rawValue)
   }
 
   @inlinable
-  public func register<View: UICollectionReusableView & NibLoadable>(_ viewClass: View.Type?, forDecorationViewOfKind kind: UICollectionView.ElementKind) {
-    register(viewClass?.nib, forDecorationViewOfKind: kind.rawValue)
+  public func register<DecorationView: UICollectionReusableView & NibLoadable>(_ viewClass: DecorationView.Type, of kind: UICollectionView.ElementKind) {
+    register(viewClass.nib, forDecorationViewOfKind: kind.rawValue)
+  }
+
+  @inlinable
+  public func unregisterDecorationView(of kind: UICollectionView.ElementKind) {
+    register(nil as AnyClass?, forDecorationViewOfKind: kind.rawValue)
   }
 }
