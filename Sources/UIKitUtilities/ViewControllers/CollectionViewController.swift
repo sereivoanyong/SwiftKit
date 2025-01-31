@@ -19,7 +19,7 @@ open class CollectionViewController: UIViewController {
 
   open private(set) var collectionViewIfLoaded: UICollectionView?
 
-  weak open var collectionView: UICollectionView! {
+  @IBOutlet weak open var collectionView: UICollectionView! {
     get {
       if let collectionViewIfLoaded {
         return collectionViewIfLoaded
