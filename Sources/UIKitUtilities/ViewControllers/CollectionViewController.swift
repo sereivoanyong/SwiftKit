@@ -12,9 +12,6 @@ open class CollectionViewController: UIViewController {
     return UICollectionView.self
   }
 
-  /// If this property is `true`, `collectionView` and `view` are the same.
-  open var isCollectionViewRoot: Bool = false
-
   open var invalidatesLayoutOnViewWillTransition: Bool = true
 
   open private(set) var collectionViewIfLoaded: UICollectionView?
@@ -80,18 +77,10 @@ open class CollectionViewController: UIViewController {
 
   // MARK: View Lifecycle
 
-  open override func loadView() {
-    if isCollectionViewRoot {
-      view = collectionView
-    } else {
-      super.loadView()
-    }
-  }
-
   open override func viewDidLoad() {
     super.viewDidLoad()
 
-    if !isCollectionViewRoot {
+    if collectionView.superview == nil {
       collectionView.frame = view.bounds
       collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       view.insertSubview(collectionView, at: 0)
