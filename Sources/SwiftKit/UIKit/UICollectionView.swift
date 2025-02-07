@@ -84,7 +84,7 @@ extension UICollectionView {
 
   public func register<Cell: UICollectionViewCell & NibLoadable>(_ cellClass: Cell.Type, identifier: String? = nil) {
     let identifier = identifier ?? cellClass.reuseIdentifier
-    register(cellClass.nib, forCellWithReuseIdentifier: identifier)
+    register(cellClass.nib(), forCellWithReuseIdentifier: identifier)
 #if DEBUG
     registeredCells[identifier] = (cellClass, true)
 #endif
@@ -100,7 +100,7 @@ extension UICollectionView {
 
   public func register<SupplementaryView: UICollectionReusableView & NibLoadable>(_ viewClass: SupplementaryView.Type, identifier: String? = nil, of kind: ElementKind) {
     let identifier = identifier ?? viewClass.reuseIdentifier
-    register(viewClass.nib, forSupplementaryViewOfKind: kind.rawValue, withReuseIdentifier: identifier)
+    register(viewClass.nib(), forSupplementaryViewOfKind: kind.rawValue, withReuseIdentifier: identifier)
 #if DEBUG
     registeredSupplementaryViews[identifier] = (viewClass, true, kind)
 #endif
@@ -148,7 +148,7 @@ extension UICollectionViewLayout {
 
   @inlinable
   public func register<DecorationView: UICollectionReusableView & NibLoadable>(_ viewClass: DecorationView.Type, of kind: UICollectionView.ElementKind) {
-    register(viewClass.nib, forDecorationViewOfKind: kind.rawValue)
+    register(viewClass.nib(), forDecorationViewOfKind: kind.rawValue)
   }
 
   @inlinable

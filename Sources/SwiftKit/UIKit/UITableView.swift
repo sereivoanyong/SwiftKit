@@ -114,7 +114,7 @@ extension UITableView {
 
   @inlinable
   public func register<Cell: UITableViewCell & NibLoadable>(_ cellClass: Cell.Type, identifier: String = Cell.reuseIdentifier) {
-    register(cellClass.nib, forCellReuseIdentifier: identifier)
+    register(cellClass.nib(), forCellReuseIdentifier: identifier)
   }
 
   @inlinable
@@ -124,7 +124,7 @@ extension UITableView {
 
   @inlinable
   public func register<View: UITableViewHeaderFooterView & NibLoadable>(_ viewClass: View.Type, identifier: String = View.reuseIdentifier) {
-    register(viewClass.nib, forHeaderFooterViewReuseIdentifier: identifier)
+    register(viewClass.nib(), forHeaderFooterViewReuseIdentifier: identifier)
   }
 
   // Unregister
