@@ -66,10 +66,13 @@ extension UIView {
 
   @available(iOS 13.0, *)
   @discardableResult
-  public func addShadowView(anchorTo targetView: UIView?, insets: NSDirectionalEdgeInsets = .zero) -> ShadowView {
+  public func addShadowView(anchorTo targetView: UIView?, insets: NSDirectionalEdgeInsets = .zero, cornerStyle: ShadowView.CornerStyle? = nil) -> ShadowView {
     let shadowView = ShadowView()
     if let targetView {
       shadowView.anchoringView = targetView
+      if let cornerStyle {
+        shadowView.cornerStyle = cornerStyle
+      }
       insertSubview(shadowView, belowSubview: targetView)
     } else {
       addSubview(shadowView)
