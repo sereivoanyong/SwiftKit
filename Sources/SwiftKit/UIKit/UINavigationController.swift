@@ -21,12 +21,6 @@ extension UINavigationController {
     return super.topMostViewController
   }
 
-  public convenience init(navigationBarClass: UINavigationBar.Type? = nil, toolbarClass: UIToolbar.Type? = nil, rootViewController: UIViewController) {
-    self.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
-
-    viewControllers = [rootViewController]
-  }
-
   @objc(navigationBar:shouldPopItem:)
   open func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
     if viewControllers.count < navigationBar.items!.count {

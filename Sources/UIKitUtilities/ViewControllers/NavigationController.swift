@@ -18,7 +18,30 @@ extension UINavigationItem {
 
 open class NavigationController: UINavigationController, UIGestureRecognizerDelegate, UINavigationControllerDelegate {
 
+  public static var navigationBarClass: UINavigationBar.Type?
+
+  public static var toolbarClass: UIToolbar.Type?
+
   private var overrideUserInterfaceStyleObservation: NSKeyValueObservation?
+
+  // MARK: Initializers
+
+  public init(navigationBarClass: UINavigationBar.Type? = nil, toolbarClass: UIToolbar.Type? = nil, rootViewController: UIViewController) {
+    super.init(navigationBarClass: navigationBarClass ?? Self.navigationBarClass, toolbarClass: toolbarClass ?? Self.toolbarClass)
+    setViewControllers([rootViewController], animated: false)
+  }
+
+  private override init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
+    super.init(navigationBarClass: navigationBarClass ?? Self.navigationBarClass, toolbarClass: toolbarClass ?? Self.toolbarClass)
+  }
+
+  public override init(nibName: String?, bundle: Bundle?) {
+    super.init(nibName: nibName, bundle: bundle)
+  }
+
+  public required init?(coder: NSCoder) {
+    super.init(coder: coder)
+  }
 
   // MARK: View Lifecycle
 
