@@ -69,8 +69,6 @@ extension UIViewController {
     showDetailViewController(detailViewController, sender: sender)
   }
 
-  public static var embeddingNavigationControllerClass: UINavigationController.Type?
-
   public func dismissOrPopFromNavigationStack(animated: Bool, completion: (() -> Void)? = nil) {
     if let navigationController, navigationController.viewControllers.first !== self {
       navigationController.popViewController(animated: animated, completion: completion)
@@ -79,9 +77,10 @@ extension UIViewController {
     }
   }
 
+  public static var embeddingInNavigationControllerHandler: ((UIViewController) -> UINavigationController)?
+
   public func embeddingInNavigationController(inheritModalBehavior: Bool = true) -> UINavigationController {
-    let navigationControllerClass = Self.embeddingNavigationControllerClass ?? UINavigationController.self
-    let navigationController = navigationControllerClass.init(rootViewController: self)
+    let navigationController = Self.embeddingInNavigationControllerHandler?(self) ?? UINavigationController(rootViewController: self)
     if inheritModalBehavior {
       navigationController.modalTransitionStyle = modalTransitionStyle
       navigationController.modalPresentationStyle = modalPresentationStyle
