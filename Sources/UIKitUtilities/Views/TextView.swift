@@ -52,6 +52,7 @@ open class TextView: UITextView {
   open override var font: UIFont! {
     get {
       if let font = super.font {
+        isFontLoaded = true
         return font
       }
       var font: UIFont!
