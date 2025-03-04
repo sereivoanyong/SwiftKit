@@ -155,6 +155,11 @@ extension UIDevice {
     case "iPhone15,5":              return "iPhone 15 Plus"
     case "iPhone16,1":              return "iPhone 15 Pro"
     case "iPhone16,2":              return "iPhone 15 Pro Max"
+    case "iPhone17,3":              return "iPhone 16"
+    case "iPhone17,4":              return "iPhone 16 Plus"
+    case "iPhone17,1":              return "iPhone 16 Pro"
+    case "iPhone17,2":              return "iPhone 16 Pro Max"
+    case "iPhone17,5":              return "iPhone 16e"
     case "iPhone8,4":               return "iPhone SE"
     case "iPhone12,8":              return "iPhone SE (2nd generation)"
     case "iPhone14,6":              return "iPhone SE (3rd generation)"
@@ -363,7 +368,7 @@ extension UIDevice {
 
 
       /* Simulator */
-    case "i386", "x86_64", "arm64": return "Simulator \(modelName(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"]!))"
+    case "i386", "x86_64", "arm64": return "\(modelName(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"]!)) Simulator"
 
     default:                        return identifier
     }
