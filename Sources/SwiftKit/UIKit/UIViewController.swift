@@ -10,6 +10,27 @@ import UIKit
 
 extension UIViewController {
 
+  private static var closeButtonItemKey: Void?
+  public var closeButtonItem: UIBarButtonItem! {
+    get {
+      if let buttonItem = associatedObject(forKey: &Self.closeButtonItemKey, with: self) as UIBarButtonItem? {
+        return buttonItem
+      }
+      let systemItem: UIBarButtonItem.SystemItem
+      if #available(iOS 13.0, *) {
+        systemItem = .close
+      } else {
+        systemItem = .stop
+      }
+      let buttonItem = UIBarButtonItem(systemItem: systemItem, target: self, action: #selector(dismiss(_:)))
+      setAssociatedObject(buttonItem, forKey: &Self.closeButtonItemKey, with: self)
+      return buttonItem
+    }
+    set {
+      setAssociatedObject(newValue, forKey: &Self.closeButtonItemKey, with: self)
+    }
+  }
+
   @IBAction open func dismiss(_ sender: Any) {
     dismiss(animated: true, completion: nil)
   }
@@ -67,6 +88,30 @@ extension UIViewController {
 
   public func showDetail(_ detailViewController: UIViewController, sender: Any?) {
     showDetailViewController(detailViewController, sender: sender)
+  }
+
+  public func showDetail(_ detailViewController: UIViewController, alwaysPresentEmbeddingOnPadAndMac: Bool = false, sender: Any?) {
+    if alwaysPresentEmbeddingOnPadAndMac {
+      if UIDevice.current.userInterfaceIdiom.isPadOrMac {
+        let navigationController = detailViewController.embeddingInNavigationController()
+        navigationController.modalPresentationStyle = .formSheet
+        var rightBarButtonItems = detailViewController.navigationItem.rightBarButtonItems ?? []
+        if !rightBarButtonItems.contains(where: { $0.action == #selector(dismiss(_:)) }) {
+          printIfDEBUG("Close button item is added to view controller \(detailViewController)")
+          rightBarButtonItems.insert(closeButtonItem, at: 0)
+          detailViewController.navigationItem.rightBarButtonItems = rightBarButtonItems
+        }
+        present(navigationController, animated: true)
+      } else {
+        if let navigationController {
+          navigationController.pushViewController(detailViewController, animated: true)
+        } else {
+          present(detailViewController, animated: true)
+        }
+      }
+    } else {
+      showDetailViewController(detailViewController, sender: sender)
+    }
   }
 
   public func dismissOrPopFromNavigationStack(animated: Bool, completion: (() -> Void)? = nil) {
