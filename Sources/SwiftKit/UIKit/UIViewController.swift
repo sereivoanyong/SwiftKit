@@ -10,6 +10,27 @@ import UIKit
 
 extension UIViewController {
 
+  private static var dismissButtonItemKey: Void?
+  public var dismissButtonItem: UIBarButtonItem! {
+    get {
+      if let buttonItem = associatedObject(forKey: &Self.dismissButtonItemKey, with: self) as UIBarButtonItem? {
+        return buttonItem
+      }
+      let systemItem: UIBarButtonItem.SystemItem
+      if #available(iOS 13.0, *) {
+        systemItem = .close
+      } else {
+        systemItem = .stop
+      }
+      let buttonItem = UIBarButtonItem(systemItem: systemItem, target: self, action: #selector(dismiss(_:)))
+      setAssociatedObject(buttonItem, forKey: &Self.dismissButtonItemKey, with: self)
+      return buttonItem
+    }
+    set {
+      setAssociatedObject(newValue, forKey: &Self.dismissButtonItemKey, with: self)
+    }
+  }
+
   @IBAction open func dismiss(_ sender: Any) {
     dismiss(animated: true, completion: nil)
   }
@@ -69,11 +90,40 @@ extension UIViewController {
     showDetailViewController(detailViewController, sender: sender)
   }
 
+  public func showDetail(_ detailViewController: UIViewController, alwaysPresentEmbeddingOnPadAndMac: Bool = false, sender: Any?) {
+    if alwaysPresentEmbeddingOnPadAndMac {
+      if UIDevice.current.userInterfaceIdiom.isPadOrMac {
+        let navigationController = detailViewController.embeddingInNavigationController()
+        navigationController.modalPresentationStyle = .formSheet
+        detailViewController.addDismissButtonItemIfNeeded(force: true)
+        present(navigationController, animated: true)
+      } else {
+        if let navigationController {
+          navigationController.pushViewController(detailViewController, animated: true)
+        } else {
+          present(detailViewController, animated: true)
+        }
+      }
+    } else {
+      showDetail(detailViewController, sender: sender)
+    }
+  }
+
   public func dismissOrPopFromNavigationStack(animated: Bool, completion: (() -> Void)? = nil) {
     if let navigationController, navigationController.viewControllers.first !== self {
       navigationController.popViewController(animated: animated, completion: completion)
     } else {
       dismiss(animated: animated, completion: completion)
+    }
+  }
+
+  public func addDismissButtonItemIfNeeded(force: Bool = false) {
+    guard force || navigationController?.presentingViewController != nil else { return }
+    var rightBarButtonItems = navigationItem.rightBarButtonItems ?? []
+    let dismissButtonItem = dismissButtonItem!
+    if !rightBarButtonItems.contains(dismissButtonItem) {
+      rightBarButtonItems.insert(dismissButtonItem, at: 0)
+      navigationItem.rightBarButtonItems = rightBarButtonItems
     }
   }
 
