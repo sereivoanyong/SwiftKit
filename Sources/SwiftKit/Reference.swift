@@ -4,24 +4,41 @@
 //  Created by Sereivoan Yong on 10/29/17.
 //
 
+import Foundation
+
 public protocol ReferenceProtocol<T>: AnyObject {
 
   associatedtype T
 
-  var value: T { get }
+  var base: T? { get set }
 
-  init(_ value: T)
+  init(_ base: T)
 }
 
-final public class Reference<T>: ReferenceProtocol {
+// For weakly holding object
+final public class WeakReference: ReferenceProtocol {
 
-  public var value: T
-  
-  public init(_ value: T) {
-    self.value = value
+  weak public var base: AnyObject?
+
+  public init(_ base: AnyObject) {
+    self.base = base
   }
 }
 
+// For holding value
+final public class Reference<T>: ReferenceProtocol {
+
+  public var base: T?
+
+  public init(_ base: T) {
+    self.base = base
+  }
+}
+
+// For holding any value
+public typealias AnyReference = Reference<Any>
+
+/*
 extension _ObjectiveCBridgeable where _ObjectiveCType: ReferenceProtocol<Self> {
 
   public func _bridgeToObjectiveC() -> _ObjectiveCType {
@@ -35,7 +52,7 @@ extension _ObjectiveCBridgeable where _ObjectiveCType: ReferenceProtocol<Self> {
   }
 
   public static func _conditionallyBridgeFromObjectiveC(_ source: _ObjectiveCType, result: inout Self?) -> Bool {
-    result = source.value
+    result = source.base
     return true
   }
 
@@ -46,3 +63,4 @@ extension _ObjectiveCBridgeable where _ObjectiveCType: ReferenceProtocol<Self> {
     return result!
   }
 }
+ */
