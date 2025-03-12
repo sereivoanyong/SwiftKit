@@ -25,6 +25,58 @@ public func class_exchangeInstanceMethodImplementations(_ cls: AnyClass, _ origi
   }
 }
 
+// MARK: Modernize
+
+@inlinable
+public func associatedObject<T: AnyObject>(
+  default defaultObject: @autoclosure () -> T,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject,
+  policy: @autoclosure () -> objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+) -> T {
+  return associatedObject(default: defaultObject, forKey: key, with: source, policy: policy)
+}
+
+@inlinable
+public func associatedObject<T: AnyObject>(
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> T? {
+  return objc_getAssociatedObject(source, key) as? T
+}
+
+@inlinable
+public func setAssociatedObject<T: AnyObject>(
+  _ newObject: T?,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject,
+  policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+) {
+  objc_setAssociatedObject(source, key, newObject, policy)
+}
+
+@inlinable
+public func removeAssociatedObjects(with source: AnyObject) {
+  objc_removeAssociatedObjects(source)
+}
+
+// MARK: Weak Object
+
+public func associatedWeakObject<T: AnyObject>(
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> T? {
+  return (objc_getAssociatedObject(source, key) as? WeakReference<T>)?.object
+}
+
+public func setAssociatedWeakObject<T: AnyObject>(
+  _ newObject: T?,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) {
+  objc_setAssociatedObject(source, key, newObject.map(WeakReference<T>.init), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+}
+
 // MARK: Value
 
 public func associatedValue<T>(
@@ -42,45 +94,11 @@ public func associatedValue<T>(forKey key: UnsafeRawPointer, with source: AnyObj
   return nil
 }
 
-public func setAssociatedValue<T>(_ value: T?, forKey key: UnsafeRawPointer, with source: AnyObject) {
-  setAssociatedReference(value.map(Reference.init), forKey: key, with: source)
+public func setAssociatedValue<T>(_ newValue: T?, forKey key: UnsafeRawPointer, with source: AnyObject) {
+  setAssociatedReference(newValue.map(Reference.init), forKey: key, with: source)
 }
 
-// MARK: Reference
-
-@inlinable
-func associatedReference<T>(
-  default defaultValue: () -> T,
-  forKey key: UnsafeRawPointer,
-  with source: AnyObject
-) -> Reference<T> {
-  return associatedObject(default: { Reference(defaultValue()) }, forKey: key, with: source, policy: { .OBJC_ASSOCIATION_RETAIN_NONATOMIC })
-}
-
-public func associatedReference<T>(
-  default defaultValue: @autoclosure () -> T,
-  forKey key: UnsafeRawPointer,
-  with source: AnyObject
-) -> Reference<T> {
-  return associatedReference(default: defaultValue, forKey: key, with: source)
-}
-
-public func associatedReference<T>(
-  forKey key: UnsafeRawPointer,
-  with source: AnyObject
-) -> Reference<T>? {
-  return associatedObject(forKey: key, with: source)
-}
-
-public func setAssociatedReference<T>(
-  _ reference: Reference<T>?,
-  forKey key: UnsafeRawPointer,
-  with source: AnyObject
-) {
-  setAssociatedObject(reference, forKey: key, with: source, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-}
-
-// MARK: Object
+// MARK: Reference (Internal)
 
 @inlinable
 func associatedObject<T: AnyObject>(
@@ -98,31 +116,43 @@ func associatedObject<T: AnyObject>(
   }
 }
 
-public func associatedObject<T: AnyObject>(
-  default defaultObject: @autoclosure () -> T,
-  forKey key: UnsafeRawPointer,
-  with source: AnyObject,
-  policy: @autoclosure () -> objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-) -> T {
-  return associatedObject(default: defaultObject, forKey: key, with: source, policy: policy)
-}
-
-public func associatedObject<T: AnyObject>(
+@inlinable
+func associatedReference<T>(
+  default defaultValue: () -> T,
   forKey key: UnsafeRawPointer,
   with source: AnyObject
-) -> T? {
-  return objc_getAssociatedObject(source, key) as? T
+) -> Reference<T> {
+  return associatedObject(default: { Reference(defaultValue()) }, forKey: key, with: source, policy: { .OBJC_ASSOCIATION_RETAIN_NONATOMIC })
 }
 
-public func setAssociatedObject<T: AnyObject>(
-  _ object: T?, forKey
-  key: UnsafeRawPointer,
-  with source: AnyObject,
-  policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+func associatedReference<T>(
+  default defaultValue: @autoclosure () -> T,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> Reference<T> {
+  return associatedReference(default: defaultValue, forKey: key, with: source)
+}
+
+func associatedReference<T>(
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
+) -> Reference<T>? {
+  return associatedObject(forKey: key, with: source)
+}
+
+func setAssociatedReference<T>(
+  _ reference: Reference<T>?,
+  forKey key: UnsafeRawPointer,
+  with source: AnyObject
 ) {
-  objc_setAssociatedObject(source, key, object, policy)
+  setAssociatedObject(reference, forKey: key, with: source, policy: .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 }
 
-public func removeAssociatedObjects(with source: AnyObject) {
-  objc_removeAssociatedObjects(source)
+final private class WeakReference<T: AnyObject> {
+
+  weak var object: T?
+
+  init(object: T) {
+    self.object = object
+  }
 }
