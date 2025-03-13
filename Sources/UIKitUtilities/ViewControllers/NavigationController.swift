@@ -91,14 +91,18 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
 
   open func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
 #if targetEnvironment(macCatalyst)
-    scene?.item = viewController.topViewControllerForScene.sceneItem
+    if presentingViewController == nil {
+      scene?.item = viewController.topViewControllerForScene.sceneItem
+    }
 #endif
     updateProperties(from: viewController)
   }
 
   open func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
 #if targetEnvironment(macCatalyst)
-    scene?.item = viewController.topViewControllerForScene.sceneItem
+    if presentingViewController == nil {
+      scene?.item = viewController.topViewControllerForScene.sceneItem
+    }
 #endif
     updateProperties(from: viewController)
   }

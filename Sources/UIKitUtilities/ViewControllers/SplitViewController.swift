@@ -13,7 +13,7 @@ open class SplitViewController: UISplitViewController {
   open override func setViewController(_ viewController: UIViewController?, for column: Column) {
     super.setViewController(viewController, for: column)
 #if targetEnvironment(macCatalyst)
-    if column == .secondary {
+    if column == .secondary && presentingViewController == nil {
       scene?.item = viewController?.topViewControllerForScene.sceneItem
     }
 #endif

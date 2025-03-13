@@ -12,7 +12,9 @@ open class TabBarController: UITabBarController {
   open override var selectedIndex: Int {
     didSet {
 #if targetEnvironment(macCatalyst)
-      scene?.item = viewControllers?[selectedIndex].topViewControllerForScene.sceneItem
+      if presentingViewController == nil {
+        scene?.item = viewControllers?[selectedIndex].topViewControllerForScene.sceneItem
+      }
 #endif
     }
   }
