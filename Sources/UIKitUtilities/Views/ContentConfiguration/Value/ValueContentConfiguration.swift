@@ -1,28 +1,28 @@
 //
-//  ViewModelContentConfiguration.swift
+//  ValueContentConfiguration.swift
 //  SwiftKit
 //
-//  Created by Sereivoan Yong on 9/9/24.
+//  Created by Sereivoan Yong on 9/16/24.
 //
 
 import UIKit
 import SwiftKit
 
 @available(iOS 14.0, *)
-public struct ViewModelContentConfiguration<ViewModel: AnyObject>: AnyContentConfiguration {
+public struct ValueContentConfiguration<Value>: AnyContentConfiguration {
 
   public let contentViewClass: (UIView & UIContentView).Type
   
-  public let viewModel: ViewModel
+  public var value: Value
 
   @MainActor public var handler: Handler
 
-  @MainActor public init<ContentView: ViewModelContentView<ViewModel>>(
+  @MainActor public init<ContentView: ValueContentView<Value>>(
     _ contentViewClass: ContentView.Type,
-    _ viewModel: ViewModel,
+    _ value: Value,
     handler: @escaping @MainActor (ContentView, Self) -> Void = { $0.configuration = $1 }
   ) {
-    self.viewModel = viewModel
+    self.value = value
     self.contentViewClass = contentViewClass
     self.handler = { contentView, configuration in
       handler(contentView as! ContentView, configuration)
@@ -31,18 +31,18 @@ public struct ViewModelContentConfiguration<ViewModel: AnyObject>: AnyContentCon
 }
 
 @available(iOS 14.0, *)
-extension ViewModelContentConfiguration: Equatable where ViewModel: Equatable {
+extension ValueContentConfiguration: Equatable where Value: Equatable {
 
   public static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.viewModel == rhs.viewModel && lhs.contentViewClass == rhs.contentViewClass
+    return lhs.value == rhs.value && lhs.contentViewClass == rhs.contentViewClass
   }
 }
 
 @available(iOS 14.0, *)
-extension ViewModelContentConfiguration: Hashable where ViewModel: Hashable {
+extension ValueContentConfiguration: Hashable where Value: Hashable {
 
   public func hash(into hasher: inout Hasher) {
-    hasher.combine(viewModel)
+    hasher.combine(value)
     hasher.combine(ObjectIdentifier(contentViewClass))
   }
 }
@@ -51,11 +51,11 @@ extension ViewModelContentConfiguration: Hashable where ViewModel: Hashable {
 extension UIContentConfiguration {
 
   @inlinable
-  @MainActor public static func viewModel<ViewModel: AnyObject, ContentView: ViewModelContentView<ViewModel>>(
+  @MainActor public static func value<Value, ContentView: ValueContentView<Value>>(
     _ contentViewClass: ContentView.Type,
-    _ viewModel: ViewModel,
+    _ value: Value,
     handler: @escaping @MainActor (ContentView, Self) -> Void = { $0.configuration = $1 }
-  ) -> Self where Self == ViewModelContentConfiguration<ViewModel> {
-    return .init(contentViewClass, viewModel, handler: handler)
+  ) -> Self where Self == ValueContentConfiguration<Value> {
+    return .init(contentViewClass, value, handler: handler)
   }
 }
