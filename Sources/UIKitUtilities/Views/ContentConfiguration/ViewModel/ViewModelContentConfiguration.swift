@@ -15,13 +15,13 @@ public struct ViewModelContentConfiguration<ViewModel>: UIContentConfiguration {
 
   public let viewModel: ViewModel
   
-  public let handler: (UIView & UIContentView) -> Void
+  @MainActor public let handler: (UIView & UIContentView, Self) -> Void
 
-  public init<ContentView: ViewModelContentView<ViewModel>>(_ contentViewClass: ContentView.Type, viewModel: ViewModel, handler: @escaping (ContentView) -> Void = { _ in }) {
+  @MainActor public init<ContentView: ViewModelContentView<ViewModel>>(_ contentViewClass: ContentView.Type, viewModel: ViewModel, handler: @escaping @MainActor (ContentView, Self) -> Void = { $0.configuration = $1 }) {
     self.contentViewClass = contentViewClass
     self.viewModel = viewModel
-    self.handler = { contentView in
-      handler(contentView as! ContentView)
+    self.handler = { contentView, configuration in
+      handler(contentView as! ContentView, configuration)
     }
   }
 
@@ -37,8 +37,7 @@ public struct ViewModelContentConfiguration<ViewModel>: UIContentConfiguration {
     if #available(iOS 16.0, *) {
       assert(contentView.supports(self))
     }
-    contentView.configuration = self
-    handler(contentView)
+    handler(contentView, self)
     return contentView
   }
 
