@@ -7,6 +7,7 @@
 import UIKit
 import SwiftKit
 
+@available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 15.0, *)
 open class CollectionListViewController: CollectionViewController {
 

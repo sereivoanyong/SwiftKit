@@ -52,6 +52,10 @@ extension Dictionary {
     }
     return merged
   }
+
+  public mutating func merge(_ other: [Key: Value]) {
+    merge(other) { (_, new) in new }
+  }
 }
 
 extension Dictionary where Key == String {

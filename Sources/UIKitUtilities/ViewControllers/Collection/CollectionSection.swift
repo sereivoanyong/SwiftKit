@@ -7,6 +7,7 @@
 
 import UIKit
 
+@available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 14.0, *)
 extension CollectionSection {
 
@@ -72,6 +73,7 @@ extension CollectionSection {
   }
 }
 
+@available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 14.0, *)
 extension CollectionSection {
 
@@ -83,6 +85,7 @@ extension CollectionSection {
   }
 }
 
+@available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 14.0, *)
 public struct CollectionSection: Hashable, Identifiable {
 
