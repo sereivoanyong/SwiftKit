@@ -20,7 +20,15 @@ extension UIView {
     set { layer.cornerRadius = newValue }
   }
 
+  @available(iOS 13.0, *)
+  @IBInspectable
+  public var layerCornerCurve: CALayerCornerCurve {
+    get { return layer.cornerCurve }
+    set { layer.cornerCurve = newValue }
+  }
+
   /// Default is `false`.
+  @available(*, deprecated, message: "Use `layerCornerCurve` instead.")
   @IBInspectable
   public var layerContinuousCorners: Bool {
     get { return layer.continuousCorners }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftKit
 
 @available(iOS 15.0, *)
 open class ModernCollectionViewController<SectionIdentifier: Hashable, ItemIdentifier: Hashable>: CollectionViewController {

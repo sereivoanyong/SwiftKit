@@ -17,11 +17,13 @@ extension CALayer {
 
   // MARK: Corner
 
+  @available(*, deprecated, message: "Use `cornerCurve` instead.")
   public var continuousCorners: Bool {
     get { return valueIfResponds(forKey: "continuousCorners") as? Bool ?? false }
     set { setValueIfResponds(newValue, forKey: "continuousCorners") }
   }
 
+  @available(*, deprecated, message: "Use `setCorner(radius:masks:curve:)` instead.")
   public func setCorner(radius: CGFloat = 0, masks: CACornerMask = .all, continuous: Bool = false) {
     cornerRadius = radius
     maskedCorners = masks
