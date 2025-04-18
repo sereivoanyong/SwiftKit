@@ -57,7 +57,7 @@ extension Bundle {
   public static let selectedLocalizationsUserDefaultsKey = "BundleSelectedLocalizations"
 
   public private(set) static var selectedLocalizations: [String: String] {
-    get { return UserDefaults.standard[Self.selectedLocalizationsUserDefaultsKey] as? [String: String] ?? [:] }
+    get { return UserDefaults.standard[Self.selectedLocalizationsUserDefaultsKey] as [String: String]? ?? [:] }
     set { UserDefaults.standard[Self.selectedLocalizationsUserDefaultsKey] = newValue as NSDictionary }
   }
 

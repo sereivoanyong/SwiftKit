@@ -1,5 +1,5 @@
 //
-//  StorageDataTransforming.swift
+//  StorageDataTransform.swift
 //
 //  Created by Sereivoan Yong on 1/31/24.
 //
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct StorageDataTransforming<T> {
+public struct StorageDataTransform<T> {
 
   public let value: (Data) throws -> T?
   public let data: (T) throws -> Data?

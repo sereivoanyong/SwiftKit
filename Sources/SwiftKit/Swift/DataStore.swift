@@ -4,16 +4,18 @@
 //  Created by Sereivoan Yong on 12/13/22.
 //
 
-#if canImport(Foundation)
-
-import Foundation
-
 public protocol DataStore: AnyObject {
 
   func data(forKey key: String) -> Data?
 
   func set(_ data: Data?, forKey key: String)
 }
+
+#if canImport(Foundation)
+
+import Foundation
+
+// MARK: PropertyListStore
 
 public protocol PropertyListStore: DataStore {
 
@@ -24,8 +26,8 @@ public protocol PropertyListStore: DataStore {
 
 extension PropertyListStore {
 
-  public subscript(key: String) -> PropertyListObject? {
-    @inlinable get { return object(forKey: key) as! PropertyListObject? }
+  public subscript<T: PropertyListObject>(key: String) -> T? {
+    @inlinable get { return object(forKey: key) as? T }
     @inlinable set { set(newValue, forKey: key) }
   }
 }

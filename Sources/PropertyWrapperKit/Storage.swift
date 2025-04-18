@@ -30,7 +30,7 @@ public struct Storage<Value, Store: DataStore> {
 
   public init(
     _ key: String,
-    store: Store
+    store: Store = UserDefaults.standard
   ) where Value == Data? {
     self.key = key
     self.store = store
@@ -45,7 +45,7 @@ public struct Storage<Value, Store: DataStore> {
   public init(
     _ key: String,
     default: Data,
-    store: Store
+    store: Store = UserDefaults.standard
   ) where Value == Data {
     self.key = key
     self.store = store
@@ -66,14 +66,14 @@ public struct Storage<Value, Store: DataStore> {
   public init<T>(
     _ key: String,
     store: Store = UserDefaults.standard,
-    transforming: StorageDataTransforming<T>
+    transform: StorageDataTransform<T>
   ) where Value == T? {
     self.key = key
     self.store = store
     self.get = { store, key in
       if let data = store.data(forKey: key) {
         do {
-          return try transforming.value(from: data)
+          return try transform.value(from: data)
         } catch {
           printIfDEBUG(error)
         }
@@ -83,7 +83,7 @@ public struct Storage<Value, Store: DataStore> {
     self.set = { store, key, value in
       if let value {
         do {
-          let data = try transforming.data(from: value)
+          let data = try transform.data(from: value)
           store.set(data, forKey: key)
         } catch {
           printIfDEBUG(error)
@@ -99,14 +99,14 @@ public struct Storage<Value, Store: DataStore> {
     _ key: String,
     default: Value,
     store: Store = UserDefaults.standard,
-    transforming: StorageDataTransforming<Value>
+    transform: StorageDataTransform<Value>
   ) {
     self.key = key
     self.store = store
     self.get = { store, key in
       if let data = store.data(forKey: key) {
         do {
-          if let value = try transforming.value(from: data) {
+          if let value = try transform.value(from: data) {
             return value
           }
         } catch {
@@ -114,7 +114,7 @@ public struct Storage<Value, Store: DataStore> {
         }
       }
       do {
-        let data = try transforming.data(from: `default`)
+        let data = try transform.data(from: `default`)
         store.set(data, forKey: key)
       } catch {
         printIfDEBUG(error)
@@ -123,7 +123,7 @@ public struct Storage<Value, Store: DataStore> {
     }
     self.set = { store, key, value in
       do {
-        let data = try transforming.data(from: value)
+        let data = try transform.data(from: value)
         store.set(data, forKey: key)
       } catch {
         printIfDEBUG(error)
@@ -144,7 +144,7 @@ extension Storage where Store: PropertyListStore {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let value = store[key] as? T {
+      if let value = store[key] as T? {
         return value
       }
       return nil
@@ -166,7 +166,7 @@ extension Storage where Store: PropertyListStore {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let value = store[key] as? Value {
+      if let value = store[key] as Value? {
         return value
       }
       store.set(`default`, forKey: key)
@@ -179,15 +179,15 @@ extension Storage where Store: PropertyListStore {
 
   // MARK: RawRepresentable where RawValue: PropertyListObject
 
-  public init<T: RawRepresentable>(
+  public init<RawValue: PropertyListObject, T>(
     _ key: String,
     store: Store = UserDefaults.standard
-  ) where T.RawValue: PropertyListObject, Value == T? {
+  ) where T: RawRepresentable<RawValue>, Value == T? {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let rawValue = store[key] as? T.RawValue, let value = T(rawValue: rawValue) {
-        return value
+      if let rawValue = store[key] as RawValue? {
+        return T(rawValue: rawValue)
       }
       return nil
     }
@@ -200,15 +200,15 @@ extension Storage where Store: PropertyListStore {
     }
   }
 
-  public init(
+  public init<RawValue: PropertyListObject>(
     _ key: String,
     default: Value,
     store: Store = UserDefaults.standard
-  ) where Value: RawRepresentable, Value.RawValue: PropertyListObject {
+  ) where Value: RawRepresentable<RawValue> {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let rawValue = store[key] as? Value.RawValue, let value = Value(rawValue: rawValue) {
+      if let rawValue = store[key] as RawValue?, let value = Value(rawValue: rawValue) {
         return value
       }
       store.set(`default`.rawValue, forKey: key)
