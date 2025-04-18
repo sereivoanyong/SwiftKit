@@ -54,7 +54,7 @@ public struct UserDefault<T> {
     self.defaults = defaults
     self.key = key
     self.get = { defaults, key, set in
-      if let value = defaults[key] as? T {
+      if let value = defaults[key] as T? {
         return value
       }
       set(defaults, key, `default`)
@@ -73,7 +73,7 @@ public struct UserDefault<T> {
     self.defaults = defaults
     self.key = key
     self.get = { defaults, key, set in
-      if let rawValue = defaults[key] as? T.RawValue, let value = T(rawValue: rawValue) {
+      if let rawValue = defaults[key] as T.RawValue?, let value = T(rawValue: rawValue) {
         return value
       }
       set(defaults, key, `default`)
@@ -92,7 +92,7 @@ public struct UserDefault<T> {
     self.defaults = defaults
     self.key = key
     self.get = { defaults, key, set in
-      if let value = defaults[key] as? Wrapped {
+      if let value = defaults[key] as Wrapped? {
         return value
       }
       set(defaults, key, `default`)
@@ -111,7 +111,7 @@ public struct UserDefault<T> {
     self.defaults = defaults
     self.key = key
     self.get = { defaults, key, set in
-      if let rawValue = defaults[key] as? Wrapped.RawValue, let value = Wrapped(rawValue: rawValue) {
+      if let rawValue = defaults[key] as Wrapped.RawValue?, let value = Wrapped(rawValue: rawValue) {
         return value
       }
       set(defaults, key, `default`)
@@ -131,7 +131,7 @@ public struct UserDefault<T> {
     self.defaults = defaults
     self.key = key
     self.get = { defaults, key, set in
-      if let data = defaults[key] as? Data, let value = try? coder.decoder.decode(Wrapped.self, from: data) {
+      if let data = defaults[key] as Data?, let value = try? coder.decoder.decode(Wrapped.self, from: data) {
         return value
       }
       set(defaults, key, `default`)
@@ -151,7 +151,7 @@ public struct UserDefault<T> {
     self.defaults = defaults
     self.key = key
     self.get = { defaults, key, set in
-      if let data = defaults[key] as? Data, let object = try? NSKeyedUnarchiver.unarchivedObject(ofClass: Wrapped.self, from: data) {
+      if let data = defaults[key] as Data?, let object = try? NSKeyedUnarchiver.unarchivedObject(ofClass: Wrapped.self, from: data) {
         return object
       }
       set(defaults, key, `default`)

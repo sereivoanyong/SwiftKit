@@ -144,7 +144,7 @@ extension Storage where Store: PropertyListStore {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let value = store[key] as? T {
+      if let value = store[key] as T? {
         return value
       }
       return nil
@@ -166,7 +166,7 @@ extension Storage where Store: PropertyListStore {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let value = store[key] as? Value {
+      if let value = store[key] as Value? {
         return value
       }
       store.set(`default`, forKey: key)
@@ -186,7 +186,7 @@ extension Storage where Store: PropertyListStore {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let rawValue = store[key] as? T.RawValue, let value = T(rawValue: rawValue) {
+      if let rawValue = store[key] as T.RawValue?, let value = T(rawValue: rawValue) {
         return value
       }
       return nil
@@ -208,7 +208,7 @@ extension Storage where Store: PropertyListStore {
     self.key = key
     self.store = store
     self.get = { store, key in
-      if let rawValue = store[key] as? Value.RawValue, let value = Value(rawValue: rawValue) {
+      if let rawValue = store[key] as Value.RawValue?, let value = Value(rawValue: rawValue) {
         return value
       }
       store.set(`default`.rawValue, forKey: key)
