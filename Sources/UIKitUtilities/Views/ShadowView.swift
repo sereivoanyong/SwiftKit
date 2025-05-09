@@ -25,40 +25,39 @@ open class ShadowView: CornerView {
     }
   }
 
+  open var shadowPathProvider: ((CGRect) -> CGPath)?
+
   public override init(frame: CGRect) {
     super.init(frame: frame)
 
     contentMode = .redraw
     isOpaque = false
-    commonInit()
   }
 
   public required init?(coder: NSCoder) {
     super.init(coder: coder)
-    commonInit()
-  }
-
-  private func commonInit() {
-    let shadowCornerRadius = (shadowCornerStyle ?? cornerStyle).resolvedRadius(with: bounds)
-    let shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: shadowCornerRadius).cgPath
-    layer.setShadow(opacity: 0.15, offset: .zero, radius: 4, path: shadowPath)
-    layerShadowColor = .label
   }
 
   open override func layoutSubviews() {
     super.layoutSubviews()
 
-    let bounds = bounds
-    let shadowCornerRadius = (shadowCornerStyle ?? cornerStyle).resolvedRadius(with: bounds)
-    layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: shadowCornerRadius).cgPath
+    let rectForShadow = bounds
+    if let shadowPathProvider {
+      layer.shadowPath = shadowPathProvider(rectForShadow)
+    } else {
+      let shadowCornerRadius = (shadowCornerStyle ?? cornerStyle).resolvedRadius(with: rectForShadow)
+      layer.shadowPath = CGPath(roundedRect: rectForShadow, cornerWidth: shadowCornerRadius, cornerHeight: shadowCornerRadius, transform: nil)
+    }
   }
 
   open override func draw(_ rect: CGRect) {
     assert(!isOpaque)
-    fillColor.setFill()
-    let shadowCornerRadius = (shadowCornerStyle ?? cornerStyle).resolvedRadius(with: rect)
-    let path = UIBezierPath(roundedRect: rect, cornerRadius: shadowCornerRadius)
-    path.fill()
+    guard let context = UIGraphicsGetCurrentContext() else { return }
+    let cornerRadius = cornerStyle.resolvedRadius(with: rect)
+    let path = CGPath(roundedRect: rect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil)
+    context.addPath(path)
+    context.setFillColor(fillColor.resolvedColor(with: traitCollection).cgColor)
+    context.fillPath()
   }
 }
 
