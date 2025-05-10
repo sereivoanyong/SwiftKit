@@ -74,7 +74,7 @@ extension TextField {
 open class TextField: UITextField {
 
   /// The custom distance that the content is inset from edges (text or overlay views if they exist).
-  open var insets: UIEdgeInsets = .zero
+  open var insets: NSDirectionalEdgeInsets = .zero
 
   open var leftViewLayoutAttributes: ViewLayoutAttributes = .init()
 
@@ -90,9 +90,9 @@ open class TextField: UITextField {
 
   // Easier for subclasses to override one for all
   func adjustedTextRect(forTextRect textRect: CGRect, forEditing: Bool) -> CGRect {
-    var insets = insets
+    var insets = resolvedInsets()
     if isVisible(for: leftViewMode) {
-      insets.left = leftViewLayoutAttributes.padding
+      insets.left += leftViewLayoutAttributes.padding
     }
     if isVisible(for: rightViewMode) {
       insets.right += rightViewLayoutAttributes.padding
@@ -102,12 +102,15 @@ open class TextField: UITextField {
 
   open override func clearButtonRect(forBounds bounds: CGRect) -> CGRect {
     var clearButtonRect = super.clearButtonRect(forBounds: bounds)
+    let insets = resolvedInsets()
     clearButtonRect.origin.x -= insets.right
     return clearButtonRect
   }
+
   open override func leftViewRect(forBounds bounds: CGRect) -> CGRect {
     assert(isVisible(for: leftViewMode))
     var leftViewRect = super.leftViewRect(forBounds: bounds)
+    let insets = resolvedInsets()
     leftViewRect.origin.x += insets.left
     apply(leftViewLayoutAttributes, to: &leftViewRect)
     return leftViewRect
@@ -116,6 +119,7 @@ open class TextField: UITextField {
   open override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
     assert(isVisible(for: rightViewMode))
     var rightViewRect = super.rightViewRect(forBounds: bounds)
+    let insets = resolvedInsets()
     rightViewRect.origin.x -= insets.right
     apply(rightViewLayoutAttributes, to: &rightViewRect)
     return rightViewRect
@@ -145,6 +149,18 @@ open class TextField: UITextField {
     }
   }
 
+  public func resolvedInsets() -> UIEdgeInsets {
+    let insets = insets
+    switch effectiveUserInterfaceLayoutDirection {
+    case .leftToRight:
+      return UIEdgeInsets(top: insets.top, left: insets.leading, bottom: insets.bottom, right: insets.trailing)
+    case .rightToLeft:
+      return UIEdgeInsets(top: insets.top, left: insets.trailing, bottom: insets.bottom, right: insets.leading)
+    @unknown default:
+      return UIEdgeInsets(top: insets.top, left: insets.leading, bottom: insets.bottom, right: insets.trailing)
+    }
+  }
+
   public func setBecomesFirstResponderOnClearButtonTap(_ becomesFirstResponderOnClearButtonTap: Bool) {
     let selector = Selector(("setBecomesFirstResponderOnClearButtonTap:"))
     if responds(to: selector) {
@@ -153,7 +169,7 @@ open class TextField: UITextField {
   }
 
   open func isClearButtonVisible() -> Bool {
-    hasText && isVisible(for: clearButtonMode)
+    return hasText && isVisible(for: clearButtonMode)
   }
 
   open func isVisible(for mode: ViewMode) -> Bool {
@@ -181,9 +197,9 @@ extension TextField {
   }
 
   @IBInspectable
-  public var leftInset: CGFloat {
-    get { return insets.left }
-    set { insets.left = newValue }
+  public var leadingInset: CGFloat {
+    get { return insets.leading }
+    set { insets.leading = newValue }
   }
 
   @IBInspectable
@@ -193,9 +209,23 @@ extension TextField {
   }
 
   @IBInspectable
+  public var trailingInset: CGFloat {
+    get { return insets.trailing }
+    set { insets.trailing = newValue }
+  }
+
+  @available(*, deprecated)
+  @IBInspectable
+  public var leftInset: CGFloat {
+    get { return insets.leading }
+    set { insets.leading = newValue }
+  }
+
+  @available(*, deprecated)
+  @IBInspectable
   public var rightInset: CGFloat {
-    get { return insets.right }
-    set { insets.right = newValue }
+    get { return insets.trailing }
+    set { insets.trailing = newValue }
   }
 
   @IBInspectable
