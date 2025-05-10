@@ -26,9 +26,11 @@ open class DropdownTextField: TextField {
 
   public let dropdownView: UIImageView = {
     let imageView = UIImageView()
-    imageView.tintColor = .lightGray
     if #available(iOS 13.0, *) {
-      imageView.preferredSymbolConfiguration = .init(scale: .small)
+      imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(textStyle: .emphasizedBody, scale: .small)
+      imageView.tintColor = .tertiaryLabel
+    } else {
+      imageView.tintColor = .lightGray
     }
     return imageView
   }()
@@ -112,6 +114,7 @@ open class DropdownTextField: TextField {
 
   open func dropdownViewRect(forBounds bounds: CGRect) -> CGRect {
     let size = dropdownView.systemLayoutSizeFitting(bounds.size)
+    let insets = resolvedInsets()
     return CGRect(origin: CGPoint(x: bounds.width - insets.right - size.width, y: (bounds.height - size.height) / 2), size: size)
   }
 
