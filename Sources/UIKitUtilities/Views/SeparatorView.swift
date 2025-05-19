@@ -94,16 +94,8 @@ open class SeparatorView: UIView {
   }
 }
 
+/*
 extension UIView {
-
-  fileprivate static var defaultShadowColor: UIColor {
-    // @see: https://github.com/noahsark769/ColorCompatibility/blob/master/ColorCompatibility.swift
-    if #available(iOS 13, *) {
-      return .separator
-    } else {
-      return .decimal(red: 60, green: 60, blue: 67, alpha: 0.29)
-    }
-  }
 
   private static var shadowViewsKey: Void?
 
@@ -136,7 +128,7 @@ extension UIView {
     }
     let shadowView = UIView(frame: frame)
     shadowView.autoresizingMask = autoresizingMask
-    shadowView.backgroundColor = color ?? Self.defaultShadowColor
+    shadowView.backgroundColor = color ?? SeparatorView.defaultBackgroundColor
     addSubview(shadowView)
     shadowViews[edge] = shadowView
     return shadowView
@@ -146,7 +138,7 @@ extension UIView {
   public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = UIScreen.main.pointPerPixel, target: LayoutGuide? = nil, layoutGuide: LayoutGuide, inset: UIEdgeInsets = .zero) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
-    shadowView.backgroundColor = color ?? Self.defaultShadowColor
+    shadowView.backgroundColor = color ?? SeparatorView.defaultBackgroundColor
     shadowView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(shadowView)
 
@@ -206,7 +198,7 @@ extension NSObjectProtocol where Self: UIView {
   public func addShadowView(at edge: CGRectEdge, color: UIColor? = nil, thickness: CGFloat = UIScreen.main.pointPerPixel, constraintsProvider: (Self, UIView) -> [NSLayoutConstraint]) -> UIView {
     assert(shadowViews[edge] == nil, "Existing shadow view at \(edge) edge found.")
     let shadowView = UIView()
-    shadowView.backgroundColor = color ?? Self.defaultShadowColor
+    shadowView.backgroundColor = color ?? SeparatorView.defaultBackgroundColor
     shadowView.translatesAutoresizingMaskIntoConstraints = false
     addSubview(shadowView)
     var constraints = constraintsProvider(self, shadowView)
@@ -221,3 +213,4 @@ extension NSObjectProtocol where Self: UIView {
     return shadowView
   }
 }
+ */
