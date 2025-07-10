@@ -41,7 +41,7 @@ extension DateFormatter {
   }
 
   public static func iso8601(dateFormat: String) -> DateFormatter {
-    return DateFormatter(dateFormat: dateFormat, locale: .enUSPOSIX, timeZone: .utc, calendar: Calendar(identifier: .iso8601))
+    return DateFormatter(dateFormat: dateFormat, locale: .enUSPOSIX, timeZone: .current, calendar: Calendar(identifier: .iso8601))
   }
 }
 
