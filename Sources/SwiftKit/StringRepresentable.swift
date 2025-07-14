@@ -6,41 +6,29 @@
 
 import Foundation
 
-public protocol StringRepresentable: Hashable, ExpressibleByStringLiteral {
+public protocol StringRepresentable: RawRepresentable, Hashable, Sendable, ExpressibleByStringLiteral where RawValue == String, StringLiteralType == String {
 
-  var string: String { get }
+  init(_ rawValue: RawValue)
 
-  init(_ string: String)
+  init(rawValue: RawValue)
 }
 
 extension StringRepresentable {
 
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.string == rhs.string
+  public init(rawValue: RawValue) {
+    self.init(rawValue)
   }
 
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(string)
-  }
+  // MARK: ExpressibleByStringLiteral
 
-  public init(stringLiteral value: String) {
+  public init(stringLiteral value: StringLiteralType) {
     self.init(value)
   }
 }
 
-extension StringRepresentable where Self: Decodable {
+extension StringRepresentable where Self: CustomStringConvertible {
 
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    let string = try container.decode(String.self)
-    self.init(string)
-  }
-}
-
-extension StringRepresentable where Self: Encodable {
-
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try container.encode(string)
+  public var description: String {
+    return rawValue
   }
 }
