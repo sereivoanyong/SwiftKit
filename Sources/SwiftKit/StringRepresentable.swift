@@ -6,7 +6,7 @@
 
 import Foundation
 
-public protocol StringRepresentable: RawRepresentable, Hashable, ExpressibleByStringLiteral where RawValue == String, StringLiteralType == String {
+public protocol StringRepresentable: Sendable, RawRepresentable, Hashable, ExpressibleByStringLiteral where RawValue == String, StringLiteralType == String {
 
   init(_ rawValue: RawValue)
 
