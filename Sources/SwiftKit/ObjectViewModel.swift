@@ -5,6 +5,8 @@
 //  Created by Sereivoan Yong on 1/23/25.
 //
 
+import Foundation
+
 public protocol ObjectViewModelProtocol<Object>: AnyObject {
 
   associatedtype Object
@@ -12,25 +14,24 @@ public protocol ObjectViewModelProtocol<Object>: AnyObject {
   var object: Object { get set }
 }
 
-open class ObjectViewModel<Object>: ObjectViewModelProtocol {
+open class ObjectViewModel<Object: Hashable>: NSObject, ObjectViewModelProtocol {
 
   open var object: Object
 
   public init(object: Object) {
     self.object = object
   }
-}
 
-extension ObjectViewModel: Equatable where Object: Equatable {
-
-  public static func == (lhs: ObjectViewModel<Object>, rhs: ObjectViewModel<Object>) -> Bool {
-    return lhs.object == rhs.object
+  open override func isEqual(_ viewModel: Any?) -> Bool {
+    guard let viewModel = viewModel as? ObjectViewModel<Object> else {
+      return false
+    }
+    return viewModel.object == object
   }
-}
 
-extension ObjectViewModel: Hashable where Object: Hashable {
-
-  public func hash(into hasher: inout Hasher) {
+  open override var hash: Int {
+    var hasher = Hasher()
     hasher.combine(object)
+    return hasher.finalize()
   }
 }
