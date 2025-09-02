@@ -93,13 +93,8 @@ extension String {
   }
 
   @inlinable
-  public func localized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "") -> String {
-    return NSLocalizedString(self, tableName: tableName, bundle: bundle, value: value, comment: comment)
-  }
-
-  @inlinable
-  public func formatLocalized(tableName: String? = nil, bundle: Bundle = .main, value: String = "", comment: String = "", _ arguments: CVarArg...) -> String {
-    return String(format: localized(tableName: tableName, bundle: bundle, value: value, comment: comment), arguments: arguments)
+  public func localized(table: LocalizationTable? = nil, bundle: Bundle = .main, value: String = "", comment: String = "") -> String {
+    return NSLocalizedString(self, tableName: table?.rawValue, bundle: bundle, value: value, comment: comment)
   }
 }
 
