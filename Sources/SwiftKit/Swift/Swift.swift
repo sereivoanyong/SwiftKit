@@ -14,24 +14,26 @@ func _copy<T>(_ value: T) -> T {
   return value
 }
 
-public func printIfDEBUG(_ item: Any) {
-  #if DEBUG
-    print(item)
-  #endif
+public func printIfDEBUG(_ items: Any..., separator: String = " ", terminator: String = "\n") {
+#if DEBUG
+  print(items.map { "\($0)" }.joined(separator: separator), terminator: terminator)
+#endif
 }
 
 @inlinable
 public func deinitPrint<T: AnyObject>(_ object: T) {
 #if DEBUG
   if type(of: object) == T.self {
-    print("\(T.self) deinit")
+    let addressPtr = address(of: object) // 0x000060000113df80
+    let addressString = String(format: "0x%lx", UInt(bitPattern: addressPtr)) // 0x60000113df80
+    print("<\(T.self): \(addressString)> deinit")
   }
 #endif
 }
 
 @inlinable
-public func address(of object: AnyObject) -> UnsafeMutableRawPointer {
-  return Unmanaged<AnyObject>.passUnretained(object).toOpaque()
+public func address<Instance: AnyObject>(of object: Instance) -> UnsafeMutableRawPointer {
+  return Unmanaged<Instance>.passUnretained(object).toOpaque()
 }
 
 @discardableResult
