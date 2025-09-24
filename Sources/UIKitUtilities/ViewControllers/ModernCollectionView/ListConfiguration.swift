@@ -11,11 +11,11 @@ import SwiftKit
 @available(iOS 15.0, *)
 public struct ListConfiguration {
 
-  public var content: UIContentConfiguration?
+  public var content: (any UIContentConfiguration)?
   public var background: UIBackgroundConfiguration?
   public var accessories: [UICellAccessory]
 
-  public init(content: UIContentConfiguration? = nil, background: UIBackgroundConfiguration? = nil, accessories: [UICellAccessory] = []) {
+  public init(content: (any UIContentConfiguration)? = nil, background: UIBackgroundConfiguration? = nil, accessories: [UICellAccessory] = []) {
     self.content = content
     self.background = background
     self.accessories = accessories
@@ -23,17 +23,17 @@ public struct ListConfiguration {
 }
 
 @available(iOS 15.0, *)
-extension UICollectionViewListCell {
-
-  public func apply(_ configuration: ListConfiguration?) {
-    if let configuration {
-      contentConfiguration = configuration.content ?? defaultContentConfiguration()
-      backgroundConfiguration = configuration.background ?? defaultBackgroundConfigurationIfAvailable()
-      accessories = configuration.accessories
+extension UICollectionViewCell {
+  
+  public func apply(_ configuration: ListConfiguration) {
+    if let cell = self as? UICollectionViewListCell {
+      cell.contentConfiguration = configuration.content ?? cell.defaultContentConfiguration()
+      cell.backgroundConfiguration = configuration.background ?? defaultBackgroundConfigurationIfAvailable()
+      cell.accessories = configuration.accessories
     } else {
-      contentConfiguration = defaultContentConfiguration()
-      backgroundConfiguration = defaultBackgroundConfigurationIfAvailable()
-      accessories = []
+      contentConfiguration = configuration.content
+      backgroundConfiguration = configuration.background ?? defaultBackgroundConfigurationIfAvailable()
+      assert(configuration.accessories.isEmpty, "Cell does not support accessories.")
     }
   }
 }
