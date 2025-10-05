@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     let button = Button(type: .custom, primaryAction: UIAction(image: UIImage(systemName: "folder")) { _ in
 
     })
-    button.overrideSize = CGSize(value: 40)
+    button.overrideSize = CGSize(40)
     button.configurationStyle = .plain
     button.configurationCornerStyle = .capsule
     button.configurationBaseBackgroundColor = .white

@@ -11,7 +11,7 @@ import CoreGraphics
 extension CGSize {
 
   /// Creates a size with the same dimension
-  public init(value: CGFloat) {
+  public init(_ value: CGFloat) {
     self.init(width: value, height: value)
   }
 
