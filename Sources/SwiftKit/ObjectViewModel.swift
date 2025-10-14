@@ -7,18 +7,18 @@
 
 import Foundation
 
-public protocol ObjectViewModelProtocol<Object>: AnyObject {
+@MainActor public protocol ObjectViewModelProtocol<Object>: AnyObject {
 
   associatedtype Object
 
   var object: Object { get set }
 }
 
-open class ObjectViewModel<Object: Hashable>: NSObject, ObjectViewModelProtocol {
+@MainActor open class ObjectViewModel<Object: Hashable>: NSObject, ObjectViewModelProtocol {
 
   open var object: Object
 
-  public init(object: Object) {
+  @MainActor public init(object: Object) {
     self.object = object
   }
 
