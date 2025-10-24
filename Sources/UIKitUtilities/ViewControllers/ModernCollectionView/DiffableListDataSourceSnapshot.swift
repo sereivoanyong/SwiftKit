@@ -91,11 +91,19 @@ public struct DiffableListDataSourceSnapshot<Section: Identifiable, Item: Identi
     base.moveItem(itemIdentifier, afterItem: toItemIdentifier)
   }
 
+  public mutating func reloadItemIdentifiers(_ itemIdentifiers: [Item.ID]) {
+    base.reloadItems(itemIdentifiers)
+  }
+
   public mutating func reloadItems(_ items: [Item]) {
     base.reloadItems(items.map(\.id))
     for item in items {
       _items[item.id] = item
     }
+  }
+
+  public mutating func reconfigureItemIdentifiers(_ itemIdentifiers: [Item.ID]) {
+    base.reconfigureItems(itemIdentifiers)
   }
 
   public mutating func reconfigureItems(_ items: [Item]) {
