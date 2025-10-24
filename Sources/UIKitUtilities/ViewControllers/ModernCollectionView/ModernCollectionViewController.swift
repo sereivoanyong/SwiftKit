@@ -107,7 +107,7 @@ open class ModernCollectionViewController<SectionIdentifier: Hashable, ItemIdent
   open func cell(in collectionView: UICollectionView, at indexPath: IndexPath, for itemIdentifier: ItemIdentifier) -> UICollectionViewCell {
     let cell = collectionView.dequeue(CollectionViewListCell.self, for: indexPath)
     let listItem = listItem(at: indexPath, for: itemIdentifier)
-    cell.apply(listItem.configuration)
+    cell.apply(listItem.configuration())
     return cell
   }
 
@@ -116,13 +116,13 @@ open class ModernCollectionViewController<SectionIdentifier: Hashable, ItemIdent
     case .sectionHeader:
       guard let listSection = listSection(at: indexPath.section, for: sectionIdentifier) else { fatalError() }
       let cell = collectionView.dequeue(CollectionViewListCell.self, of: kind, for: indexPath)
-      cell.apply(listSection.headerConfiguration!)
+      cell.apply(listSection.headerConfiguration())
       return cell
 
     case .sectionFooter:
       let cell = collectionView.dequeue(CollectionViewListCell.self, of: kind, for: indexPath)
       guard let listSection = listSection(at: indexPath.section, for: sectionIdentifier) else { fatalError() }
-      cell.apply(listSection.footerConfiguration!)
+      cell.apply(listSection.footerConfiguration())
       return cell
 
     default:

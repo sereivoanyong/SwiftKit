@@ -25,15 +25,23 @@ public struct ListConfiguration {
 @available(iOS 15.0, *)
 extension UICollectionViewCell {
   
-  public func apply(_ configuration: ListConfiguration) {
-    if let cell = self as? UICollectionViewListCell {
-      cell.contentConfiguration = configuration.content ?? cell.defaultContentConfiguration()
-      cell.backgroundConfiguration = configuration.background ?? defaultBackgroundConfigurationIfAvailable()
-      cell.accessories = configuration.accessories
+  public func apply(_ configuration: ListConfiguration?) {
+    if let configuration {
+      if let cell = self as? UICollectionViewListCell {
+        cell.contentConfiguration = configuration.content ?? cell.defaultContentConfiguration()
+        cell.backgroundConfiguration = configuration.background ?? defaultBackgroundConfigurationIfAvailable()
+        cell.accessories = configuration.accessories
+      } else {
+        contentConfiguration = configuration.content
+        backgroundConfiguration = configuration.background ?? defaultBackgroundConfigurationIfAvailable()
+        assert(configuration.accessories.isEmpty, "Cell does not support accessories.")
+      }
     } else {
-      contentConfiguration = configuration.content
-      backgroundConfiguration = configuration.background ?? defaultBackgroundConfigurationIfAvailable()
-      assert(configuration.accessories.isEmpty, "Cell does not support accessories.")
+      contentConfiguration = nil
+      backgroundConfiguration = nil
+      if let cell = self as? UICollectionViewListCell {
+        cell.accessories = []
+      }
     }
   }
 }
@@ -55,10 +63,10 @@ extension UICollectionViewCell {
 public struct ListSection<ID: Hashable>: Identifiable {
 
   public let id: ID
-  public var headerConfiguration: ListConfiguration?
-  public var footerConfiguration: ListConfiguration?
+  public var headerConfiguration: () -> ListConfiguration?
+  public var footerConfiguration: () -> ListConfiguration?
 
-  public init(id: ID, headerConfiguration: ListConfiguration? = nil, footerConfiguration: ListConfiguration? = nil) {
+  public init(id: ID, headerConfiguration: @autoclosure @escaping () -> ListConfiguration? = nil, footerConfiguration: @autoclosure @escaping () -> ListConfiguration? = nil) {
     self.id = id
     self.headerConfiguration = headerConfiguration
     self.footerConfiguration = footerConfiguration
@@ -69,14 +77,14 @@ public struct ListSection<ID: Hashable>: Identifiable {
 public struct ListItem<ID: Hashable>: Identifiable {
 
   public let id: ID
-  public var configuration: ListConfiguration
+  public var configuration: () -> ListConfiguration?
 
-  public init(id: ID, configuration: ListConfiguration) {
+  public init(id: ID, configuration: @autoclosure @escaping () -> ListConfiguration) {
     self.id = id
     self.configuration = configuration
   }
 
-  public init(configuration: ListConfiguration) where ID == UUID {
+  public init(configuration: @autoclosure @escaping () -> ListConfiguration) where ID == UUID {
     self.id = UUID()
     self.configuration = configuration
   }
