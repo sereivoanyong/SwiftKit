@@ -25,3 +25,10 @@ extension StringRepresentable {
     self.init(value)
   }
 }
+
+extension StringRepresentable where Self: CustomStringConvertible {
+
+  public var description: String {
+    return rawValue
+  }
+}
