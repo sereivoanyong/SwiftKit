@@ -11,7 +11,7 @@ import SwiftKit
 @available(iOS 14.0, *)
 @MainActor public protocol ContentView<Configuration>: UIView, UIContentView {
 
-  associatedtype Configuration: UIContentConfiguration
+  associatedtype Configuration: UIContentConfiguration & Hashable
 
   @MainActor func configure(_ configuration: Configuration)
 }
@@ -30,6 +30,7 @@ extension ContentView {
       return associatedValue(forKey: &configurationKey, with: self)!
     }
     set {
+      guard newValue != _configurationIfSet else { return }
       setAssociatedValue(newValue, forKey: &configurationKey, with: self)
       configure(newValue)
     }
@@ -40,10 +41,9 @@ extension ContentView {
       return associatedValue(forKey: &configurationKey, with: self)!
     }
     set {
+      guard let newValue = newValue as? Configuration, newValue != _configurationIfSet else { return }
       setAssociatedValue(newValue, forKey: &configurationKey, with: self)
-      if let newValue = newValue as? Configuration {
-        configure(newValue)
-      }
+      configure(newValue)
     }
   }
 
