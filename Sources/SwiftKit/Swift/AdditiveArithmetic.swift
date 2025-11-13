@@ -26,3 +26,10 @@ extension Optional where Wrapped: AdditiveArithmetic {
     }
   }
 }
+
+extension AdditiveArithmetic {
+
+  public var nonZero: Self? {
+    return self == .zero ? nil : self
+  }
+}
