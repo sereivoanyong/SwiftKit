@@ -45,4 +45,32 @@ extension Data {
   public func string(encoding: String.Encoding) -> String? {
     return String(data: self, encoding: encoding)
   }
+
+  @available(iOS 14.0, *)
+  public struct HexEncodingOptions: OptionSet {
+
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+      self.rawValue = rawValue
+    }
+
+    public static let uppercase: Self = Self(rawValue: 1 << 0)
+  }
+
+  @available(iOS 14.0, *)
+  public func hexEncodedString(options: HexEncodingOptions = []) -> String {
+    let hexDigits = options.contains(.uppercase) ? "0123456789ABCDEF" : "0123456789abcdef"
+    let utf8HexDigits = ContiguousArray<UInt8>(hexDigits.utf8)
+    let count = count
+    return String(unsafeUninitializedCapacity: 2 * count) { bufferPtr in
+      var ptr = bufferPtr.baseAddress.unsafelyUnwrapped
+      for byte in self {
+        ptr[0] = utf8HexDigits[Int(byte / 16)]
+        ptr[1] = utf8HexDigits[Int(byte % 16)]
+        ptr += 2
+      }
+      return 2 * count
+    }
+  }
 }
