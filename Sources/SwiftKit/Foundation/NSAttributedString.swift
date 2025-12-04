@@ -4,17 +4,31 @@
 //  Created by Sereivoan Yong on 8/22/20.
 //
 
-#if canImport(Foundation)
+#if canImport(UIKit)
 
-import Foundation
+import UIKit
 
 extension NSAttributedString {
 
-  public static func space<Number>(_ width: Number) -> NSAttributedString where Number: _ObjectiveCBridgeable, Number._ObjectiveCType: NSNumber {
+  @inlinable
+  public static func space(_ width: CGFloat) -> NSAttributedString {
+    /* Tested and works on iOS 18 and 26 but does not work on 16.
     var attchmentCharacter: unichar = 0xFFFC // NSTextAttachment.character
     let nonPrintableString = String(utf16CodeUnits: &attchmentCharacter, count: 1) // This can be anything non-printable
     return NSAttributedString(string: nonPrintableString, attributes: [.kern: width._bridgeToObjectiveC()])
+     */
+
+    let attachment = NSTextAttachment()
+    attachment.bounds = CGRect(x: 0, y: 0, width: width, height: 0)
+    return NSAttributedString(attachment: attachment)
   }
+}
+
+#endif
+
+#if canImport(Foundation)
+
+extension NSAttributedString {
 
   @inlinable
   public static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSMutableAttributedString {
