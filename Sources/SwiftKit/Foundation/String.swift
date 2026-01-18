@@ -52,6 +52,16 @@ extension String {
     return result
   }
 
+  public func joined(with optionalStrings: String?..., separator: String) -> String {
+    var strings: [String] = [self]
+    for optionalString in optionalStrings {
+      if let string = optionalString {
+        strings.append(string)
+      }
+    }
+    return strings.joined(separator: separator)
+  }
+
   public func results(matchesPattern pattern: String, options: NSRegularExpression.Options = []) throws -> [NSTextCheckingResult] {
     return try NSRegularExpression(pattern: pattern, options: options).matches(in: self, options: [], range: NSRange(location: 0, length: utf16.count))
   }
