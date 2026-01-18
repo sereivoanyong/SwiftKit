@@ -6,19 +6,30 @@
 
 import UIKit
 
-@_marker
-public protocol UIImageProtocol {
+@_marker public protocol _UIImageProtocol {
 }
 
-extension UIImageProtocol {
+extension UIImage: _UIImageProtocol {
+}
+
+extension _UIImageProtocol where Self == UIImage {
 
   public init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void) {
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
     let context = UIGraphicsGetCurrentContext()!
     actions(context)
     // This is the whole purpose of the UIImageInitializable
-    self = UIGraphicsGetImageFromCurrentImageContext() as! Self
+    self = UIGraphicsGetImageFromCurrentImageContext()!
     UIGraphicsEndImageContext()
+  }
+
+  public init(color: UIColor, size: CGSize = CGSize(width: 1, height: 1), cornerRadius: CGFloat = 0) {
+    self.init(size: size, opaque: false, scale: UIScreen.main.scale) { context in
+      context.addPath(CGPath(roundedRect: CGRect(origin: .zero, size: size), cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil))
+      context.closePath()
+      context.setFillColor(color.cgColor)
+      context.fillPath()
+    }
   }
 
   @available(iOS 13.0, *)
@@ -37,7 +48,7 @@ extension UIImageProtocol {
       darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkUnscaledTraitCollection))
     }
     lightImage.imageAsset!.register(darkImage, with: UITraitCollection(traitsFrom: [scaleTraitCollection, darkUnscaledTraitCollection]))
-    self = lightImage as! Self
+    self = lightImage
   }
 
   @available(iOS 13.0, *)
@@ -78,14 +89,12 @@ extension UIImageProtocol {
         }
       }
       image.imageAsset!.register(darkImage, with: darkScaledTraitCollection)
-      self = image as! Self
+      self = image
     } else {
-      self = light() as! Self
+      self = light()
     }
   }
 }
-
-extension UIImage: UIImageProtocol { }
 
 extension UIImage {
   
@@ -94,15 +103,6 @@ extension UIImage {
       return nil
     }
     self.init(contentsOfFile: path)
-  }
-  
-  public convenience init(color: UIColor, size: CGSize = CGSize(width: 1, height: 1), cornerRadius: CGFloat = 0) {
-    self.init(size: size, opaque: false, scale: UIScreen.main.scale) { context in
-      context.addPath(CGPath(roundedRect: CGRect(origin: .zero, size: size), cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil))
-      context.closePath()
-      context.setFillColor(color.cgColor)
-      context.fillPath()
-    }
   }
   
   public func resizing(to newSize: CGSize) -> UIImage {
