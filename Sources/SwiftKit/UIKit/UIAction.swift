@@ -7,6 +7,15 @@
 import UIKit
 
 @available(iOS 13.0, *)
+extension UIAction: @retroactive Identifiable {
+
+  @inlinable
+  public var id: Identifier {
+    return identifier
+  }
+}
+
+@available(iOS 13.0, *)
 extension UIAction {
 
   public var handler: UIActionHandler {
