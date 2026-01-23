@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftKit
 import Combine
 
 @available(iOS 15.0, *)
@@ -64,7 +65,7 @@ protocol FilterItemInternal: FilterItem {
   /// For size calculation
   var currentTitle: String { get }
 
-  var predicatePublisher: any Publisher<NSPredicate?, Never> { get }
+  var predicateSubject: PassthroughSubject<NSPredicate?, Never> { get }
 }
 
 // MARK: - [Value,Collection]ToggleFilterItem
@@ -87,34 +88,39 @@ open class ValueToggleFilterItem<Object: AnyObject, Value: Equatable>: ToggleFil
     return title
   }
 
-  @Published open var isSelected: Bool = false
+  open var isSelected: Bool = false {
+    didSet {
+      predicate = isSelected ? predicateProvider(value) : nil
+    }
+  }
 
   public let value: Value
 
   public let valueSelection: FilterItemSelection = .toggleSelection
 
-  @Published public private(set) var predicate: NSPredicate?
+  public let predicateProvider: (Value) -> NSPredicate
 
-  @inlinable
-  var predicatePublisher: any Publisher<NSPredicate?, Never> {
-    return $predicate
+  public private(set) var predicate: NSPredicate? {
+    didSet {
+      predicateSubject.send(predicate)
+    }
   }
+
+  public let predicateSubject = PassthroughSubject<NSPredicate?, Never>()
 
   public init(
     id: String = UUID().uuidString,
     title: String,
     value: Value,
+    isSelected: Bool = false,
     predicateProvider: @escaping (Value) -> NSPredicate // Called when selected
   ) {
     self.id = id
     self.title = title
     self.value = value
-    $isSelected.map { [unowned self] isSelected in
-      if isSelected {
-        return predicateProvider(self.value)
-      }
-      return nil
-    }.assign(to: &$predicate)
+    self.isSelected = isSelected
+    self.predicateProvider = predicateProvider
+    self.predicate = isSelected ? predicateProvider(value) : nil
   }
 }
 
@@ -129,34 +135,39 @@ open class CollectionToggleFilterItem<Object: AnyObject, Value: Equatable>: Togg
     return title
   }
 
-  @Published open var isSelected: Bool = false
+  open var isSelected: Bool = false {
+    didSet {
+      predicate = isSelected ? predicateProvider(values) : nil
+    }
+  }
 
   public let values: [Value]
 
   public let valueSelection: FilterItemSelection = .toggleSelection
 
-  @Published public private(set) var predicate: NSPredicate?
+  public let predicateProvider: ([Value]) -> NSPredicate
 
-  @inlinable
-  var predicatePublisher: any Publisher<NSPredicate?, Never> {
-    return $predicate
+  public private(set) var predicate: NSPredicate? {
+    didSet {
+      predicateSubject.send(predicate)
+    }
   }
+
+  public let predicateSubject = PassthroughSubject<NSPredicate?, Never>()
 
   public init(
     id: String = UUID().uuidString,
     title: String,
     values: [Value],
+    isSelected: Bool = false,
     predicateProvider: @escaping ([Value]) -> NSPredicate // Called when selected
   ) {
     self.id = id
     self.title = title
     self.values = values
-    $isSelected.map { [unowned self] isSelected in
-      if isSelected {
-        return predicateProvider(self.values)
-      }
-      return nil
-    }.assign(to: &$predicate)
+    self.isSelected = false
+    self.predicateProvider = predicateProvider
+    self.predicate = isSelected ? predicateProvider(values) : nil
   }
 }
 
@@ -190,7 +201,11 @@ open class ValueValueFilterItem<Object: AnyObject, Value: Equatable>: ValueFilte
     return title
   }
 
-  @Published open var selectedValue: Value?
+  open var selectedValue: Value? {
+    didSet {
+      predicate = selectedValue.map(predicateProvider)
+    }
+  }
 
   public var anySelectedValue: Any? {
     get { return selectedValue }
@@ -201,12 +216,15 @@ open class ValueValueFilterItem<Object: AnyObject, Value: Equatable>: ValueFilte
 
   public let valueSelection: FilterItemSelection
 
-  @Published public private(set) var predicate: NSPredicate?
+  public let predicateProvider: (Value) -> NSPredicate
 
-  @inlinable
-  var predicatePublisher: any Publisher<NSPredicate?, Never> {
-    return $predicate
+  public private(set) var predicate: NSPredicate? {
+    didSet {
+      predicateSubject.send(predicate)
+    }
   }
+
+  public let predicateSubject = PassthroughSubject<NSPredicate?, Never>()
 
   public init(
     id: String = UUID().uuidString,
@@ -222,12 +240,8 @@ open class ValueValueFilterItem<Object: AnyObject, Value: Equatable>: ValueFilte
     self.selectedValue = selectedValue
     self.titleProvider = titleProvider
     self.valueSelection = .value(valuesProvider: valuesProvider, actionConfigurationProvider: actionConfigurationProvider)
-    $selectedValue.map { selectedValue in
-      if let selectedValue {
-        return predicateProvider(selectedValue)
-      }
-      return nil
-    }.assign(to: &$predicate)
+    self.predicateProvider = predicateProvider
+    self.predicate = selectedValue.map(predicateProvider)
   }
 }
 
@@ -245,7 +259,11 @@ open class CollectionValueFilterItem<Object: AnyObject, Value: Equatable>: Value
     return title
   }
 
-  @Published open var selectedValue: Value?
+  open var selectedValue: Value? {
+    didSet {
+      predicate = selectedValue.map(predicateProvider)
+    }
+  }
 
   public var anySelectedValue: Any? {
     get { return selectedValue }
@@ -256,12 +274,15 @@ open class CollectionValueFilterItem<Object: AnyObject, Value: Equatable>: Value
 
   public let valueSelection: FilterItemSelection
 
-  @Published public private(set) var predicate: NSPredicate?
+  public let predicateProvider: (Value) -> NSPredicate
 
-  @inlinable
-  var predicatePublisher: any Publisher<NSPredicate?, Never> {
-    return $predicate
+  public private(set) var predicate: NSPredicate? {
+    didSet {
+      predicateSubject.send(predicate)
+    }
   }
+
+  public let predicateSubject = PassthroughSubject<NSPredicate?, Never>()
 
   public init(
     id: String = UUID().uuidString,
@@ -277,12 +298,8 @@ open class CollectionValueFilterItem<Object: AnyObject, Value: Equatable>: Value
     self.selectedValue = selectedValue
     self.titleProvider = titleProvider
     self.valueSelection = .value(valuesProvider: valuesProvider, actionConfigurationProvider: actionConfigurationProvider)
-    $selectedValue.map { selectedValue in
-      if let selectedValue {
-        return predicateProvider(selectedValue)
-      }
-      return nil
-    }.assign(to: &$predicate)
+    self.predicateProvider = predicateProvider
+    self.predicate = selectedValue.map(predicateProvider)
   }
 }
 
@@ -316,7 +333,11 @@ open class ValueValuesFilterItem<Object: AnyObject, Value: Equatable>: ValuesFil
     return title
   }
 
-  @Published open var selectedValues: [Value]
+  open var selectedValues: [Value] {
+    didSet {
+      predicate = selectedValues.nonEmpty.map(predicateProvider)
+    }
+  }
 
   public var anySelectedValues: [Any] {
     get { return selectedValues }
@@ -327,12 +348,15 @@ open class ValueValuesFilterItem<Object: AnyObject, Value: Equatable>: ValuesFil
 
   public let valueSelection: FilterItemSelection
 
-  @Published public private(set) var predicate: NSPredicate?
+  public let predicateProvider: ([Value]) -> NSPredicate
 
-  @inlinable
-  var predicatePublisher: any Publisher<NSPredicate?, Never> {
-    return $predicate
+  public private(set) var predicate: NSPredicate? {
+    didSet {
+      predicateSubject.send(predicate)
+    }
   }
+
+  public let predicateSubject = PassthroughSubject<NSPredicate?, Never>()
 
   public init(
     id: String = UUID().uuidString,
@@ -348,17 +372,13 @@ open class ValueValuesFilterItem<Object: AnyObject, Value: Equatable>: ValuesFil
     self.selectedValues = selectedValues
     self.titleProvider = titleProvider
     self.valueSelection = .values(valuesProvider: valuesProvider, actionConfigurationProvider: actionConfigurationProvider)
-    $selectedValues.map { selectedValues in
-      if !selectedValues.isEmpty {
-        return predicateProvider(selectedValues)
-      }
-      return nil
-    }.assign(to: &$predicate)
+    self.predicateProvider = predicateProvider
+    self.predicate = selectedValues.nonEmpty.map(predicateProvider)
   }
 }
 
 @available(iOS 15.0, *)
-open class CollectionValuesFilterItem<Object: AnyObject, Element: Equatable>: ValuesFilterItem, FilterItemInternal {
+open class CollectionValuesFilterItem<Object: AnyObject, Value: Equatable>: ValuesFilterItem, FilterItemInternal {
 
   public let id: String
 
@@ -371,43 +391,46 @@ open class CollectionValuesFilterItem<Object: AnyObject, Element: Equatable>: Va
     return title
   }
 
-  @Published open var selectedValues: [Element]
+  @Published open var selectedValues: [Value] {
+    didSet {
+      predicate = selectedValues.nonEmpty.map(predicateProvider)
+    }
+  }
 
   public var anySelectedValues: [Any] {
     get { return selectedValues }
-    set { selectedValues = newValue as! [Element] }
+    set { selectedValues = newValue as! [Value] }
   }
 
-  public let titleProvider: ([Element]) -> String
+  public let titleProvider: ([Value]) -> String
 
   public let valueSelection: FilterItemSelection
 
-  @Published public private(set) var predicate: NSPredicate?
+  public let predicateProvider: ([Value]) -> NSPredicate
 
-  @inlinable
-  var predicatePublisher: any Publisher<NSPredicate?, Never> {
-    return $predicate
+  public private(set) var predicate: NSPredicate? {
+    didSet {
+      predicateSubject.send(predicate)
+    }
   }
+
+  public let predicateSubject = PassthroughSubject<NSPredicate?, Never>()
 
   public init(
     id: String = UUID().uuidString,
     title: String,
-    selectedValues: [Element] = [],
-    titleProvider: @escaping ([Element]) -> String,
-    actionConfigurationProvider: @escaping (Element) -> UIAction.Configuration,
-    valuesProvider: @escaping (@escaping ([Element]) -> Void) -> Void,
-    predicateProvider: @escaping ([Element]) -> NSPredicate // Selected values is guaranteed to be non-empty
+    selectedValues: [Value] = [],
+    titleProvider: @escaping ([Value]) -> String,
+    actionConfigurationProvider: @escaping (Value) -> UIAction.Configuration,
+    valuesProvider: @escaping (@escaping ([Value]) -> Void) -> Void,
+    predicateProvider: @escaping ([Value]) -> NSPredicate // Selected values is guaranteed to be non-empty
   ) {
     self.id = id
     self.title = title
     self.selectedValues = selectedValues
     self.titleProvider = titleProvider
     self.valueSelection = .values(valuesProvider: valuesProvider, actionConfigurationProvider: actionConfigurationProvider)
-    $selectedValues.map { selectedValues in
-      if !selectedValues.isEmpty {
-        return predicateProvider(selectedValues)
-      }
-      return nil
-    }.assign(to: &$predicate)
+    self.predicateProvider = predicateProvider
+    self.predicate = selectedValues.nonEmpty.map(predicateProvider)
   }
 }

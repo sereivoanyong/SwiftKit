@@ -14,7 +14,7 @@ open class FilterView: UICollectionView, UICollectionViewDataSource, UICollectio
 
   private var itemCancellables: Set<AnyCancellable> = []
 
-  open var items: [any FilterItem] {
+  open var items: [any FilterItem] = [] {
     didSet {
       observe()
       reloadData()
@@ -23,10 +23,11 @@ open class FilterView: UICollectionView, UICollectionViewDataSource, UICollectio
 
   open var verticalSectionInsets: YAxisEdges<CGFloat> = .zero
 
-  @Published open private(set) var predicates: [NSPredicate?] = []
+  open private(set) var predicates: [NSPredicate?] = []
 
-  public init(frame: CGRect = .zero, items: [any FilterItem] = []) {
-    self.items = items
+  public let predicatesSubject = PassthroughSubject<[NSPredicate?], Never>()
+
+  public init(frame: CGRect = .zero) {
     let flowLayout = UICollectionViewFlowLayout()
     flowLayout.minimumInteritemSpacing = 8
     flowLayout.scrollDirection = .horizontal
@@ -43,28 +44,31 @@ open class FilterView: UICollectionView, UICollectionViewDataSource, UICollectio
     delegate = self
 
     commonInit()
-    reloadData()
   }
 
   public required init?(coder: NSCoder) {
-    self.items = []
     super.init(coder: coder)
     commonInit()
   }
 
   private func commonInit() {
     register(UICollectionViewCell.self)
-    observe()
   }
 
-  private func observe() {
+  private func observe(notifySubject: Bool = false) {
     itemCancellables.removeAll()
     predicates = [NSPredicate?](repeating: nil, count: items.count)
     for (index, item) in items.enumerated() {
       let item = item as! any FilterItemInternal
-      item.predicatePublisher.sink { [unowned self] predicate in
-        predicates[index] = predicate
-      }.store(in: &itemCancellables)
+      item.predicateSubject
+        .sink { [unowned self] predicate in
+          predicates[index] = predicate
+          predicatesSubject.send(predicates)
+        }
+        .store(in: &itemCancellables)
+    }
+    if notifySubject {
+      predicatesSubject.send(predicates)
     }
   }
 
