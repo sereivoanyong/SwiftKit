@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum JSON: Equatable {
+public enum JSON: Hashable, @unchecked Sendable {
 
   case string(NSString)
   case number(NSNumber)
@@ -16,13 +16,30 @@ public enum JSON: Equatable {
   case dictionary(NSDictionary)
   case null
 
-  public init?(with data: Data, options: JSONSerialization.ReadingOptions = []) throws {
-    let jsonObject = try JSONSerialization.jsonObject(with: data, options: options)
-    self.init(jsonObject: jsonObject)
+  public var object: Any {
+    switch self {
+    case .string(let string):
+      return string
+    case .number(let number):
+      return number
+    case .bool(let bool):
+      return bool
+    case .array(let array):
+      return array
+    case .dictionary(let dictionary):
+      return dictionary
+    case .null:
+      return NSNull()
+    }
   }
 
-  public init?(jsonObject: Any) {
-    switch jsonObject {
+  public init?(data: Data, options: JSONSerialization.ReadingOptions = []) throws {
+    let object = try JSONSerialization.jsonObject(with: data, options: options)
+    self.init(object)
+  }
+
+  public init?(_ object: Any) {
+    switch object {
     case let string as NSString:
       self = .string(string)
 
@@ -44,7 +61,7 @@ public enum JSON: Equatable {
       self = .null
 
     default:
-      printIfDEBUG("Attempt to initialize JSON with unsupported type \(type(of: jsonObject))")
+      printIfDEBUG("Attempt to initialize JSON with unsupported type \(type(of: object))")
       return nil
     }
   }
@@ -53,136 +70,160 @@ public enum JSON: Equatable {
 
   public subscript(index: Int) -> JSON? {
     if case .array(let array) = self {
-      let jsonObject = array[index]
-      return JSON(jsonObject: jsonObject)
+      let object = array[index]
+      return JSON(object)
     }
     return nil
   }
 
   public subscript(key: String) -> JSON? {
     if case .dictionary(let dictionary) = self {
-      if let jsonObject = dictionary[key] {
-        return JSON(jsonObject: jsonObject)
+      if let object = dictionary[key] {
+        return JSON(object)
       }
     }
     return nil
   }
 
-  // MARK: Optional
+  // MARK: Optional Swift Objects
 
   public var string: String? {
-    if case .string(let string) = self {
-      return string as String
-    }
-    return nil
+    return nsString as String?
   }
 
   public var int: Int? {
-    return number?.intValue
+    return nsNumber?.intValue
+  }
+
+  public var uint: UInt? {
+    return nsNumber?.uintValue
   }
 
   public var float: Float? {
-    return number?.floatValue
+    return nsNumber?.floatValue
   }
 
   public var double: Double? {
-    return number?.doubleValue
+    return nsNumber?.doubleValue
   }
 
-  public var number: NSNumber? {
-    switch self {
-    case .number(let number):
-      return number
-    case .bool(let bool):
-      return bool as NSNumber
-    default:
-      return nil
-    }
+  public var decimal: Decimal? {
+    return nsNumber?.decimalValue
   }
 
   public var bool: Bool? {
-    switch self {
-    case .string(let string):
-      switch string {
-      case "0", "n", "N", "no", "NO", "false", "FALSE":
-        return false
-      case "1", "y", "Y", "yes", "YES", "true", "TRUE":
-        return true
-      default:
-        return nil
-      }
-    case .number(let number):
-      switch number {
-      case 0:
-        return false
-      case 1:
-        return true
-      default:
-        return nil
-      }
-    case .bool(let bool):
+    if case .bool(let bool) = self {
       return bool
+    }
+    return nil
+  }
+
+  public var array: [Any]? {
+    return nsArray as? [Any]
+  }
+
+  public var dictionary: [String: Any]? {
+    return nsDictionary as? [String: Any]
+  }
+
+  // MARK: Optional Foundation Objects
+
+  public var nsString: NSString? {
+    if case .string(let string) = self {
+      return string
+    }
+    return nil
+  }
+
+  public var nsNumber: NSNumber? {
+    switch self {
+    case .number(let number):
+      return number
+    case .bool(let bool):
+      return NSNumber(value: bool)
     default:
       return nil
     }
   }
 
-  public var array: [JSON]? {
+  public var nsArray: NSArray? {
     if case .array(let array) = self {
-      return array.compactMap(JSON.init(jsonObject:))
+      return array
     }
     return nil
   }
 
-  public var dictionary: [String: JSON]? {
+  public var nsMutableArray: NSMutableArray? {
+    return nsArray as? NSMutableArray
+  }
+
+  public var nsDictionary: NSDictionary? {
     if case .dictionary(let dictionary) = self {
-      return dictionary.reduce(into: [:]) { result, pair in
-        let key = pair.key as! String
-        result[key] = JSON(jsonObject: pair.value)
-      }
+      return dictionary
     }
     return nil
   }
 
-  // MARK: Default
+  public var nsMutableDictionary: NSMutableDictionary? {
+    return dictionary as? NSMutableDictionary
+  }
+
+  // MARK: Optional JSON Containers
+
+  public var jsonArray: [JSON]? {
+    if case .array(let array) = self {
+      return array.compactMap(JSON.init)
+    }
+    return nil
+  }
+
+  public var jsonDictionary: [String: JSON]? {
+    if case .dictionary(let dictionary) = self {
+      return dictionary.reduce(into: [:]) { $0[$1.key as! String] = JSON($1.value) }
+    }
+    return nil
+  }
+
+  // MARK: Default Swift Objects
 
   public var stringValue: String {
-    if case .string(let string) = self {
+    switch self {
+    case .string(let string):
       return string as String
+    case .number(let number):
+      return number.stringValue
+    case .bool(let bool):
+      return String(bool)
+    default:
+      return ""
     }
-    return ""
   }
 
   public var intValue: Int {
-    return numberValue.intValue
+    return nsNumberValue.intValue
+  }
+
+  public var uintValue: UInt {
+    return nsNumberValue.uintValue
   }
 
   public var floatValue: Float {
-    return numberValue.floatValue
+    return nsNumberValue.floatValue
   }
 
   public var doubleValue: Double {
-    return numberValue.doubleValue
+    return nsNumberValue.doubleValue
   }
 
-  public var numberValue: NSNumber {
-    switch self {
-    case .number(let number):
-      return number
-    case .bool(let bool):
-      return bool as NSNumber
-    default:
-      return NSNumber()
-    }
+  public var decimalValue: Decimal {
+    return nsNumberValue.decimalValue
   }
 
   public var boolValue: Bool {
     switch self {
     case .string(let string):
-      switch string {
-      case "0", "n", "N", "no", "NO", "false", "FALSE":
-        return false
-      case "1", "y", "Y", "yes", "YES", "true", "TRUE":
+      switch string.lowercased {
+      case "true", "y", "t", "yes", "1":
         return true
       default:
         return false
@@ -196,20 +237,50 @@ public enum JSON: Equatable {
     }
   }
 
-  public var arrayValue: [JSON] {
-    if case .array(let array) = self {
-      return array.compactMap(JSON.init(jsonObject:))
+  // MARK: Default Foundation Objects
+
+  public var nsStringValue: NSString {
+    switch self {
+    case .string(let string):
+      return string
+    case .number(let number):
+      return number.stringValue as NSString
+    case .bool(let bool):
+      return String(bool) as NSString
+    default:
+      return NSString()
     }
-    return []
   }
 
-  public var dictionaryValue: [String: JSON] {
-    if case .dictionary(let dictionary) = self {
-      return dictionary.reduce(into: [:]) { result, pair in
-        let key = pair.key as! String
-        result[key] = .init(jsonObject: pair.value)
-      }
+  public var nsNumberValue: NSNumber {
+    switch self {
+    case .string(let string):
+      let decimal = NSDecimalNumber(string: string as String)
+      return decimal != .notANumber ? decimal : NSNumber()
+    case .number(let number):
+      return number
+    case .bool(let bool):
+      return NSNumber(value: bool)
+    default:
+      return NSNumber()
     }
-    return [:]
+  }
+
+  public var nsArrayValue: NSArray {
+    return nsArray ?? NSArray()
+  }
+
+  public var nsDictionaryValue: NSDictionary {
+    return nsDictionary ?? NSDictionary()
+  }
+
+  // MARK: Default JSON Containers
+
+  public var jsonArrayValue: [JSON] {
+    return jsonArray ?? []
+  }
+
+  public var jsonDictionaryValue: [String: JSON] {
+    return jsonDictionary ?? [:]
   }
 }
