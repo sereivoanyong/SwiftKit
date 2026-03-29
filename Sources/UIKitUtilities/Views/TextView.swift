@@ -67,8 +67,19 @@ open class TextView: UITextView {
   }
 
   @IBInspectable
-  open var minimumNumberOfLinesToDisplay: Int = 1 {
+  open var minimumNumberOfVisibleLines: Int = 1 {
     didSet {
+      assert(maximumNumberOfVisibleLines == 0 || minimumNumberOfVisibleLines <= maximumNumberOfVisibleLines)
+      if allowsSelfSizing {
+        invalidateIntrinsicContentSize()
+      }
+    }
+  }
+
+  @IBInspectable
+  open var maximumNumberOfVisibleLines: Int = 0 {
+    didSet {
+      assert(maximumNumberOfVisibleLines == 0 || minimumNumberOfVisibleLines <= maximumNumberOfVisibleLines)
       if allowsSelfSizing {
         invalidateIntrinsicContentSize()
       }
@@ -87,9 +98,19 @@ open class TextView: UITextView {
   open override var intrinsicContentSize: CGSize {
     var intrinsicContentSize = super.intrinsicContentSize
     if allowsSelfSizing, let font {
-      let textHeight = (font.lineHeight * CGFloat(max(minimumNumberOfLinesToDisplay, 1))).ceiledToPixel(scale: traitCollection.displayScale)
-      let minimumHeight = textContainerInset.top + textHeight + textContainerInset.bottom
-      intrinsicContentSize.height = max(minimumHeight, intrinsicContentSize.height)
+      var height: CGFloat = intrinsicContentSize.height
+      if height == UIView.noIntrinsicMetric {
+        let numberOfLines = max(text.split(separator: "\n", omittingEmptySubsequences: false).count, minimumNumberOfVisibleLines)
+        height = font.lineHeight(numberOfLines: numberOfLines).ceiledToPixel(scale: traitCollection.displayScale) + textContainerInset.vertical
+      } else {
+        let minimumHeight = font.lineHeight(numberOfLines: max(minimumNumberOfVisibleLines, 1)).ceiledToPixel(scale: traitCollection.displayScale) + textContainerInset.vertical
+        height = max(height, minimumHeight)
+      }
+      if maximumNumberOfVisibleLines > 0 {
+        let maximumHeight = font.lineHeight(numberOfLines: maximumNumberOfVisibleLines).ceiledToPixel(scale: traitCollection.displayScale) + textContainerInset.vertical
+        height = min(height, maximumHeight)
+      }
+      intrinsicContentSize.height = height
     }
     return intrinsicContentSize
   }
