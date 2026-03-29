@@ -13,7 +13,10 @@ extension UIScrollView {
     alwaysBounceHorizontal = false
     alwaysBounceVertical = false
     isPagingEnabled = false
+    // clipsToBounds is reset when isScrollEnabled is set
+    let oldClipsToBounds = clipsToBounds
     isScrollEnabled = false
+    clipsToBounds = oldClipsToBounds
     showsHorizontalScrollIndicator = false
     showsVerticalScrollIndicator = false
   }
