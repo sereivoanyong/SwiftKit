@@ -98,4 +98,20 @@ extension CACornerMask {
   public static var all: CACornerMask {
     return [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
   }
+
+  public static var topLeft: Self {
+    return .layerMinXMinYCorner
+  }
+
+  public static var topRight: Self {
+    return .layerMaxXMinYCorner
+  }
+
+  public static var bottomLeft: Self {
+    return .layerMinXMaxYCorner
+  }
+
+  public static var bottomRight: Self {
+    return .layerMaxXMaxYCorner
+  }
 }
