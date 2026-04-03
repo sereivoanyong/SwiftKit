@@ -24,6 +24,27 @@ extension UIView {
     return value(forKey: "_contentMargin") as? CGFloat ?? 20
   }
 
+  @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
+  public func setCornerRadius(_ cornerRadius: CGFloat, corners: CACornerMask = .all) {
+    if #available(iOS 26.0, *) {
+      let radius: UICornerRadius = .fixed(cornerRadius)
+      if corners == .all {
+        cornerConfiguration = .corners(radius: radius)
+      } else {
+        cornerConfiguration = .corners(
+          topLeftRadius: corners.contains(.topLeft) ? radius : nil,
+          topRightRadius: corners.contains(.topRight) ? radius : nil,
+          bottomLeftRadius: corners.contains(.bottomLeft) ? radius : nil,
+          bottomRightRadius: corners.contains(.bottomRight) ? radius : nil
+        )
+      }
+    } else {
+      layer.maskedCorners = corners
+      layer.cornerCurve = .continuous
+      layer.cornerRadius = cornerRadius
+    }
+  }
+
   public func viewToResepectLayoutMargins() -> UIView {
     if preservesSuperviewLayoutMargins, let superview {
       return superview.viewToResepectLayoutMargins()
