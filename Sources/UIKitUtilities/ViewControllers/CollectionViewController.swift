@@ -91,10 +91,9 @@ open class CollectionViewController: UIViewController {
     super.viewWillTransition(to: size, with: coordinator)
 
     if invalidatesLayoutOnViewWillTransition {
-      if #available(iOS 13.0, *), collectionViewLayout is UICollectionViewCompositionalLayout {
-        return
+      coordinator.animate { _ in
+        self.collectionViewLayout.invalidateLayout()
       }
-      collectionViewLayout.invalidateLayout()
     }
   }
 }
