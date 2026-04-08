@@ -16,8 +16,6 @@ extension UICollectionView {
 
   public typealias CellProvider<Item> = (UICollectionView, IndexPath, Item) -> UICollectionViewCell?
 
-  public static let elementKindSectionBackground: String = "UICollectionElementKindSectionBackground"
-
   @inlinable
   public convenience init(collectionViewLayout: UICollectionViewLayout) {
     self.init(frame: .zero, collectionViewLayout: collectionViewLayout)
