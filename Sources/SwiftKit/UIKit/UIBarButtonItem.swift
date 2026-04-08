@@ -32,32 +32,30 @@ extension UIBarButtonItem {
 
   // MARK: Action Support
 
-  public convenience init(image: UIImage?, style: Style, primaryAction: Action?) {
-    self.init(image: image, style: style, target: nil, action: nil)
-    bc.primaryAction = primaryAction
-  }
-
-  public convenience init(title: String?, style: Style, primaryAction: Action?) {
-    self.init(title: title, style: style, target: nil, action: nil)
-    bc.primaryAction = primaryAction
-  }
-
+  @available(iOS, deprecated: 14.0)
+  @available(tvOS, deprecated: 14.0)
   public convenience init(systemItem: SystemItem, primaryAction: Action?) {
     self.init(systemItem: systemItem, target: nil, action: nil)
     bc.primaryAction = primaryAction
   }
 
-  @available(*, deprecated, message: "Use `bc.primaryAction` instead.")
-  public var _primaryAction: Action? {
-    get { return bc.primaryAction }
-    set { bc.primaryAction = newValue }
+  @available(iOS, deprecated: 14.0)
+  @available(tvOS, deprecated: 14.0)
+  public convenience init(title: String? = nil, image: UIImage? = nil, primaryAction: Action?) {
+    self.init()
+    self.title = title
+    self.image = image
+    bc.primaryAction = primaryAction
   }
 }
 
 private var primaryActionKey: Void?
+
 extension BackwardCompatibility where Base: UIBarButtonItem {
 
-  public var primaryAction: Action? {
+  @available(iOS, deprecated: 14.0)
+  @available(tvOS, deprecated: 14.0)
+  @MainActor public var primaryAction: Action? {
     get { return associatedObject(forKey: &primaryActionKey, with: base) }
     nonmutating set {
       let oldValue = primaryAction
