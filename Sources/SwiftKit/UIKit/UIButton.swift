@@ -56,17 +56,29 @@ extension UIButton {
     }
   }
 
+  @available(iOS 14.0, *)
   @inlinable
-  public convenience init(type: ButtonType = .custom, image: UIImage? = nil, title: String? = nil, target: AnyObject? = nil, action: Selector? = nil) {
+  public convenience init(type: ButtonType = .system, title: String? = nil, image: UIImage? = nil, primaryAction: UIAction?) {
     self.init(type: type)
-    setImage(image, for: .normal)
     setTitle(title, for: .normal)
+    setImage(image, for: .normal)
+    if let primaryAction {
+      addAction(primaryAction, for: .primaryActionTriggered)
+    }
+  }
+
+  @inlinable
+  public convenience init(type: ButtonType = .system, title: String? = nil, image: UIImage? = nil, target: Any?, action: Selector?) {
+    self.init(type: type)
+    setTitle(title, for: .normal)
+    setImage(image, for: .normal)
     if let target, let action {
       addTarget(target, action: action, for: .touchUpInside)
     }
   }
 
-  public convenience init(type: ButtonType, primaryAction: Action?) {
+  @inlinable
+  public convenience init(type: ButtonType = .system, primaryAction: Action?) {
     self.init(type: type)
     bc.primaryAction = primaryAction
   }
