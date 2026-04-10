@@ -12,7 +12,7 @@ import SwiftKit
 final class FilterItemView: UIView, UIContentView {
 
   private static var chevronDownImage: UIImage? {
-    return UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(textStyle: .emphasizedBody, scale: .small))
+    return UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(font: nameFont, scale: .medium))
   }
 
   static let baseButtonConfiguration: UIButton.Configuration = {
@@ -22,7 +22,6 @@ final class FilterItemView: UIView, UIContentView {
       configuration.cornerStyle = .capsule
     } else {
       configuration = .tinted()
-      configuration.imageColorTransformer = .init { _ in .tertiaryLabel }
       configuration.baseForegroundColor = .label
       configuration.baseBackgroundColor = .clear
       configuration.background.visualEffect = UIBlurEffect(style: .systemMaterial)
@@ -30,7 +29,8 @@ final class FilterItemView: UIView, UIContentView {
       configuration.background.cornerRadius = 10
     }
     configuration.buttonSize = .mini
-    configuration.imagePadding = 4
+    configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(font: nameFont, scale: .medium)
+    configuration.imagePadding = 2
     configuration.imagePlacement = .trailing
     return configuration
   }()
@@ -75,22 +75,42 @@ final class FilterItemView: UIView, UIContentView {
   init(configuration: FilterItemContentConfiguration) {
     buttonConfiguration = Self.baseButtonConfiguration
     button = UIButton(configuration: buttonConfiguration)
-    button.configurationUpdateHandler = { button in
-      var configuration = button.configuration!
-      if button.isSelected {
-        // Style for filled
-        configuration.imageColorTransformer = .init { _ in .tertiaryLabel.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)) }
-        configuration.baseForegroundColor = .white
-        configuration.baseBackgroundColor = nil
-      } else {
-        configuration.imageColorTransformer = .init { _ in .tertiaryLabel }
-        configuration.baseForegroundColor = .label
-        configuration.baseBackgroundColor = .clear
-      }
-      button.configuration = configuration
-    }
     _configuration = configuration
     super.init(frame: .zero)
+
+    button.configurationUpdateHandler = { [unowned self] button in
+      var configuration = buttonConfiguration
+      if button.isSelected {
+        if #available(iOS 26.0, *) {
+          switch _configuration.item.configuration {
+          case .toggle:
+            break
+          case .selection:
+            // imageColorTransformer doesn't work on iOS 26 glass. So we reset to the original version after tinting manually.
+            configuration.image = Self.chevronDownImage
+          }
+        } else {
+          configuration.baseForegroundColor = .white
+          configuration.baseBackgroundColor = nil
+        }
+        configuration.imageColorTransformer = .init { _ in .tertiaryLabel.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark)) }
+      } else {
+        if #available(iOS 26.0, *) {
+          switch _configuration.item.configuration {
+          case .toggle:
+            break
+          case .selection:
+            // baseForegroundColor & imageColorTransformer don't work on iOS 26 glass. So we tint manually.
+            configuration.image = Self.chevronDownImage?.withTintColor(.tertiaryLabel, renderingMode: .alwaysOriginal)
+          }
+        } else {
+          configuration.baseForegroundColor = .label
+          configuration.baseBackgroundColor = .clear
+        }
+        configuration.imageColorTransformer = .init { _ in .tertiaryLabel }
+      }
+      buttonConfiguration = configuration
+    }
 
     reloadData()
     addSubview(button)
@@ -198,7 +218,12 @@ final class FilterItemView: UIView, UIContentView {
     case .toggle:
       newButtonConfiguration.image = nil
     case .selection:
-      newButtonConfiguration.image = Self.chevronDownImage
+      if #available(iOS 26.0, *), !item.isSelected {
+        // imageColorTransformer doesn't work on iOS 26 glass. So we tint manually.
+        newButtonConfiguration.image = Self.chevronDownImage?.withTintColor(.tertiaryLabel, renderingMode: .alwaysOriginal)
+      } else {
+        newButtonConfiguration.image = Self.chevronDownImage
+      }
     }
     buttonConfiguration = newButtonConfiguration
     button.isSelected = item.isSelected
