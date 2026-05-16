@@ -191,6 +191,11 @@ extension UIDevice {
     case "iPhone17,4":              return "iPhone 16 Plus"
     case "iPhone17,5":              return "iPhone 16e"
 
+    case "iPhone18,1":              return "iPhone 17 Pro"
+    case "iPhone18,2":              return "iPhone 17 Pro Max"
+    case "iPhone18,3":              return "iPhone 17"
+    case "iPhone18,4":              return "iPhone Air"
+
 
       /* iPod */
     case "iPod1,1":                 return "iPod touch"
@@ -307,10 +312,10 @@ extension UIDevice {
 
     case "iPad16,1":                return "iPad mini (A17 Pro) (7th generation)" // WiFi
     case "iPad16,2":                return "iPad mini (A17 Pro) (7th generation)" // WiFi + Cellular
-    case "iPad16,3":                return "iPad Pro 11-inch (M4) (5th generation)"
-    case "iPad16,4":                return "iPad Pro 11-inch (M4) (5th generation)"
-    case "iPad16,5":                return "iPad Pro 13-inch (M4) (7th generation)"
-    case "iPad16,6":                return "iPad Pro 13-inch (M4) (7th generation)"
+    case "iPad16,3":                return "iPad Pro 11-inch (M4) (5th generation)" // WiFi
+    case "iPad16,4":                return "iPad Pro 11-inch (M4) (5th generation)" // WiFi + Cellular
+    case "iPad16,5":                return "iPad Pro 13-inch (M4) (7th generation)" // WiFi
+    case "iPad16,6":                return "iPad Pro 13-inch (M4) (7th generation)" // WiFi + Cellular
 
 
       /* Apple TV */
@@ -372,18 +377,33 @@ extension UIDevice {
     case "Watch6,15":               return "Apple Watch Series 8, 45mm" // GPS
     case "Watch6,16":               return "Apple Watch Series 8, 41mm" // GPS + Cellular
     case "Watch6,17":               return "Apple Watch Series 8, 45mm" // GPS + Cellular
+
     case "Watch6,18":               return "Apple Watch Ultra"
 
     case "Watch7,1":                return "Apple Watch Series 9, 41mm" // GPS
     case "Watch7,2":                return "Apple Watch Series 9, 45mm" // GPS
     case "Watch7,3":                return "Apple Watch Series 9, 41mm" // GPS + Cellular
     case "Watch7,4":                return "Apple Watch Series 9, 45mm" // GPS + Cellular
+
     case "Watch7,5":                return "Apple Watch Ultra 2"
 
     case "Watch7,8":                return "Apple Watch Series 10, 42mm" // GPS
     case "Watch7,9":                return "Apple Watch Series 10, 46mm" // GPS
     case "Watch7,10":               return "Apple Watch Series 10, 42mm" // GPS + Cellular
     case "Watch7,11":               return "Apple Watch Series 10, 46mm" // GPS + Cellular
+
+    case "Watch7,12":               return "Apple Watch Ultra 3"
+
+    case "Watch7,13":               return "Apple Watch SE 3, 40mm"
+    case "Watch7,14":               return "Apple Watch SE 3, 44mm"
+    case "Watch7,15":               return "Apple Watch SE 3, 40mm" // GPS + Cellular
+    case "Watch7,16":               return "Apple Watch SE 3, 44mm" // GPS + Cellular
+
+    case "Watch7,17":               return "Apple Watch Series 11, 42mm"
+    case "Watch7,18":               return "Apple Watch Series 11, 46mm"
+    case "Watch7,19":               return "Apple Watch Series 11, 42mm" // GPS + Celllular
+    case "Watch7,20":               return "Apple Watch Series 11, 46mm" // GPS + Celllular
+
 
       /* HomePod */
     case "AudioAccessory1,1":       return "HomePod"
