@@ -139,6 +139,26 @@ extension Storage where Store: PropertyListStore {
 
   public init<T: PropertyListObject>(
     _ key: String,
+    store: Store = .standard,
+    get: ((Store, String) -> Value)? = nil,
+    set: ((Store, String, Value) -> Void)? = nil
+  ) where Value == T?, Store == UserDefaults {
+    self.key = key
+    self.store = store
+    self.get = get ?? { store, key in
+      return store[key] as T?
+    }
+    self.set = set ?? { store, key, value in
+      if let value {
+        store.set(value, forKey: key)
+      } else {
+        store.set(nil as Any?, forKey: key)
+      }
+    }
+  }
+
+  public init<T: PropertyListObject>(
+    _ key: String,
     store: Store = UserDefaults.standard
   ) where Value == T? {
     self.key = key
