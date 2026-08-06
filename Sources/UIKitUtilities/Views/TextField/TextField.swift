@@ -46,13 +46,19 @@ extension TextField {
   }
    */
 
+  public enum InsetsReference {
+
+    case none
+    case layoutMargins(UIRectEdge)
+  }
+
   public struct ViewLayoutAttributes {
 
-    public var overrideWidth: CGFloat?
+    public var width: CGFloat?
 
-    public var overrideHeight: CGFloat?
+    public var height: CGFloat?
 
-    /// Take precedence over `overrideHeight` if value is `.fill`
+    /// `height` is ignored if this property is `.fill`
     public var verticalAlignment: ContentVerticalAlignment?
 
     /// The space between the overlay view and the edge.
@@ -69,12 +75,14 @@ extension TextField {
 // If overlay view exists, the spacing or inset is 0
 // H:|-0-[leftView]-0-[text]-0-[rightView]-0-|
 
-// H:|-insets.left-[leftView]-layoutAttributes.spacing-[text]-layoutAttributes.spacing-[rightView]-insets.right-|
+// H:|-insets.left-[leftView]-leftLayoutAttributes.padding-[text]-rightLayoutAttributes.padding-[rightView]-insets.right-|
 @IBDesignable
 open class TextField: UITextField {
 
   /// The custom distance that the content is inset from edges (text or overlay views if they exist).
-  open var insets: NSDirectionalEdgeInsets = .zero
+  open var insets: UIEdgeInsets = .zero
+
+  open var insetsReference: InsetsReference = .none
 
   open var leftViewLayoutAttributes: ViewLayoutAttributes = .init()
 
@@ -126,10 +134,10 @@ open class TextField: UITextField {
   }
 
   private func apply(_ layoutAttributes: ViewLayoutAttributes, to viewRect: inout CGRect) {
-    if let width = layoutAttributes.overrideWidth {
+    if let width = layoutAttributes.width {
       viewRect.size.width = width
     }
-    if let height = layoutAttributes.overrideHeight {
+    if let height = layoutAttributes.height {
       viewRect.size.height = height
     }
     if let verticalAlignment = layoutAttributes.verticalAlignment {
@@ -150,15 +158,26 @@ open class TextField: UITextField {
   }
 
   public func resolvedInsets() -> UIEdgeInsets {
-    let insets = insets
-    switch effectiveUserInterfaceLayoutDirection {
-    case .leftToRight:
-      return UIEdgeInsets(top: insets.top, left: insets.leading, bottom: insets.bottom, right: insets.trailing)
-    case .rightToLeft:
-      return UIEdgeInsets(top: insets.top, left: insets.trailing, bottom: insets.bottom, right: insets.leading)
-    @unknown default:
-      return UIEdgeInsets(top: insets.top, left: insets.leading, bottom: insets.bottom, right: insets.trailing)
+    var insets = insets
+    switch insetsReference {
+    case .none:
+      break
+    case .layoutMargins(let edges):
+      let layoutMargins = layoutMargins
+      if edges.contains(.top) {
+        insets.top += layoutMargins.top
+      }
+      if edges.contains(.left) {
+        insets.left += layoutMargins.left
+      }
+      if edges.contains(.bottom) {
+        insets.bottom += layoutMargins.bottom
+      }
+      if edges.contains(.right) {
+        insets.right += layoutMargins.right
+      }
     }
+    return insets
   }
 
   public func setBecomesFirstResponderOnClearButtonTap(_ becomesFirstResponderOnClearButtonTap: Bool) {
@@ -190,52 +209,32 @@ open class TextField: UITextField {
 
 extension TextField {
 
-  @IBInspectable
-  public var topInset: CGFloat {
+  @IBInspectable public var topInset: CGFloat {
     get { return insets.top }
     set { insets.top = newValue }
   }
 
-  @IBInspectable
-  public var leadingInset: CGFloat {
-    get { return insets.leading }
-    set { insets.leading = newValue }
+  @IBInspectable public var leftInset: CGFloat {
+    get { return insets.left }
+    set { insets.left = newValue }
   }
 
-  @IBInspectable
-  public var bottomInset: CGFloat {
+  @IBInspectable public var bottomInset: CGFloat {
     get { return insets.bottom }
     set { insets.bottom = newValue }
   }
 
-  @IBInspectable
-  public var trailingInset: CGFloat {
-    get { return insets.trailing }
-    set { insets.trailing = newValue }
+  @IBInspectable public var rightInset: CGFloat {
+    get { return insets.right }
+    set { insets.right = newValue }
   }
 
-  @available(*, deprecated)
-  @IBInspectable
-  public var leftInset: CGFloat {
-    get { return insets.leading }
-    set { insets.leading = newValue }
-  }
-
-  @available(*, deprecated)
-  @IBInspectable
-  public var rightInset: CGFloat {
-    get { return insets.trailing }
-    set { insets.trailing = newValue }
-  }
-
-  @IBInspectable
-  public var leftViewPadding: CGFloat {
+  @IBInspectable public var leftViewPadding: CGFloat {
     get { return leftViewLayoutAttributes.padding }
     set { leftViewLayoutAttributes.padding = newValue }
   }
 
-  @IBInspectable
-  public var rightViewPadding: CGFloat {
+  @IBInspectable public var rightViewPadding: CGFloat {
     get { return rightViewLayoutAttributes.padding }
     set { rightViewLayoutAttributes.padding = newValue }
   }
