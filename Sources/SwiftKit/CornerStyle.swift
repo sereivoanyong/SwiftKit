@@ -7,7 +7,7 @@
 
 import CoreGraphics
 
-public enum CornerStyle {
+public enum CornerStyle: Hashable, Sendable {
 
   case fixed(CGFloat)
   case fractional(CGFloat)

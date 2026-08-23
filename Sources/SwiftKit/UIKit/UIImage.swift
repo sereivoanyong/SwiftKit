@@ -14,7 +14,7 @@ extension UIImage: _UIImageProtocol {
 
 extension _UIImageProtocol where Self == UIImage {
 
-  public init(size: CGSize, opaque: Bool, scale: CGFloat, actions: (CGContext) -> Void) {
+  public init(size: CGSize, opaque: Bool = false, scale: CGFloat = 0, actions: (CGContext) -> Void) {
     UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
     let context = UIGraphicsGetCurrentContext()!
     actions(context)
@@ -23,38 +23,32 @@ extension _UIImageProtocol where Self == UIImage {
     UIGraphicsEndImageContext()
   }
 
-  public init(color: UIColor, size: CGSize = CGSize(width: 1, height: 1), cornerRadius: CGFloat = 0) {
-    self.init(size: size, opaque: false, scale: UIScreen.main.scale) { context in
-      context.addPath(CGPath(roundedRect: CGRect(origin: .zero, size: size), cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil))
+  public init(color: UIColor, size: CGSize, opaque: Bool = false, scale: CGFloat = 0, cornerStyle: CornerStyle = .fixed(0)) {
+    self.init(size: size, opaque: opaque, scale: scale) { context in
+      let rect = CGRect(origin: .zero, size: size)
+      let cornerRadius = cornerStyle.resolvedRadius(with: rect)
+      context.addPath(CGPath(roundedRect: rect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil))
       context.closePath()
       context.setFillColor(color.cgColor)
       context.fillPath()
     }
   }
 
-  @available(iOS 13.0, *)
-  public init(dynamicProvider: (UITraitCollection) -> UIImage) {
-    let scaleTraitCollection = UITraitCollection.current
-
-    let lightUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .light)
-    let darkUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
-
-    var lightImage = dynamicProvider(lightUnscaledTraitCollection)
-    if let configuration = lightImage.configuration {
-      lightImage = lightImage.withConfiguration(configuration.withTraitCollection(lightUnscaledTraitCollection))
+  public init(dynamicColor: UIColor, size: CGSize, opaque: Bool = false, scale: CGFloat = 0, cornerStyle: CornerStyle = .fixed(0)) {
+    self.init(size: size, opaque: opaque, scale: scale) { traitCollection, context in
+      let rect = CGRect(origin: .zero, size: size)
+      let cornerRadius = cornerStyle.resolvedRadius(with: rect)
+      context.addPath(CGPath(roundedRect: rect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil))
+      context.closePath()
+      context.setFillColor(dynamicColor.resolvedColor(with: traitCollection).cgColor)
+      context.fillPath()
     }
-    var darkImage = dynamicProvider(darkUnscaledTraitCollection)
-    if let configuration = darkImage.configuration {
-      darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkUnscaledTraitCollection))
-    }
-    lightImage.imageAsset!.register(darkImage, with: UITraitCollection(traitsFrom: [scaleTraitCollection, darkUnscaledTraitCollection]))
-    self = lightImage
   }
 
   @available(iOS 13.0, *)
-  public init(size: CGSize, opaque: Bool, scale: CGFloat?, dynamicActions: (UITraitCollection, CGContext) -> Void) {
+  public init(size: CGSize, opaque: Bool = false, scale: CGFloat = 0, dynamicActions: (UITraitCollection, CGContext) -> Void) {
     self.init { traitCollection in
-      UIGraphicsBeginImageContextWithOptions(size, opaque, scale ?? traitCollection.displayScale)
+      UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
       let context = UIGraphicsGetCurrentContext()!
       dynamicActions(traitCollection, context)
       let image = UIGraphicsGetImageFromCurrentImageContext()!
@@ -62,34 +56,39 @@ extension _UIImageProtocol where Self == UIImage {
       return image
     }
   }
-  
-  // https://gist.github.com/timonus/8b4feb47eccb6dde47ca6320d8fc6b11#gistcomment-3176210
+
+  @available(iOS 13.0, *)
+  public init(dynamicProvider: (UITraitCollection) -> UIImage) {
+    let lightTraitCollection = UITraitCollection(userInterfaceStyle: .light)
+    let darkTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+
+    var lightImage = dynamicProvider(lightTraitCollection)
+    if let configuration = lightImage.configuration {
+      lightImage = lightImage.withConfiguration(configuration.withTraitCollection(lightTraitCollection))
+    }
+    var darkImage = dynamicProvider(darkTraitCollection)
+    if let configuration = darkImage.configuration {
+      darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkTraitCollection))
+    }
+    lightImage.imageAsset?.register(darkImage, with: UITraitCollection(traitsFrom: [darkTraitCollection, UITraitCollection(displayScale: darkImage.scale)]))
+    self = lightImage
+  }
+
   public init(light: @autoclosure () -> UIImage, dark: @autoclosure () -> UIImage) {
     if #available(iOS 13.0, *) {
-      let scaleTraitCollection = UITraitCollection.current
-      
-      let lightUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .light)
-      let darkUnscaledTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
-      
-      let lightScaledTraitCollection = UITraitCollection(traitsFrom: [scaleTraitCollection, lightUnscaledTraitCollection])
-      let darkScaledTraitCollection = UITraitCollection(traitsFrom: [scaleTraitCollection, darkUnscaledTraitCollection])
-      
-      var image: UIImage!
-      lightScaledTraitCollection.performAsCurrent {
-        image = light()
-        if let configuration = image.configuration {
-          image = image.withConfiguration(configuration.withTraitCollection(lightUnscaledTraitCollection))
-        }
+      let lightTraitCollection = UITraitCollection(userInterfaceStyle: .light)
+      let darkTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+
+      var lightImage = light()
+      if let configuration = lightImage.configuration {
+        lightImage = lightImage.withConfiguration(configuration.withTraitCollection(lightTraitCollection))
       }
-      var darkImage: UIImage!
-      darkScaledTraitCollection.performAsCurrent {
-        darkImage = dark()
-        if let configuration = darkImage.configuration {
-          darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkUnscaledTraitCollection))
-        }
+      var darkImage = dark()
+      if let configuration = darkImage.configuration {
+        darkImage = darkImage.withConfiguration(configuration.withTraitCollection(darkTraitCollection))
       }
-      image.imageAsset!.register(darkImage, with: darkScaledTraitCollection)
-      self = image
+      lightImage.imageAsset?.register(darkImage, with: UITraitCollection(traitsFrom: [darkTraitCollection, UITraitCollection(displayScale: darkImage.scale)]))
+      self = lightImage
     } else {
       self = light()
     }

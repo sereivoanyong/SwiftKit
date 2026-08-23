@@ -16,7 +16,7 @@ extension UIButton {
     }
     var backgroundImage: UIImage
     if cornerRadius > 0 {
-      backgroundImage = UIImage(color: color, size: CGSize(cornerRadius * 2), cornerRadius: cornerRadius)
+      backgroundImage = UIImage(color: color, size: CGSize(cornerRadius * 2), cornerStyle: .fixed(cornerRadius))
         .resizableImage(withCapInsets: UIEdgeInsets(cornerRadius))
     } else {
       backgroundImage = UIImage(color: color, size: CGSize(2))
