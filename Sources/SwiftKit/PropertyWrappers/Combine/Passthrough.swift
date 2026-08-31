@@ -1,11 +1,11 @@
 //
 //  Passthrough.swift
-//  SwiftKit
 //
 //  Created by Sereivoan Yong on 2/1/25.
 //
 
-import Foundation
+#if canImport(Combine)
+
 import Combine
 
 @available(iOS 13.0, *)
@@ -30,3 +30,5 @@ final public class Passthrough<T: Equatable> {
     return subject
   }
 }
+
+#endif

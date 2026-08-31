@@ -4,8 +4,6 @@
 //  Created by Sereivoan Yong on 11/29/20.
 //
 
-import SwiftKit
-
 @propertyWrapper
 public struct NeverBlank: Equatable {
   

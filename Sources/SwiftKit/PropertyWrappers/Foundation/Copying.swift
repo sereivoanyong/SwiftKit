@@ -4,6 +4,8 @@
 //  Created by Sereivoan Yong on 11/30/20.
 //
 
+#if canImport(Foundation)
+
 import Foundation
 
 @propertyWrapper
@@ -20,3 +22,5 @@ public struct Copying<Value: NSCopying> {
     set { _value = newValue.copy() as! Value }
   }
 }
+
+#endif

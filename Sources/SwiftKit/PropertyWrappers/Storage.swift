@@ -4,10 +4,6 @@
 //  Created by Sereivoan Yong on 1/31/24.
 //
 
-#if canImport(Foundation)
-
-import Foundation
-
 @propertyWrapper
 public struct Storage<Value, Store: DataStore> {
 
@@ -25,6 +21,13 @@ public struct Storage<Value, Store: DataStore> {
   public var projectedValue: Storage<Value, Store> {
     return self
   }
+}
+
+#if canImport(Foundation)
+
+import Foundation
+
+extension Storage {
 
   // MARK: Data
 

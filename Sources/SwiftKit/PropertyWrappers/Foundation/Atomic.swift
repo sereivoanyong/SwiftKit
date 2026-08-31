@@ -4,6 +4,8 @@
 //  Created by Sereivoan Yong on 11/30/20.
 //
 
+#if canImport(Foundation)
+
 import Foundation
 
 @propertyWrapper
@@ -35,3 +37,5 @@ public struct Atomic<Value> {
     lock.unlock()
   }
 }
+
+#endif

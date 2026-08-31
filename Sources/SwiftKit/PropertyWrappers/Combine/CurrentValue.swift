@@ -1,9 +1,10 @@
 //
 //  CurrentValue.swift
-//  SwiftKit
 //
 //  Created by Sereivoan Yong on 1/18/26.
 //
+
+#if canImport(Combine)
 
 import Combine
 
@@ -24,3 +25,5 @@ public struct CurrentValue<Value> {
     self.projectedValue = CurrentValueSubject(wrappedValue)
   }
 }
+
+#endif
