@@ -7,7 +7,7 @@
 import Foundation
 
 @propertyWrapper
-public struct URLEncoding: Equatable {
+public struct URLEncoding: Equatable, Sendable {
 
   public var wrappedValue: URL?
 

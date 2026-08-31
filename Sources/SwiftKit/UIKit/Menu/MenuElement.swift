@@ -42,7 +42,7 @@ extension MenuElement {
 /// An object representing a menu, action, or command.
 ///
 /// `MenuElement` defines the behavior shared by all menus, actions, and commands. You don’t create `MenuElement` objects directly. Instead, you create an appropriate object that inherits from this class, such as `Menu`, `Action`, or `Command`.
-open class MenuElement: NSObject {
+@MainActor open class MenuElement: NSObject {
 
   /// The title of the menu element.
   open var title: String?
@@ -61,6 +61,5 @@ open class MenuElement: NSObject {
     self.title = title
     self.subtitle = subtitle
     self.image = image
-//    UIMenuElement
   }
 }

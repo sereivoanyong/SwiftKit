@@ -49,7 +49,10 @@ open class WKWebViewController: UIViewController {
       if usesWebViewTitleAsNavigationTitle {
         if isViewLoaded {
           webViewTitleObservation = webView.observe(\.title, options: [.initial, .new]) { [unowned self] webView, _ in
-            navigationItem.title = webView.title
+            let `self` = self
+            MainActor.assumeIsolated {
+              self.navigationItem.title = webView.title
+            }
           }
         }
       } else {
@@ -122,12 +125,18 @@ open class WKWebViewController: UIViewController {
     ])
 
     webViewEstimatedProgressObservation = webView.observe(\.estimatedProgress, options: [.initial, .new]) { [unowned self] _, _ in
-      progressView.setProgress(Float(webView.estimatedProgress), animated: true)
+      let `self` = self
+      MainActor.assumeIsolated {
+        self.progressView.setProgress(Float(self.webView.estimatedProgress), animated: true)
+      }
     }
 
     if usesWebViewTitleAsNavigationTitle {
       webViewTitleObservation = webView.observe(\.title, options: [.initial, .new]) { [unowned self] webView, _ in
-        navigationItem.title = webView.title
+        let `self` = self
+        MainActor.assumeIsolated {
+          self.navigationItem.title = webView.title
+        }
       }
     }
 

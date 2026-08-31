@@ -39,7 +39,7 @@ open class PickerTextField<Item: Equatable>: DropdownTextField {
     set { select(newValue, updateSource: true, sendValueChangedActions: false) }
   }
 
-  open var textProvider: (Item) -> String = String.init(describing:) {
+  open var textProvider: (Item) -> String = { String(describing: $0) } {
     didSet {
       setNeedsTextProviderUpdate()
     }

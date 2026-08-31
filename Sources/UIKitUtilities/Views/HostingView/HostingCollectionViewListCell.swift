@@ -39,6 +39,6 @@ open class HostingCollectionViewListCell<RootView: UIView>: UICollectionViewList
 }
 
 @available(iOS 14.0, *)
-extension HostingCollectionViewListCell: ContentConfiguring where RootView: ContentConfiguring {
+extension HostingCollectionViewListCell: @MainActor ContentConfiguring where RootView: ContentConfiguring {
 
 }

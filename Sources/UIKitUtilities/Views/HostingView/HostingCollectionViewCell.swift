@@ -35,6 +35,6 @@ open class HostingCollectionViewCell<RootView: UIView>: UICollectionViewCell, Ho
   }
 }
 
-extension HostingCollectionViewCell: ContentConfiguring where RootView: ContentConfiguring {
+extension HostingCollectionViewCell: @MainActor ContentConfiguring where RootView: ContentConfiguring {
 
 }

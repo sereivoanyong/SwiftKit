@@ -7,7 +7,7 @@
 
 import UIKit
 
-private var titleTextAttributesBeforeActivityIndicatorKey: Void?
+@MainActor private var titleTextAttributesBeforeActivityIndicatorKey: Void?
 
 extension UIBarButtonItem: UIActivityIndicatorContainer {
 

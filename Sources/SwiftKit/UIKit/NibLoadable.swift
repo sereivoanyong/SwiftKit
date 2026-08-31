@@ -17,7 +17,7 @@ public protocol NibLoadableView: UIView, NibLoadable {
   static var instantiatingIndexInNib: Int { get }
 }
 
-private var cachedNibsKey: Void?
+@MainActor private var cachedNibsKey: Void?
 
 extension NibLoadable {
 
@@ -29,11 +29,11 @@ extension NibLoadable {
     return Bundle(for: self)
   }
 
-  public static func nib() -> UINib {
+  @MainActor public static func nib() -> UINib {
     return UINib(nibName: nibName, bundle: bundleForNib)
   }
 
-  public static func nib(associatedWith object: AnyObject) -> UINib {
+  @MainActor public static func nib(associatedWith object: AnyObject) -> UINib {
     let nibName = nibName
     let associatedNibs = UINib.associatedNibs(with: object)
     if let associatedNib = associatedNibs?[nibName] {
@@ -49,7 +49,7 @@ extension NibLoadable {
     return nib
   }
 
-  public static func loadFromNib(owner: Any? = nil, options: [UINib.OptionsKey: Any]? = nil, index: Int? = nil) -> Self where Self: UIView {
+  @MainActor public static func loadFromNib(owner: Any? = nil, options: [UINib.OptionsKey: Any]? = nil, index: Int? = nil) -> Self where Self: UIView {
     let nib = nib()
     let index = index ?? (self as? NibLoadableView.Type)?.instantiatingIndexInNib ?? 0
     return nib.instantiate(withOwner: owner, options: options)[index] as! Self

@@ -25,7 +25,7 @@ extension UIApplication {
   }
 
   @discardableResult
-  public func openIfPossible(_ url: URL?, options: [OpenExternalURLOptionsKey: Any]? = nil, completion: ((Bool) -> Void)? = nil) -> Bool {
+  public func openIfPossible(_ url: URL?, options: [OpenExternalURLOptionsKey: Any]? = nil, completion: (@Sendable (Bool) -> Void)? = nil) -> Bool {
     guard let url, canOpenURL(url) else {
       return false
     }
@@ -34,7 +34,7 @@ extension UIApplication {
   }
 
   @discardableResult
-  public func openAppOnAppStore(identifier: String, completion: ((Bool) -> Void)? = nil) -> Bool {
+  public func openAppOnAppStore(identifier: String, completion: (@Sendable (Bool) -> Void)? = nil) -> Bool {
     return openIfPossible(URL(string: "itms-apps://itunes.apple.com/app/id\(identifier)")!, completion: completion)
   }
 }

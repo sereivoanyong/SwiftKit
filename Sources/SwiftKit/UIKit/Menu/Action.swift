@@ -23,12 +23,12 @@ extension Action {
   }
 }
 
-public typealias ActionHandler = (Action) -> Void
+public typealias ActionHandler = @MainActor (Action) -> Void
 
 /// A menu element that performs its action in a closure.
 ///
 /// Create an `Action` object when you want a menu element that performs its action in a closure.
-open class Action: MenuElement {
+@MainActor open class Action: MenuElement {
 
   /// The unique identifier for the action.
   public let identifier: Identifier
@@ -59,7 +59,6 @@ open class Action: MenuElement {
     self.state = state
     self.handler = handler
     super.init(title: title, subtitle: subtitle, image: image)
-//    UIAction
   }
 
   @objc open func performAction(_ sender: Any) {

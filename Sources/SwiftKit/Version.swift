@@ -7,7 +7,7 @@
 import Foundation
 
 /// Represents a version aligning to [SemVer 2.0.0](http://semver.org).
-public struct Version: RawRepresentable {
+public struct Version: RawRepresentable, Sendable {
 
   public let major: Int
 

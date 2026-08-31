@@ -47,13 +47,15 @@ extension UIViewController {
     set { setAssociatedObject(newValue, forKey: &Self.navigationGradientViewKey, with: self) }
   }
 
-  public func setContentScrollViewForNavigationGradient(_ scrollView: UIScrollView, maximumHeightProvider: @escaping () -> CGFloat) {
+  public func setContentScrollViewForNavigationGradient(_ scrollView: UIScrollView, maximumHeightProvider: @escaping @MainActor () -> CGFloat) {
     offsetObservation = scrollView.observe(\.contentOffset) { [weak self] scrollView, _ in
       guard let self else { return }
-      let offset = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
-      let maximumHeight = maximumHeightProvider()
-      let alpha = min(max(offset / maximumHeight, 0), 1)
-      navigationGradientView.alpha = 1 - alpha
+      MainActor.assumeIsolated {
+        let offset = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
+        let maximumHeight = maximumHeightProvider()
+        let alpha = min(max(offset / maximumHeight, 0), 1)
+        navigationGradientView.alpha = 1 - alpha
+      }
     }
   }
 }

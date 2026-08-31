@@ -98,9 +98,12 @@ open class StackTableView: UIScrollView {
     stackViewDimensionConstraint.isActive = true
 
     stackViewAxisObservation = stackView.observe(\.axis) { [unowned self] _, _ in
-      stackViewDimensionConstraint.isActive = false
-      stackViewDimensionConstraint = stackViewDimensionConstraint(for: axis)
-      stackViewDimensionConstraint.isActive = true
+      let `self` = self
+      MainActor.assumeIsolated {
+        self.stackViewDimensionConstraint.isActive = false
+        self.stackViewDimensionConstraint = self.stackViewDimensionConstraint(for: self.axis)
+        self.stackViewDimensionConstraint.isActive = true
+      }
     }
   }
 

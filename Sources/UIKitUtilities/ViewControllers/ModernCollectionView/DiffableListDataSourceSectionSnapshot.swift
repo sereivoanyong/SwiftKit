@@ -8,7 +8,7 @@
 import UIKit
 
 @available(iOS 15.0, *)
-public struct DiffableListDataSourceSectionSnapshot<Item: Identifiable> {
+public struct DiffableListDataSourceSectionSnapshot<Item: Identifiable> where Item.ID: Hashable & Sendable {
 
   @usableFromInline
   var base: NSDiffableDataSourceSectionSnapshot<Item.ID>

@@ -16,16 +16,16 @@ import SwiftKit
   @MainActor func configure(_ configuration: Configuration)
 }
 
-private var configurationKey: Void?
+@MainActor private var configurationKey: Void?
 
 @available(iOS 14.0, *)
 extension ContentView {
 
-  @MainActor var _configurationIfSet: Configuration? {
+  var _configurationIfSet: Configuration? {
     return associatedValue(forKey: &configurationKey, with: self)
   }
 
-  @MainActor public var _configuration: Configuration {
+  public var _configuration: Configuration {
     get {
       return associatedValue(forKey: &configurationKey, with: self)!
     }
@@ -36,7 +36,7 @@ extension ContentView {
     }
   }
 
-  @MainActor public var configuration: UIContentConfiguration {
+  public var configuration: UIContentConfiguration {
     get {
       return associatedValue(forKey: &configurationKey, with: self)!
     }
@@ -47,7 +47,7 @@ extension ContentView {
     }
   }
 
-  @MainActor public func supports(_ configuration: UIContentConfiguration) -> Bool {
+  public func supports(_ configuration: UIContentConfiguration) -> Bool {
     return configuration is Configuration
   }
 }

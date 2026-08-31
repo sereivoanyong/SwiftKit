@@ -25,7 +25,9 @@ open class PasswordTextField: TextField {
     button.setImage(Self.isSecureTextEntryOffImage, for: .selected)
     button.isSelected = isSecureTextEntry
     isSecureTextEntryObservation = observe(\.isSecureTextEntry) { textField, _ in
-      button.isSelected = textField.isSecureTextEntry
+      MainActor.assumeIsolated {
+        button.isSelected = textField.isSecureTextEntry
+      }
     }
     button.addTarget(self, action: #selector(toggleIsSecureTextEntry(_:)), for: .touchUpInside)
     button.translatesAutoresizingMaskIntoConstraints = false

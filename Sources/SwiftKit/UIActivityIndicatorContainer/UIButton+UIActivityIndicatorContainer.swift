@@ -8,9 +8,9 @@
 import UIKit
 
 @available(iOS 15.0, *)
-private var configurationBeforeActivityIndicatorViewKey: Void?
+@MainActor private var configurationBeforeActivityIndicatorViewKey: Void?
 
-private var contentBeforeActivityIndicatorViewKey: Void?
+@MainActor private var contentBeforeActivityIndicatorViewKey: Void?
 
 extension UIButton: UIActivityIndicatorContainer {
 

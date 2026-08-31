@@ -17,7 +17,7 @@ public enum ActivityIndicatorUserInteractionLevel {
   case window(UIWindow? = nil)
 }
 
-public protocol UIActivityIndicatorContainer: NSObjectProtocol {
+@MainActor public protocol UIActivityIndicatorContainer: NSObjectProtocol {
 
   var containerViewForActivityIndicator: UIView? { get }
 
@@ -36,9 +36,9 @@ public protocol UIActivityIndicatorContainer: NSObjectProtocol {
   func willHideActivityIndicator(_ activityIndicatorView: UIActivityIndicatorView)
 }
 
-private var activityIndicatorConfigurationHandlerKey: Void?
-private var userInteractionLevelKey: Void?
-private var activityIndicatorViewKey: Void?
+@MainActor private var activityIndicatorConfigurationHandlerKey: Void?
+@MainActor private var userInteractionLevelKey: Void?
+@MainActor private var activityIndicatorViewKey: Void?
 
 extension UIActivityIndicatorContainer {
 

@@ -15,7 +15,7 @@ extension DirectionalXAxisEdges where XAxisItem == NSLayoutXAxisAnchor {
   /// view.directionalXAnchors.constraints(equalTo: view2.directionalAnchors, constants: XAxisEdges<CGFloat>.zero)
   /// ```
   @inlinable
-  public func constraints(
+  @MainActor public func constraints(
     equalTo anchors: any DirectionalXAxisEdgesProtocol<NSLayoutXAxisAnchor>,
     constants: any DirectionalXAxisEdgesProtocol<CGFloat> = DirectionalXAxisEdges<CGFloat>.zero
   ) -> DirectionalXAxisEdges<NSLayoutConstraint> {
@@ -29,12 +29,12 @@ extension DirectionalXAxisEdges where XAxisItem == NSLayoutXAxisAnchor {
   /// view.directionalXAnchors == view2.directionalXAnchors
   /// ```
   @inlinable
-  public static func == (anchors: Self, otherAnchors: any DirectionalXAxisEdgesProtocol<XAxisItem>) -> DirectionalXAxisEdges<NSLayoutConstraint> {
+  @MainActor public static func == (anchors: Self, otherAnchors: any DirectionalXAxisEdgesProtocol<XAxisItem>) -> DirectionalXAxisEdges<NSLayoutConstraint> {
     return anchors.constraints(equalTo: otherAnchors)
   }
 
   @inlinable
-  public static func == <Constants: DirectionalXAxisEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> DirectionalXAxisEdges<NSLayoutConstraint> {
+  @MainActor public static func == <Constants: DirectionalXAxisEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> DirectionalXAxisEdges<NSLayoutConstraint> {
     return anchors.constraints(equalTo: attributes.otherAnchors, constants: attributes.constants)
   }
 
@@ -53,7 +53,7 @@ extension XAxisEdges where XAxisItem == NSLayoutXAxisAnchor {
   /// view.xAnchors.constraints(equalTo: view2.anchors, constants: XAxisEdges<CGFloat>.zero)
   /// ```
   @inlinable
-  public func constraints(
+  @MainActor public func constraints(
     equalTo anchors: any XAxisEdgesProtocol<NSLayoutXAxisAnchor>,
     constants: any XAxisEdgesProtocol<CGFloat> = XAxisEdges<CGFloat>.zero
   ) -> XAxisEdges<NSLayoutConstraint> {
@@ -67,12 +67,12 @@ extension XAxisEdges where XAxisItem == NSLayoutXAxisAnchor {
   /// view.xAnchors == view2.xAnchors
   /// ```
   @inlinable
-  public static func == (anchors: Self, otherAnchors: Self) -> XAxisEdges<NSLayoutConstraint> {
+  @MainActor public static func == (anchors: Self, otherAnchors: Self) -> XAxisEdges<NSLayoutConstraint> {
     return anchors.constraints(equalTo: otherAnchors)
   }
 
   @inlinable
-  public static func == <Constants: XAxisEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> XAxisEdges<NSLayoutConstraint> {
+  @MainActor public static func == <Constants: XAxisEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> XAxisEdges<NSLayoutConstraint> {
     return anchors.constraints(equalTo: attributes.otherAnchors, constants: attributes.constants)
   }
 
@@ -91,7 +91,7 @@ extension YAxisEdges where YAxisItem == NSLayoutYAxisAnchor {
   /// view.yAnchors.constraints(equalTo: view2.anchors, constants: YAxisEdges<CGFloat>.zero)
   /// ```
   @inlinable
-  public func constraints(
+  @MainActor public func constraints(
     equalTo anchors: any YAxisEdgesProtocol<NSLayoutYAxisAnchor>,
     constants: any YAxisEdgesProtocol<CGFloat> = YAxisEdges<CGFloat>.zero
   ) -> YAxisEdges<NSLayoutConstraint> {
@@ -105,12 +105,12 @@ extension YAxisEdges where YAxisItem == NSLayoutYAxisAnchor {
   /// view.yAnchors == view2.yAnchors
   /// ```
   @inlinable
-  public static func == (anchors: Self, otherAnchors: Self) -> YAxisEdges<NSLayoutConstraint> {
+  @MainActor public static func == (anchors: Self, otherAnchors: Self) -> YAxisEdges<NSLayoutConstraint> {
     return anchors.constraints(equalTo: otherAnchors)
   }
 
   @inlinable
-  public static func == <Constants: YAxisEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> YAxisEdges<NSLayoutConstraint> {
+  @MainActor public static func == <Constants: YAxisEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> YAxisEdges<NSLayoutConstraint> {
     return anchors.constraints(equalTo: attributes.otherAnchors, constants: attributes.constants)
   }
 

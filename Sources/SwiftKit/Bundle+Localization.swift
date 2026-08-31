@@ -9,7 +9,7 @@ import Foundation
 extension Locale {
 
   /// The selected locale based on the selected localization of `Bundle.main`. It is useful for formatters.
-  public fileprivate(set) static var selected: Locale! {
+  nonisolated(unsafe) public fileprivate(set) static var selected: Locale! {
     didSet {
       let selected = selected!
       for (_, handler) in autoupdatingSelectedHandlers {
@@ -18,7 +18,7 @@ extension Locale {
     }
   }
 
-  private static var autoupdatingSelectedHandlers: [UUID: (Locale) -> Void] = [:]
+  nonisolated(unsafe) private static var autoupdatingSelectedHandlers: [UUID: (Locale) -> Void] = [:]
 
   /// When the `selected` locale changes, it will reflect to the specified object at the specified key path.
   /// This is a workaround since we cannot mimic behavior of `autoupdatingCurrent`.
@@ -52,7 +52,7 @@ extension Locale {
 
 extension Bundle {
 
-  public private(set) static var mainLocalized: Bundle!
+  nonisolated(unsafe) public private(set) static var mainLocalized: Bundle!
 
   public static let selectedLocalizationsUserDefaultsKey = "BundleSelectedLocalizations"
 
@@ -73,7 +73,7 @@ extension Bundle {
     return "en"
   }
 
-  private static var selectedLocalizationKey: Void?
+  nonisolated(unsafe) private static var selectedLocalizationKey: Void?
 
   public var selectedLocalization: String! {
     get {
@@ -125,7 +125,7 @@ extension Bundle {
     }
   }
 
-  private static var selectedLocalizationBundleKey: Void?
+  nonisolated(unsafe) private static var selectedLocalizationBundleKey: Void?
 
   public private(set) var selectedLocalizationBundle: Bundle? {
     get {

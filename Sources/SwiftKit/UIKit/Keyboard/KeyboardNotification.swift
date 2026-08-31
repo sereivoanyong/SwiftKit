@@ -6,7 +6,7 @@
 
 import UIKit
 
-public struct KeyboardNotification {
+public struct KeyboardNotification: Sendable {
 
   public weak var screen: UIScreen?
   public let frameBegin: CGRect
@@ -26,7 +26,7 @@ public struct KeyboardNotification {
     isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as! Bool
   }
 
-  public func convertedKeyboardFrameEnd(_ view: UIView) -> CGRect {
+  @MainActor public func convertedKeyboardFrameEnd(_ view: UIView) -> CGRect {
     if let screen {
       return screen.coordinateSpace.convert(frameEnd, to: view)
     } else {
@@ -34,7 +34,7 @@ public struct KeyboardNotification {
     }
   }
 
-  public func animate(animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
+  @MainActor public func animate(animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
     UIView.animate(withDuration: animationDuration, delay: 0, options: animationOptions, animations: animations, completion: completion)
   }
 }

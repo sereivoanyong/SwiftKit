@@ -66,7 +66,10 @@ open class NavigationController: UINavigationController, UIGestureRecognizerDele
   open func updateProperties(from topViewController: UIViewController) {
     if #available(iOS 13.0, *) {
       overrideUserInterfaceStyleObservation = topViewController.observe(\.overrideUserInterfaceStyle, options: [.initial, .new]) { [unowned self] topViewController, _ in
-        overrideUserInterfaceStyle = topViewController.overrideUserInterfaceStyle
+        let `self` = self
+        MainActor.assumeIsolated {
+          self.overrideUserInterfaceStyle = topViewController.overrideUserInterfaceStyle
+        }
       }
     }
   }

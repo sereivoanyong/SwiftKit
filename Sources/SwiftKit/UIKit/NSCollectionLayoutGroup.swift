@@ -8,7 +8,8 @@
 import UIKit
 
 @available(iOS 13.0, *)
-@_marker public protocol __NSCollectionLayoutGroupProtocol {
+@_marker
+@MainActor public protocol __NSCollectionLayoutGroupProtocol {
 }
 
 @available(iOS 13.0, *)

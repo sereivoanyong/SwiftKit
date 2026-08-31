@@ -8,7 +8,7 @@ import UIKit
 
 extension UITableView {
 
-  public typealias CellProvider<Item> = (UITableView, IndexPath, Item) -> UITableViewCell?
+  public typealias CellProvider<Item> = @MainActor (UITableView, IndexPath, Item) -> UITableViewCell?
 
   private static var allowsHeaderViewsToFloatKey: Void?
   @objc final public var allowsHeaderViewsToFloat: Bool {

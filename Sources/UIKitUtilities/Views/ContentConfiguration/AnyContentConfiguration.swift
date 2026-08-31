@@ -11,7 +11,7 @@ import SwiftKit
 @available(iOS 14.0, *)
 public protocol AnyContentConfiguration: UIContentConfiguration {
 
-  typealias Handler = (UIView & UIContentView, Self) -> Void
+  typealias Handler = @MainActor (UIView & UIContentView, Self) -> Void
 
   var contentViewClass: (UIView & UIContentView).Type { get }
 

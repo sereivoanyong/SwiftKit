@@ -18,7 +18,7 @@ public typealias DirectionalEdgeInsets = DirectionalEdges<CGFloat>
 
 extension DirectionalEdgesProtocol where AxisItem == NSLayoutConstraint {
 
-  public var constants: DirectionalEdgeInsets {
+  @MainActor public var constants: DirectionalEdgeInsets {
     get { return map { $0.constant } }
     set { set(newValue, at: \.constant) }
   }
@@ -34,7 +34,7 @@ public typealias EdgeInsets = Edges<CGFloat>
 
 extension EdgesProtocol where AxisItem == NSLayoutConstraint {
 
-  public var constants: EdgeInsets {
+  @MainActor public var constants: EdgeInsets {
     get { return map { $0.constant } }
     set { set(newValue, at: \.constant) }
   }

@@ -143,8 +143,11 @@ open class GradientView: UIView {
 
   open override func awakeFromNib() {
     super.awakeFromNib()
-    assert(!isOpaque)
-    assert(!isUserInteractionEnabled)
+
+    MainActor.assumeIsolated {
+      assert(!isOpaque)
+      assert(!isUserInteractionEnabled)
+    }
   }
 
   private func configure(_ configuration: GradientConfiguration) {

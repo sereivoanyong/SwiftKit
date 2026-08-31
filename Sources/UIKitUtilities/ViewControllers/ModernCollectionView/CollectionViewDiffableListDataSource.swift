@@ -9,7 +9,7 @@ import UIKit
 import SwiftKit
 
 @available(iOS 15.0, *)
-open class CollectionViewDiffableListDataSource<Section: Identifiable, Item: Identifiable>: UICollectionViewDiffableDataSource<Section.ID, Item.ID> {
+open class CollectionViewDiffableListDataSource<Section: Identifiable, Item: Identifiable>: UICollectionViewDiffableDataSource<Section.ID, Item.ID> where Section.ID: Hashable & Sendable, Item.ID: Hashable & Sendable {
 
   public typealias Snapshot = DiffableListDataSourceSnapshot<Section, Item>
 

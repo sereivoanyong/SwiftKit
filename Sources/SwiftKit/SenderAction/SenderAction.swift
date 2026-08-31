@@ -6,16 +6,16 @@
 
 import UIKit
 
-final public class SenderAction<Sender: NSObjectProtocol> {
+@MainActor final public class SenderAction<Sender: NSObjectProtocol> {
 
   public typealias Identifier = UUID
 
-  public typealias Handler = (Sender) -> Void
+  public typealias Handler = @MainActor (Sender) -> Void
 
   public let identifier: Identifier
   public var handler: Handler
 
-  public init(identifier: Identifier? = nil, handler: @escaping (Sender) -> Void) {
+  public init(identifier: Identifier? = nil, handler: @escaping @MainActor (Sender) -> Void) {
     self.identifier = identifier ?? UUID()
     self.handler = handler
   }

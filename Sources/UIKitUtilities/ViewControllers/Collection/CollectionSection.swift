@@ -87,7 +87,7 @@ extension CollectionSection {
 
 @available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 14.0, *)
-public struct CollectionSection: Hashable, Identifiable {
+public struct CollectionSection: Hashable, Identifiable, @unchecked Sendable {
 
   public let id: UUID
   public let content: Content

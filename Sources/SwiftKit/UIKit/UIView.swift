@@ -83,7 +83,7 @@ extension UIView {
   }
 
   @discardableResult
-  public func addTapGestureRecognizer(configurationHandler: (UITapGestureRecognizer) -> Void = { _ in }, handler: @escaping (UITapGestureRecognizer) -> Void) -> UITapGestureRecognizer {
+  public func addTapGestureRecognizer(configurationHandler: (UITapGestureRecognizer) -> Void = { _ in }, handler: @escaping @MainActor (UITapGestureRecognizer) -> Void) -> UITapGestureRecognizer {
     isUserInteractionEnabled = true
     let tapGestureRecognizer = UITapGestureRecognizer(handler: handler)
     configurationHandler(tapGestureRecognizer)
@@ -147,7 +147,7 @@ extension UIView.AutoresizingMask {
 extension NSObjectProtocol where Self: UIView {
   
   @inlinable
-  public var withAutoLayout: Self {
+  @MainActor public var withAutoLayout: Self {
     return with(\.translatesAutoresizingMaskIntoConstraints, false)
   }
 }

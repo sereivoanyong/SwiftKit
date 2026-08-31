@@ -9,7 +9,7 @@ import UIKit
 
 extension UICollectionView {
 
-  public struct ElementKind: Hashable, RawRepresentable, Sendable {
+  public struct ElementKind: Hashable, RawRepresentable, @unchecked Sendable {
 
     public let rawValue: String
 
@@ -32,15 +32,15 @@ extension UICollectionView.ElementKind: ExpressibleByStringLiteral {
 
 extension UICollectionView.ElementKind {
 
-  public static let layoutHeader: Self = Self("UICollectionElementKindLayoutHeader")
+  @MainActor public static let layoutHeader: Self = Self("UICollectionElementKindLayoutHeader")
 
-  public static let layoutFooter: Self = Self("UICollectionElementKindLayoutFooter")
+  @MainActor public static let layoutFooter: Self = Self("UICollectionElementKindLayoutFooter")
 
-  public static let sectionHeader: Self = Self(UICollectionView.elementKindSectionHeader)
+  @MainActor public static let sectionHeader: Self = Self(UICollectionView.elementKindSectionHeader)
 
-  public static let sectionFooter: Self = Self(UICollectionView.elementKindSectionFooter)
+  @MainActor public static let sectionFooter: Self = Self(UICollectionView.elementKindSectionFooter)
 
-  public static let sectionSeparator: Self = Self("UICollectionElementKindSectionSeparator")
+  @MainActor public static let sectionSeparator: Self = Self("UICollectionElementKindSectionSeparator")
 
-  public static let sectionBackground: Self = Self("UICollectionElementKindSectionBackground")
+  @MainActor public static let sectionBackground: Self = Self("UICollectionElementKindSectionBackground")
 }

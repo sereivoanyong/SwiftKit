@@ -7,7 +7,7 @@
 import UIKit
 
 @available(iOS 13.0, *)
-extension UIAction: @retroactive Identifiable {
+extension UIAction: @retroactive @MainActor Identifiable {
 
   @inlinable
   public var id: Identifier {

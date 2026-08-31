@@ -11,9 +11,9 @@ extension WKWebView {
   public struct Request {
 
     let isFile: Bool
-    fileprivate let loadHandler: (WKWebView) -> WKNavigation?
+    fileprivate let loadHandler: @MainActor (WKWebView) -> WKNavigation?
 
-    private init(isFile: Bool = false, loadHandler: @escaping (WKWebView) -> WKNavigation?) {
+    private init(isFile: Bool = false, loadHandler: @escaping @MainActor (WKWebView) -> WKNavigation?) {
       self.isFile = isFile
       self.loadHandler = loadHandler
     }

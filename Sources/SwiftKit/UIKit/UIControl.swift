@@ -46,7 +46,7 @@ extension UIControl {
     self.actions = actions
   }
 
-  public func addAction(handler: @escaping (Action) -> Void, for events: Event) {
+  public func addAction(handler: @escaping @MainActor (Action) -> Void, for events: Event) {
     addAction(Action(handler: handler), for: events)
   }
 
@@ -70,14 +70,14 @@ extension UIControl {
   }
 
   @objc func bc_setPrimaryAction(_ primaryAction: Action?) {
-
   }
 }
 
-private var primaryActionKey: Void?
+@MainActor private var primaryActionKey: Void?
+
 extension BackwardCompatibility where Base: UIControl {
 
-  public var primaryAction: Action? {
+  @MainActor public var primaryAction: Action? {
     get { return associatedObject(forKey: &primaryActionKey, with: base) }
     nonmutating set {
       let oldValue = primaryAction

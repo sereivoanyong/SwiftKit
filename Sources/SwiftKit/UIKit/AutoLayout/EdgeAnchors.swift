@@ -28,7 +28,7 @@ extension DirectionalAxisEdges where XAxisItem == NSLayoutXAxisAnchor, YAxisItem
   /// view.directionalAnchors.constraints(equalTo: view2.directionalAnchors, constants: DirectionalEdgeInsets.zero)
   /// ```
   @inlinable
-  public func constraints(
+  @MainActor public func constraints(
     equalTo anchors: Self,
     constants: any DirectionalEdgesProtocol<CGFloat> = DirectionalEdgeInsets.zero
   ) -> DirectionalEdgeConstraints {
@@ -44,12 +44,12 @@ extension DirectionalAxisEdges where XAxisItem == NSLayoutXAxisAnchor, YAxisItem
   /// view.directionalAnchors == view2.directionalAnchors
   /// ```
   @inlinable
-  public static func == (anchors: Self, otherAnchors: Self) -> DirectionalEdgeConstraints {
+  @MainActor public static func == (anchors: Self, otherAnchors: Self) -> DirectionalEdgeConstraints {
     return anchors.constraints(equalTo: otherAnchors)
   }
 
   @inlinable
-  public static func == <Constants: DirectionalEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> DirectionalEdgeConstraints {
+  @MainActor public static func == <Constants: DirectionalEdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> DirectionalEdgeConstraints {
     return anchors.constraints(equalTo: attributes.otherAnchors, constants: attributes.constants)
   }
 
@@ -69,7 +69,7 @@ extension AxisEdges where XAxisItem == NSLayoutXAxisAnchor, YAxisItem == NSLayou
   /// view.anchors.constraints(equalTo: view2.anchors, constants: EdgeInsets.zero)
   /// ```
   @inlinable
-  public func constraints(
+  @MainActor public func constraints(
     equalTo anchors: Self,
     constants: any EdgesProtocol<CGFloat> = EdgeInsets.zero
   ) -> EdgeConstraints {
@@ -85,12 +85,12 @@ extension AxisEdges where XAxisItem == NSLayoutXAxisAnchor, YAxisItem == NSLayou
   /// view.anchors == view2.anchors
   /// ```
   @inlinable
-  public static func == (anchors: Self, otherAnchors: Self) -> EdgeConstraints {
+  @MainActor public static func == (anchors: Self, otherAnchors: Self) -> EdgeConstraints {
     return anchors.constraints(equalTo: otherAnchors)
   }
 
   @inlinable
-  public static func == <Constants: EdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> EdgeConstraints {
+  @MainActor public static func == <Constants: EdgesProtocol<CGFloat>>(anchors: Self, attributes: _EdgeAttributes<Self, Constants>) -> EdgeConstraints {
     return anchors.constraints(equalTo: attributes.otherAnchors, constants: attributes.constants)
   }
 

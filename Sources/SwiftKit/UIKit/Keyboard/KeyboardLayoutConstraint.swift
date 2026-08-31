@@ -13,14 +13,16 @@ final public class KeyboardLayoutConstraint: NSLayoutConstraint {
   public override func awakeFromNib() {
     super.awakeFromNib()
 
-    isActive = false
-    guard
-      let safeAreaLayoutGuide = firstItem as? UILayoutGuide,
-      let view = safeAreaLayoutGuide.owningView,
-      let viewController = view.owningViewController else {
-      fatalError()
+    MainActor.assumeIsolated {
+      isActive = false
+      guard
+        let safeAreaLayoutGuide = firstItem as? UILayoutGuide,
+        let view = safeAreaLayoutGuide.owningView,
+        let viewController = view.owningViewController else {
+        fatalError()
+      }
+      swpped = viewController.viewKeyboardLayoutGuide.topAnchor.constraint(equalTo: secondAnchor as! NSLayoutAnchor<NSLayoutYAxisAnchor>, constant: constant)
+      swpped.isActive = true
     }
-    swpped = viewController.viewKeyboardLayoutGuide.topAnchor.constraint(equalTo: secondAnchor as! NSLayoutAnchor<NSLayoutYAxisAnchor>, constant: constant)
-    swpped.isActive = true
   }
 }

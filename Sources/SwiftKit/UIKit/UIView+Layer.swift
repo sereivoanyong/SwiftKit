@@ -6,10 +6,10 @@
 
 import UIKit
 
-private var layerBorderWidthKey: Void?
-private var layerBorderColorKey: Void?
-private var layerShouldRasterizeAtDisplayScaleKey: Void?
-private var layerShadowColorKey: Void?
+@MainActor private var layerBorderWidthKey: Void?
+@MainActor private var layerBorderColorKey: Void?
+@MainActor private var layerShouldRasterizeAtDisplayScaleKey: Void?
+@MainActor private var layerShadowColorKey: Void?
 
 extension UIView {
 
@@ -83,8 +83,8 @@ extension UIView {
   }
 }
 
-private var isLayerBorderColorConfiguredKey: Void?
-private var isLayerShadowColorConfiguredKey: Void?
+@MainActor private var isLayerBorderColorConfiguredKey: Void?
+@MainActor private var isLayerShadowColorConfiguredKey: Void?
 
 extension UIView {
 
