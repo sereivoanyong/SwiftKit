@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Time {
+public struct Time: Sendable {
 
   public static let formatter: DateFormatter = {
     let formatter = DateFormatter()

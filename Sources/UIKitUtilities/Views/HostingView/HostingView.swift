@@ -18,6 +18,6 @@ open class HostingView<RootView: UIView>: UIView, HostingViewProtocol {
   }
 }
 
-extension HostingView: ContentConfiguring where RootView: ContentConfiguring {
+extension HostingView: @MainActor ContentConfiguring where RootView: ContentConfiguring {
 
 }

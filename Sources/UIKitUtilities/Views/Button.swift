@@ -170,9 +170,12 @@ import SwiftKit
 
   open override func awakeFromNib() {
     super.awakeFromNib()
-    check()
-    reloadState()
-    configure()
+
+    MainActor.assumeIsolated {
+      check()
+      reloadState()
+      configure()
+    }
   }
 
   private func check() {
@@ -191,7 +194,10 @@ import SwiftKit
 
   open override func prepareForInterfaceBuilder() {
     super.prepareForInterfaceBuilder()
-    configure()
+
+    MainActor.assumeIsolated {
+      configure()
+    }
   }
 
   open func configure() {

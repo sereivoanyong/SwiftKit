@@ -48,8 +48,11 @@ open class WKWebViewController: UIViewController {
       guard usesWebViewTitleAsNavigationTitle != oldValue else { return }
       if usesWebViewTitleAsNavigationTitle {
         if isViewLoaded {
-          webViewTitleObservation = webView.observe(\.title, options: [.initial, .new]) { [unowned self] webView, _ in
-            navigationItem.title = webView.title
+          webViewTitleObservation = webView.observe(\.title, options: [.initial, .new]) { [weak self] webView, _ in
+            guard let self else { return }
+            MainActor.assumeIsolated {
+              navigationItem.title = webView.title
+            }
           }
         }
       } else {
@@ -121,13 +124,19 @@ open class WKWebViewController: UIViewController {
       progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
     ])
 
-    webViewEstimatedProgressObservation = webView.observe(\.estimatedProgress, options: [.initial, .new]) { [unowned self] _, _ in
-      progressView.setProgress(Float(webView.estimatedProgress), animated: true)
+    webViewEstimatedProgressObservation = webView.observe(\.estimatedProgress, options: [.initial, .new]) { [weak self] _, _ in
+      guard let self else { return }
+      MainActor.assumeIsolated {
+        progressView.setProgress(Float(webView.estimatedProgress), animated: true)
+      }
     }
 
     if usesWebViewTitleAsNavigationTitle {
-      webViewTitleObservation = webView.observe(\.title, options: [.initial, .new]) { [unowned self] webView, _ in
-        navigationItem.title = webView.title
+      webViewTitleObservation = webView.observe(\.title, options: [.initial, .new]) { [weak self] webView, _ in
+        guard let self else { return }
+        MainActor.assumeIsolated {
+          navigationItem.title = webView.title
+        }
       }
     }
 

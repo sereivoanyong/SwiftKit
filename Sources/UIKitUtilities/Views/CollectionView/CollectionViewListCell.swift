@@ -34,7 +34,9 @@ open class CollectionViewListCell: UICollectionViewListCell, AppearingCollection
 
   private func commonInit() {
     contentObservation = observe(\.contentView) { cell, change in
-      cell.contentViewDidChange(change.oldValue)
+      MainActor.assumeIsolated {
+        cell.contentViewDidChange(change.oldValue)
+      }
     }
   }
 

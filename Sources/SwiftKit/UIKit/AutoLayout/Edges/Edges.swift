@@ -105,6 +105,8 @@ extension Edges: Sequence {
   }
 }
 
+extension Edges: Sendable where AxisItem: Sendable { }
+
 extension Edges: Equatable where AxisItem: Equatable { }
 
 extension Edges: Hashable where AxisItem: Hashable { }
@@ -133,6 +135,8 @@ public struct AxisEdges<XAxisItem, YAxisItem>: XAxisEdgesProtocol, YAxisEdgesPro
     self.init(top: yAxis.top, left: xAxis.left, bottom: yAxis.bottom, right: xAxis.right)
   }
 }
+
+extension AxisEdges: Sendable where XAxisItem: Sendable, YAxisItem: Sendable { }
 
 extension AxisEdges: Equatable where XAxisItem: Equatable, YAxisItem: Equatable { }
 

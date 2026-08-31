@@ -22,11 +22,11 @@ extension Reusable {
   }
 }
 
-extension UICollectionReusableView: Reusable {
+extension UICollectionReusableView: @MainActor Reusable {
 }
 
-extension UITableViewCell: Reusable {
+extension UITableViewCell: @MainActor Reusable {
 }
 
-extension UITableViewHeaderFooterView: Reusable {
+extension UITableViewHeaderFooterView: @MainActor Reusable {
 }

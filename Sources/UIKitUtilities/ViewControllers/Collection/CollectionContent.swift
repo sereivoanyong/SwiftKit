@@ -9,7 +9,7 @@ import UIKit
 
 @available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 14.0, *)
-public enum CollectionContent: Hashable {
+public enum CollectionContent: Hashable, Sendable {
 
   case list(image: UIImage?, text: String?, secondaryText: String?)
 }

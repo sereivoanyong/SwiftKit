@@ -49,7 +49,7 @@ extension UIBarButtonItem {
   }
 }
 
-private var primaryActionKey: Void?
+@MainActor private var primaryActionKey: Void?
 
 extension BackwardCompatibility where Base: UIBarButtonItem {
 

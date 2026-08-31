@@ -6,14 +6,15 @@
 
 import UIKit
 
-public protocol UIGestureRecognizerProtocol: NSObjectProtocol {
-  
+@MainActor public protocol UIGestureRecognizerProtocol: NSObjectProtocol {
+
   init(target: Any?, action: Selector?)
   func addTarget(_ target: Any, action: Selector)
   func removeTarget(_ target: Any?, action: Selector?)
 }
 
-private var actionsKey: Void?
+@MainActor private var actionsKey: Void?
+
 extension UIGestureRecognizerProtocol {
   
   private var actions: [SenderAction<Self>.Identifier: SenderAction<Self>] {
@@ -21,7 +22,7 @@ extension UIGestureRecognizerProtocol {
     set { setAssociatedValue(newValue, forKey: &actionsKey, with: self) }
   }
   
-  public init(identifier: SenderAction<Self>.Identifier? = nil, handler: @escaping (Self) -> Void) {
+  public init(identifier: SenderAction<Self>.Identifier? = nil, handler: @escaping @MainActor (Self) -> Void) {
     let action = SenderAction<Self>(identifier: identifier, handler: handler)
     self.init(target: action, action: #selector(SenderAction<Self>.invoke(_:)))
     actions[action.identifier] = action
@@ -30,7 +31,7 @@ extension UIGestureRecognizerProtocol {
   /// Adds action handler to a gesture-recognizer object. If the same identifier is found, the handler will replaced instead of being added.
   /// - Parameter handler: The handler to be called by the action message.
   /// - Returns: The token used to remove handler
-  public func addAction(identifier: SenderAction<Self>.Identifier? = nil, handler: @escaping (Self) -> Void) {
+  public func addAction(identifier: SenderAction<Self>.Identifier? = nil, handler: @escaping @MainActor (Self) -> Void) {
     if let identifier, let action = actions[identifier] {
       removeTarget(action, action: #selector(SenderAction<Self>.invoke(_:)))
     }

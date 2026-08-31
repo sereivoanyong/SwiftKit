@@ -105,6 +105,8 @@ extension DirectionalEdges: Sequence {
   }
 }
 
+extension DirectionalEdges: Sendable where AxisItem: Sendable { }
+
 extension DirectionalEdges: Equatable where AxisItem: Equatable { }
 
 extension DirectionalEdges: Hashable where AxisItem: Hashable { }
@@ -133,6 +135,8 @@ public struct DirectionalAxisEdges<XAxisItem, YAxisItem>: DirectionalXAxisEdgesP
     self.init(top: yAxis.top, leading: xAxis.leading, bottom: yAxis.bottom, trailing: xAxis.trailing)
   }
 }
+
+extension DirectionalAxisEdges: Sendable where XAxisItem: Sendable, YAxisItem: Sendable { }
 
 extension DirectionalAxisEdges: Equatable where XAxisItem: Equatable, YAxisItem: Equatable { }
 

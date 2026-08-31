@@ -35,12 +35,12 @@ extension NSLayoutConstraint {
 extension Sequence where Element == NSLayoutConstraint {
 
   @inlinable
-  public func activate() {
+  @MainActor public func activate() {
     NSLayoutConstraint.activate(self as? [NSLayoutConstraint] ?? [NSLayoutConstraint](self))
   }
 
   @inlinable
-  public func deactivate() {
+  @MainActor public func deactivate() {
     NSLayoutConstraint.deactivate(self as? [NSLayoutConstraint] ?? [NSLayoutConstraint](self))
   }
 }

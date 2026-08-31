@@ -142,6 +142,7 @@ open class TextView: UITextView {
   }
 
   private func bind<Value>(_ keyPath: ReferenceWritableKeyPath<UITextView, Value>, to target: UITextView) {
+    nonisolated(unsafe) let keyPath = keyPath
     let binding = (self as UITextView).observe(keyPath, options: [.initial, .new]) { [unowned target] source, _ in
       target[keyPath: keyPath] = source[keyPath: keyPath]
     }

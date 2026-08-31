@@ -6,7 +6,7 @@
 
 import UIKit
 
-public struct Axis: OptionSet {
+public struct Axis: OptionSet, Sendable {
 
   public let rawValue: UInt
 

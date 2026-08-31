@@ -9,7 +9,7 @@ import UIKit
 
 @available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 14.0, *)
-public struct CollectionItem: Hashable, Identifiable {
+public struct CollectionItem: Hashable, Identifiable, Sendable {
 
   public let id: UUID
   public let content: CollectionContent

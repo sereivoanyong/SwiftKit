@@ -13,7 +13,8 @@ public protocol SearchContainingController: UIViewController, UISearchBarDelegat
   var searchBar: UISearchBar { get }
 }
 
-private var searchBarKey: Void?
+@MainActor private var searchBarKey: Void?
+
 extension SearchContainingController {
 
   public var searchBar: UISearchBar {

@@ -9,7 +9,9 @@ import UIKit
 
 extension GradientConfiguration.Location {
 
-  final public class Provider: Equatable {
+  public struct Provider: Hashable {
+
+    private let id: UUID = UUID()
 
     public let provider: (CGRect) -> CGFloat
 
@@ -21,15 +23,19 @@ extension GradientConfiguration.Location {
       provider(rect)
     }
 
-    public static func == (lhs: Provider, rhs: Provider) -> Bool {
-      return lhs === rhs
+    public static func == (lhs: borrowing Self, rhs: borrowing Self) -> Bool {
+      return lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+      hasher.combine(id)
     }
   }
 }
 
 extension GradientConfiguration {
 
-  public enum Location: Equatable {
+  public enum Location: Hashable {
 
     case absolute(CGFloat)
 
@@ -50,7 +56,7 @@ extension GradientConfiguration {
   }
 }
 
-public struct GradientConfiguration: Equatable {
+public struct GradientConfiguration: Hashable {
 
   /// An array of `UIColor` objects defining the color of each gradient stop. Animatable.
   /// Default is `nil`.
@@ -143,8 +149,11 @@ open class GradientView: UIView {
 
   open override func awakeFromNib() {
     super.awakeFromNib()
-    assert(!isOpaque)
-    assert(!isUserInteractionEnabled)
+
+    MainActor.assumeIsolated {
+      assert(!isOpaque)
+      assert(!isUserInteractionEnabled)
+    }
   }
 
   private func configure(_ configuration: GradientConfiguration) {

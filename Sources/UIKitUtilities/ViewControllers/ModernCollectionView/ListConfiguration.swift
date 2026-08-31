@@ -60,13 +60,13 @@ extension UICollectionViewCell {
 }
 
 @available(iOS 15.0, *)
-public struct ListSection<ID: Hashable>: Identifiable {
+public struct ListSection<ID: Hashable & Sendable>: Identifiable, Sendable {
 
   public let id: ID
-  public var headerConfiguration: () -> ListConfiguration?
-  public var footerConfiguration: () -> ListConfiguration?
+  public var headerConfiguration: @Sendable @MainActor () -> ListConfiguration?
+  public var footerConfiguration: @Sendable @MainActor () -> ListConfiguration?
 
-  public init(id: ID, headerConfiguration: @autoclosure @escaping () -> ListConfiguration? = nil, footerConfiguration: @autoclosure @escaping () -> ListConfiguration? = nil) {
+  public init(id: ID, headerConfiguration: @autoclosure @escaping @Sendable @MainActor () -> ListConfiguration? = nil, footerConfiguration: @autoclosure @escaping @Sendable @MainActor () -> ListConfiguration? = nil) {
     self.id = id
     self.headerConfiguration = headerConfiguration
     self.footerConfiguration = footerConfiguration
@@ -74,17 +74,17 @@ public struct ListSection<ID: Hashable>: Identifiable {
 }
 
 @available(iOS 15.0, *)
-public struct ListItem<ID: Hashable>: Identifiable {
+public struct ListItem<ID: Hashable & Sendable>: Identifiable, Sendable {
 
   public let id: ID
-  public var configuration: () -> ListConfiguration?
+  public var configuration: @Sendable @MainActor () -> ListConfiguration?
 
-  public init(id: ID, configuration: @autoclosure @escaping () -> ListConfiguration) {
+  public init(id: ID, configuration: @autoclosure @escaping @Sendable @MainActor () -> ListConfiguration) {
     self.id = id
     self.configuration = configuration
   }
 
-  public init(configuration: @autoclosure @escaping () -> ListConfiguration) where ID == UUID {
+  public init(configuration: @autoclosure @escaping @Sendable @MainActor () -> ListConfiguration) where ID == UUID {
     self.id = UUID()
     self.configuration = configuration
   }

@@ -52,7 +52,7 @@ extension TextField {
     case layoutMargins(UIRectEdge)
   }
 
-  public struct ViewLayoutAttributes {
+  public struct ViewLayoutAttributes: Sendable {
 
     public var width: CGFloat?
 

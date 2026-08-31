@@ -47,7 +47,7 @@ extension Data {
   }
 
   @available(iOS 14.0, *)
-  public struct HexEncodingOptions: OptionSet {
+  public struct HexEncodingOptions: OptionSet, Sendable {
 
     public let rawValue: Int
 

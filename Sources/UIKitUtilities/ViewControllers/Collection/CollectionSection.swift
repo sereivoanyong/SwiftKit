@@ -11,7 +11,7 @@ import UIKit
 @available(iOS 14.0, *)
 extension CollectionSection {
 
-  public enum ListHeader: Hashable {
+  public enum ListHeader: Hashable, Sendable {
 
     case none
     case supplementary(CollectionContent)
@@ -44,7 +44,7 @@ extension CollectionSection {
     }
   }
 
-  public enum ListFooter: Hashable {
+  public enum ListFooter: Hashable, Sendable {
 
     case none
     case supplementary(CollectionContent)
@@ -77,7 +77,7 @@ extension CollectionSection {
 @available(iOS 14.0, *)
 extension CollectionSection {
 
-  public enum Content: Hashable {
+  public enum Content: Hashable, Sendable {
 
     case list(ListHeader, ListFooter)
 
@@ -87,7 +87,7 @@ extension CollectionSection {
 
 @available(*, deprecated, message: "Use modern version instead.")
 @available(iOS 14.0, *)
-public struct CollectionSection: Hashable, Identifiable {
+public struct CollectionSection: Hashable, Identifiable, Sendable {
 
   public let id: UUID
   public let content: Content

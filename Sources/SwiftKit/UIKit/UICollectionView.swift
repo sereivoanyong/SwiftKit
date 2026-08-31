@@ -8,13 +8,13 @@
 import UIKit
 
 #if DEBUG
-private var registeredCellsKey: Void?
-private var registeredSupplementaryViewsKey: Void?
+@MainActor private var registeredCellsKey: Void?
+@MainActor private var registeredSupplementaryViewsKey: Void?
 #endif
 
 extension UICollectionView {
 
-  public typealias CellProvider<Item> = (UICollectionView, IndexPath, Item) -> UICollectionViewCell?
+  public typealias CellProvider<Item> = @MainActor (UICollectionView, IndexPath, Item) -> UICollectionViewCell?
 
   @inlinable
   public convenience init(collectionViewLayout: UICollectionViewLayout) {

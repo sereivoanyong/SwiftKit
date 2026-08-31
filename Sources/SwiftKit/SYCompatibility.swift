@@ -7,7 +7,7 @@
 
 import Foundation
 
-@_marker public protocol SYCompatible: AnyObject {}
+@_marker public protocol SYCompatible: AnyObject { }
 
 extension SYCompatible {
 
@@ -26,3 +26,5 @@ public struct SYCompatibility<Base: SYCompatible> {
     self.base = base
   }
 }
+
+extension SYCompatibility: Sendable where Base: Sendable { }

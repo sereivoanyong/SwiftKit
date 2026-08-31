@@ -6,9 +6,7 @@
 
 import Foundation
 
-public protocol BackwardCompatible {
-
-}
+@_marker public protocol BackwardCompatible { }
 
 extension BackwardCompatible {
 
@@ -23,3 +21,5 @@ public struct BackwardCompatibility<Base> {
 
   public let base: Base
 }
+
+extension BackwardCompatibility: Sendable where Base: Sendable { }

@@ -8,7 +8,7 @@
 import UIKit
 
 @available(iOS 15.0, *)
-open class ModernCollectionViewListController<SectionIdentifier: Hashable, ItemIdentifier: Hashable>: ModernCollectionViewController<SectionIdentifier, ItemIdentifier> {
+open class ModernCollectionViewListController<SectionIdentifier: Hashable & Sendable, ItemIdentifier: Hashable & Sendable>: ModernCollectionViewController<SectionIdentifier, ItemIdentifier> {
 
   public typealias ListDataSource = CollectionViewDiffableListDataSource<ListSection<SectionIdentifier>, ListItem<ItemIdentifier>>
 

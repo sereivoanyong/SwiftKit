@@ -53,11 +53,13 @@ open class BarShadowView: UIImageView {
   open override func awakeFromNib() {
     super.awakeFromNib()
 
-    if backgroundColor == nil {
-      backgroundColor = Self.defaultColor
+    MainActor.assumeIsolated {
+      if backgroundColor == nil {
+        backgroundColor = Self.defaultColor
+      }
+      assert(!isUserInteractionEnabled)
+      updateCompressionResistance()
     }
-    assert(!isUserInteractionEnabled)
-    updateCompressionResistance()
   }
 
   private func updateCompressionResistance() {
@@ -105,21 +107,21 @@ open class BarShadowView: UIImageView {
   }
 }
 
-private var barShadowViewKey: Void?
+@MainActor private var barShadowViewKey: Void?
 
 extension SYCompatibility where Base: UIView {
 
-  public var barShadowView: BarShadowView? {
+  @MainActor public var barShadowView: BarShadowView? {
     return associatedObject(forKey: &barShadowViewKey, with: base) as BarShadowView?
   }
 
-  public func removeBarShadowView() {
+  @MainActor public func removeBarShadowView() {
     barShadowView?.removeFromSuperview()
     removeAssociatedObject(forKey: &barShadowViewKey, with: base)
   }
 
   @discardableResult
-  public func addBarShadowView(thickness: CGFloat = -1, color: UIColor? = nil, for barPosition: BarPosition, layoutGuide: LayoutGuide? = nil, insets: DirectionalEdgeInsets = .zero) -> BarShadowView {
+  @MainActor public func addBarShadowView(thickness: CGFloat = -1, color: UIColor? = nil, for barPosition: BarPosition, layoutGuide: LayoutGuide? = nil, insets: DirectionalEdgeInsets = .zero) -> BarShadowView {
     assert(!base.clipsToBounds)
     removeBarShadowView()
     

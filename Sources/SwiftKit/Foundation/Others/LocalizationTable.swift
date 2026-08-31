@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct LocalizationTable: StringRepresentable {
+public struct LocalizationTable: StringRepresentable, Sendable {
 
   public let rawValue: String
 

@@ -16,7 +16,7 @@ public typealias DirectionalEdgeAnchors = DirectionalAxisEdges<NSLayoutXAxisAnch
 
 public typealias EdgeAnchors = AxisEdges<NSLayoutXAxisAnchor, NSLayoutYAxisAnchor>
 
-public protocol LayoutGuide: AnyObject {
+@MainActor public protocol LayoutGuide: AnyObject {
 
   var leadingAnchor: NSLayoutXAxisAnchor { get }
   var trailingAnchor: NSLayoutXAxisAnchor { get }

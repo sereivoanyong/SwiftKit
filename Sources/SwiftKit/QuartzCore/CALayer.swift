@@ -39,7 +39,7 @@ extension CALayer {
 
   // MARK: Border
 
-  public struct Border: Equatable {
+  public struct Border: Hashable, Sendable {
 
     public var width: CGFloat
     public var color: CGColor?
@@ -62,13 +62,13 @@ extension CALayer {
 
   // MARK: Shadow
 
-  public struct Shadow: Equatable {
+  public struct Shadow: Hashable, Sendable {
 
     public var color: CGColor?
     public var opacity: Float
     public var offset: CGSize
     public var radius: CGFloat
-    public var path: CGPath?
+    nonisolated(unsafe) public var path: CGPath?
 
     public init(color: CGColor? = nil, opacity: Float = 0, offset: CGSize = CGSize(width: 0, height: -3), radius: CGFloat = 3, path: CGPath? = nil) {
       self.color = color

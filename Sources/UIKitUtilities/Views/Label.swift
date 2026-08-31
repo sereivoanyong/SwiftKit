@@ -9,7 +9,7 @@ import UIKit
 extension Label {
 
   /// `UIListContentConfiguration`
-  public struct ContentConfiguration {
+  public struct ContentConfiguration: Hashable {
 
     /// Configures the color of the text. A nil value uses the view's tint color; use `.clear` for no color (transparent).
     public var color: UIColor? // The original implementation is not optional tho

@@ -4,7 +4,7 @@
 //  Created by Sereivoan Yong on 12/13/22.
 //
 
-public protocol DataStore: AnyObject {
+public protocol DataStore: AnyObject, Sendable {
 
   func data(forKey key: String) -> Data?
 

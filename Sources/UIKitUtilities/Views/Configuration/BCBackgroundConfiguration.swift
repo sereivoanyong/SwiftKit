@@ -40,18 +40,4 @@ public struct BCBackgroundConfiguration: Hashable {
     }
     return backgroundColor
   }
-
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    return isEqual(lhs, rhs, at: \.maskedCorners) &&
-    isEqual(lhs, rhs, at: \.cornerRadius) &&
-    isEqual(lhs, rhs, at: \.backgroundInsets) &&
-    isEqual(lhs, rhs, at: \.backgroundColor)
-  }
-
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(maskedCorners)
-    hasher.combine(cornerRadius)
-    hasher.combine(backgroundInsets)
-    hasher.combine(backgroundColor)
-  }
 }

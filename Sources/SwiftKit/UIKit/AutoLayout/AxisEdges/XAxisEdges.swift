@@ -72,6 +72,8 @@ extension XAxisEdges: Sequence {
   }
 }
 
+extension XAxisEdges: Sendable where XAxisItem: Sendable { }
+
 extension XAxisEdges: Equatable where XAxisItem: Equatable { }
 
 extension XAxisEdges: Hashable where XAxisItem: Hashable { }

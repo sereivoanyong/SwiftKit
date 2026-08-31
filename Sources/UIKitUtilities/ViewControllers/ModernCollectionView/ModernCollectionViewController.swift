@@ -9,7 +9,7 @@ import UIKit
 import SwiftKit
 
 @available(iOS 15.0, *)
-open class ModernCollectionViewController<SectionIdentifier: Hashable, ItemIdentifier: Hashable>: CollectionViewController {
+open class ModernCollectionViewController<SectionIdentifier: Hashable & Sendable, ItemIdentifier: Hashable & Sendable>: CollectionViewController {
 
   public typealias DataSource = UICollectionViewDiffableDataSource<SectionIdentifier, ItemIdentifier>
 

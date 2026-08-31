@@ -18,7 +18,7 @@ import Foundation
 
   open var object: Object
 
-  @MainActor public init(object: Object) {
+  public init(object: Object) {
     self.object = object
   }
 
@@ -29,12 +29,16 @@ import Foundation
     if viewModel === self {
       return true
     }
-    return viewModel.object == object
+    return MainActor.assumeIsolated {
+      return viewModel.object == object
+    }
   }
 
   open override var hash: Int {
     var hasher = Hasher()
-    hasher.combine(object)
+    MainActor.assumeIsolated {
+      hasher.combine(object)
+    }
     return hasher.finalize()
   }
 }

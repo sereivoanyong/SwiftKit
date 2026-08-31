@@ -26,10 +26,10 @@ public protocol HostingViewProtocol<RootView>: UIView {
   func rootViewDidMoveToContentView()
 }
 
-private var rootViewConstraintsKey: Void?
-private var rootViewInsetsKey: Void?
-private var rootViewAxesPinningContentViewLayoutMarginsKey: Void?
-private var rootViewKey: Void?
+@MainActor private var rootViewConstraintsKey: Void?
+@MainActor private var rootViewInsetsKey: Void?
+@MainActor private var rootViewAxesPinningContentViewLayoutMarginsKey: Void?
+@MainActor private var rootViewKey: Void?
 
 extension HostingViewProtocol {
 

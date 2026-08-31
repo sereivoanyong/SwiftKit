@@ -6,7 +6,7 @@
 
 import UIKit
 
-private var senderActionKey: Void?
+@MainActor private var senderActionKey: Void?
 
 extension BackwardCompatibility where Base: UIBarButtonItem {
 

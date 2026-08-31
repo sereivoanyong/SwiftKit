@@ -72,6 +72,8 @@ extension YAxisEdges: Sequence {
   }
 }
 
+extension YAxisEdges: Sendable where YAxisItem: Sendable { }
+
 extension YAxisEdges: Equatable where YAxisItem: Equatable { }
 
 extension YAxisEdges: Hashable where YAxisItem: Hashable { }

@@ -6,12 +6,12 @@
 
 import UIKit
 
-public protocol BackgroundedView: AnyObject {
-  
+@MainActor public protocol BackgroundedView: AnyObject {
+
   var backgroundView: UIView? { get set }
 }
 
-private var kBackgroundViewKey: Void?
+@MainActor private var kBackgroundViewKey: Void?
 
 extension BackgroundedView where Self: UIView {
   

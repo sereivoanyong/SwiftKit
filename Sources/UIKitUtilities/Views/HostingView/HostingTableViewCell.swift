@@ -26,6 +26,6 @@ open class HostingTableViewCell<RootView: UIView>: UITableViewCell, HostingViewC
   }
 }
 
-extension HostingTableViewCell: ContentConfiguring where RootView: ContentConfiguring {
+extension HostingTableViewCell: @MainActor ContentConfiguring where RootView: ContentConfiguring {
 
 }

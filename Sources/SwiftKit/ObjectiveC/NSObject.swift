@@ -82,7 +82,7 @@ extension NSObjectProtocol {
 
 import Foundation
 
-private var kObservationKey: Void?
+nonisolated(unsafe) private var kObservationKey: Void?
 
 extension _KeyValueCodingAndObserving where Self: NSObject {
 
@@ -92,7 +92,7 @@ extension _KeyValueCodingAndObserving where Self: NSObject {
   }
 
   @discardableResult
-  public func addObservation<Value>(for keyPath: KeyPath<Self, Value>, options: NSKeyValueObservingOptions = [], changeHandler: @escaping (Self, NSKeyValueObservedChange<Value>) -> Void) -> NSKeyValueObservation {
+  public func addObservation<Value>(for keyPath: KeyPath<Self, Value>, options: NSKeyValueObservingOptions = [], changeHandler: @escaping @Sendable (Self, NSKeyValueObservedChange<Value>) -> Void) -> NSKeyValueObservation {
     let observation = observe(keyPath, options: options, changeHandler: changeHandler)
     observations[keyPath] = observation
     return observation
