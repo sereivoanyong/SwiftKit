@@ -7,8 +7,9 @@
 #if os(iOS)
 
 import Foundation
+import SwiftKit
 
-public enum NumberTransformer<Number: _ObjectiveCBridgeable> where Number._ObjectiveCType: NSNumber {
+public enum NumberTransformer<Number: _ObjectiveCBridgeable & StringInitializable> where Number._ObjectiveCType: NSNumber {
 
   case formatted(NumberFormatter)
   case custom((Number) -> String?, (String) -> Number?)
@@ -26,8 +27,8 @@ public enum NumberTransformer<Number: _ObjectiveCBridgeable> where Number._Objec
   @inlinable
   public func number(from string: String) -> Number? {
     switch self {
-    case .formatted(let formatter):
-      return formatter.number(from: string) as! Number?
+    case .formatted:
+      return Number(string)
     case .custom(_, let numberFrom):
       return numberFrom(string)
     }

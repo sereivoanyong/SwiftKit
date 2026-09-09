@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class StepperTextField<Value>: NumberTextField<Value> where Value: _ObjectiveCBridgeable & Comparable & AdditiveArithmetic, Value._ObjectiveCType: NSNumber {
+open class StepperTextField<Value>: NumberTextField<Value> where Value: _ObjectiveCBridgeable & StringInitializable & Comparable & AdditiveArithmetic, Value._ObjectiveCType: NSNumber {
 
   open var stepValue: Value = .zero
   

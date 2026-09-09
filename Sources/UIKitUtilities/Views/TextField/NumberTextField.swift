@@ -13,7 +13,7 @@ public typealias DoubleTextField = NumberTextField<Double> // Formatted
 public typealias FloatTextField = NumberTextField<Float> // Formatted
 public typealias IntTextField = NumberTextField<Int> // Lossless
 
-open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveArithmetic>: TextField, UITextFieldDelegate where Value._ObjectiveCType: NSNumber {
+open class NumberTextField<Value: _ObjectiveCBridgeable & StringInitializable & Comparable & AdditiveArithmetic>: TextField, UITextFieldDelegate where Value._ObjectiveCType: NSNumber {
 
   // Not called when the `value` is changed programmatically.
   public static var valueDidChangeNotification: Notification.Name {
@@ -23,7 +23,7 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveA
   open override var delegate: UITextFieldDelegate? {
     get { return super.delegate }
     set {
-      assert(newValue is Self, "`textField(_:shouldChangeCharactersIn:replacementString:)`")
+      assert(newValue === self, "`textField(_:shouldChangeCharactersIn:replacementString:)`")
       super.delegate = newValue
     }
   }
@@ -32,7 +32,7 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveA
 
   open var minimumValue: Value? {
     didSet {
-      if let minimumValue = minimumValue, let value = value, value < minimumValue {
+      if let minimumValue, let value, value < minimumValue {
         self.value = minimumValue
       }
     }
@@ -40,7 +40,7 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveA
 
   open var maximumValue: Value? {
     didSet {
-      if let maximumValue = maximumValue, let value = value, value > maximumValue {
+      if let maximumValue, let value, value > maximumValue {
         self.value = maximumValue
       }
     }
@@ -49,14 +49,14 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveA
   open var showsSignForOverrideSignumWhenNotZero: Bool = false {
     willSet {
       if case .formatted(let formatter) = transformer, formatter.positivePrefix.isEmpty {
-        fatalError()
+        preconditionFailure()
       }
     }
   }
 
   open var overrideSignum: Int? {
     didSet {
-      if let value = value {
+      if let value {
         setValue(signumedValue(value), sendValueChangedActions: true)
       }
     }
@@ -103,7 +103,7 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveA
 
   /// if `newText` is not nil, it should be unformatted and number-parseable or it will be discarded.
   func setText(_ newText: String?, textTransform: (String) -> String = { $0 }, sendValueChangedActions: Bool = false) {
-    if let newValue = newText.flatMap(value(from:)), let newText = newValue == .zero ? newText : text(from: newValue) {
+    if let newValue = newText.flatMap(value(from:)), let newText = text(from: newValue) {
       let newValidatedValue = validatedValue(newValue)
       _value = newValidatedValue
       super.text = textTransform(validatedText(newText, newValidatedValue))
@@ -220,9 +220,22 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveA
 
     var textTransform: (String) -> String = { $0 }
     if case .formatted(let formatter) = transformer {
-      newText = newText.replacingOccurrences(of: formatter.groupingSeparator, with: "")
+      switch formatter.numberStyle {
+      case .currency:
+        newText = newText.removingFirstOccurrence(of: formatter.currencySymbol)
+        newText = newText.removingOccurrences(of: formatter.currencyGroupingSeparator)
+      case .currencyISOCode:
+        newText = newText.removingFirstOccurrence(of: formatter.currencyCode)
+        newText = newText.removingOccurrences(of: formatter.currencyGroupingSeparator)
+      case .currencyPlural:
+        assertionFailure("Not supported")
+      case .currencyAccounting:
+        assertionFailure("Not supported")
+      default:
+        newText = newText.removingOccurrences(of: formatter.groupingSeparator)
+      }
 
-      if Value.self is Decimal.Type {
+      if Value.self is Decimal.Type || Value.self is any FloatingPoint.Type {
         let decimalSeparator = formatter.decimalSeparator!
         if formatter.maximumFractionDigits > 0,
            let decimalSeparatorRange = newText.range(of: decimalSeparator),
@@ -230,10 +243,15 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & Comparable & AdditiveA
           return false
         }
         /// Check if user has just type the `decimalSeparator`
-        if newText.hasSuffix(decimalSeparator) {
-          /// `formatter` can't parse if the string has `decimalSeparator` as its suffix, so we remove it and append it later via `textTransform`
-          textTransform = { $0 + decimalSeparator }
-          newText.removeLast(decimalSeparator.count)
+        if let range = newText.range(of: decimalSeparator, options: .backwards) {
+          let fractionPart = newText[range.upperBound...]
+          if fractionPart.isEmpty || fractionPart.allSatisfy({ $0 == "0" }) { // Allows "X." and "X.00"
+            /// `formatter` can't parse if the string has `decimalSeparator` as its suffix.
+            /// Remove suffix and append it later via `textTransform`
+            let suffix = decimalSeparator + fractionPart
+            newText.removeLast(suffix.count)
+            textTransform = { $0 + suffix }
+          }
         }
       }
     }
@@ -275,7 +293,7 @@ extension NumberTextField {
     self.value = value
   }
 
-  public convenience init(value: Value? = nil, placeholder: String? = nil, font: UIFont? = nil, textAlignment: NSTextAlignment = .natural, textColor: UIColor? = nil) where Value: LosslessStringConvertible {
+  public convenience init(value: Value?, placeholder: String? = nil, font: UIFont? = nil, textAlignment: NSTextAlignment = .natural, textColor: UIColor? = nil) where Value: LosslessStringConvertible {
     self.init()
     self.font = font
     self.textAlignment = textAlignment
