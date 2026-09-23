@@ -12,7 +12,7 @@ extension UINavigationItem {
   private static var usesCrossDissolveAnimatorWhenPushedAndPoppedKey: Void?
   public var usesCrossDissolveAnimatorWhenPushedAndPopped: Bool {
     get { return associatedValue(forKey: &Self.usesCrossDissolveAnimatorWhenPushedAndPoppedKey, with: self) ?? false }
-    set { setAssociatedValue(newValue, forKey: &Self.usesCrossDissolveAnimatorWhenPushedAndPoppedKey, with: self) }
+    set { associateValue(newValue, forKey: &Self.usesCrossDissolveAnimatorWhenPushedAndPoppedKey, with: self) }
   }
 }
 

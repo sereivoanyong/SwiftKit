@@ -19,7 +19,7 @@ extension UIGestureRecognizerProtocol {
   
   private var actions: [SenderAction<Self>.Identifier: SenderAction<Self>] {
     get { return associatedValue(default: [:], forKey: &actionsKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &actionsKey, with: self) }
+    set { associateValue(newValue, forKey: &actionsKey, with: self) }
   }
   
   public init(identifier: SenderAction<Self>.Identifier? = nil, handler: @escaping @MainActor (Self) -> Void) {

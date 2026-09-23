@@ -16,14 +16,14 @@ extension UIScene {
   private static var itemTitleObservationKey: Void?
   private var itemTitleObservation: NSKeyValueObservation? {
     get { return associatedObject(forKey: &Self.itemTitleObservationKey, with: self) }
-    set { setAssociatedObject(newValue, forKey: &Self.itemTitleObservationKey, with: self) }
+    set { associateObject(newValue, forKey: &Self.itemTitleObservationKey, with: self) }
   }
 
   private static var itemKey: Void?
   weak public var item: SceneItem? {
     get { return associatedObject(forKey: &Self.itemKey, with: self) }
     set(newItem) {
-      setAssociatedObject(newItem, forKey: &Self.itemKey, with: self)
+      associateObject(newItem, forKey: &Self.itemKey, with: self)
       itemTitleObservation = newItem?.observe(\.title, options: [.initial, .new]) { [weak self] newItem, _ in
         self?.title = newItem.title
       }
@@ -41,11 +41,11 @@ extension UIViewController {
       }
       let item = SceneItem()
       item.viewController = self
-      setAssociatedObject(item, forKey: &Self.sceneItemKey, with: self)
+      associateObject(item, forKey: &Self.sceneItemKey, with: self)
       return item
     }
     set {
-      setAssociatedObject(newValue, forKey: &Self.sceneItemKey, with: self)
+      associateObject(newValue, forKey: &Self.sceneItemKey, with: self)
     }
   }
 }

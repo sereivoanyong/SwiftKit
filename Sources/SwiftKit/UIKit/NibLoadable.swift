@@ -42,9 +42,9 @@ extension NibLoadable {
     let nib = nib()
     if var associatedNibs {
       associatedNibs[nibName] = nib
-      setAssociatedValue(associatedNibs, forKey: &cachedNibsKey, with: object)
+      associateValue(associatedNibs, forKey: &cachedNibsKey, with: object)
     } else {
-      setAssociatedValue([nibName: nib], forKey: &cachedNibsKey, with: object)
+      associateValue([nibName: nib], forKey: &cachedNibsKey, with: object)
     }
     return nib
   }

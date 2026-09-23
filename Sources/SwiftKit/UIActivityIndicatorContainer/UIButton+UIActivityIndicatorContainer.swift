@@ -23,12 +23,12 @@ extension UIButton: UIActivityIndicatorContainer {
   @available(iOS 15.0, *)
   public private(set) var configurationBeforeActivityIndicator: Configuration? {
     get { return associatedValue(forKey: &configurationBeforeActivityIndicatorViewKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &configurationBeforeActivityIndicatorViewKey, with: self) }
+    set { associateValue(newValue, forKey: &configurationBeforeActivityIndicatorViewKey, with: self) }
   }
 
   public private(set) var contentBeforeActivityIndicator: Content? {
     get { return associatedValue(forKey: &contentBeforeActivityIndicatorViewKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &contentBeforeActivityIndicatorViewKey, with: self) }
+    set { associateValue(newValue, forKey: &contentBeforeActivityIndicatorViewKey, with: self) }
   }
 
   public func willShowActivityIndicator(_ activityIndicatorView: UIActivityIndicatorView) {

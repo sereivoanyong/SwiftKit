@@ -17,7 +17,7 @@ extension UIViewController {
   private static var offsetObservationKey: Void?
   private var offsetObservation: NSKeyValueObservation? {
     get { return associatedObject(forKey: &Self.offsetObservationKey, with: self) }
-    set { setAssociatedObject(newValue, forKey: &Self.offsetObservationKey, with: self) }
+    set { associateObject(newValue, forKey: &Self.offsetObservationKey, with: self) }
   }
 
   private static var navigationGradientViewKey: Void?
@@ -32,7 +32,7 @@ extension UIViewController {
         startPoint: CGPoint(x: 0.5, y: 0),
         endPoint: CGPoint(x: 0.5, y: 1)
       ))
-      setAssociatedObject(navigationGradientView, forKey: &Self.navigationGradientViewKey, with: self)
+      associateObject(navigationGradientView, forKey: &Self.navigationGradientViewKey, with: self)
       view.addSubview(navigationGradientView)
 
       navigationGradientView.translatesAutoresizingMaskIntoConstraints = false
@@ -44,7 +44,7 @@ extension UIViewController {
       ])
       return navigationGradientView
     }
-    set { setAssociatedObject(newValue, forKey: &Self.navigationGradientViewKey, with: self) }
+    set { associateObject(newValue, forKey: &Self.navigationGradientViewKey, with: self) }
   }
 
   public func setContentScrollViewForNavigationGradient(_ scrollView: UIScrollView, maximumHeightProvider: @escaping @MainActor () -> CGFloat) {

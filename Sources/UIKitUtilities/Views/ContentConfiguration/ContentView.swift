@@ -31,7 +31,7 @@ extension ContentView {
     }
     set {
       guard newValue != _configurationIfSet else { return }
-      setAssociatedValue(newValue, forKey: &configurationKey, with: self)
+      associateValue(newValue, forKey: &configurationKey, with: self)
       configure(newValue)
     }
   }
@@ -42,7 +42,7 @@ extension ContentView {
     }
     set {
       guard let newValue = newValue as? Configuration, newValue != _configurationIfSet else { return }
-      setAssociatedValue(newValue, forKey: &configurationKey, with: self)
+      associateValue(newValue, forKey: &configurationKey, with: self)
       configure(newValue)
     }
   }

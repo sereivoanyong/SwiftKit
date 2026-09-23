@@ -101,7 +101,7 @@ extension UIView {
 
   public fileprivate(set) var shadowViews: [CGRectEdge: UIView] {
     get { return associatedValue(default: [:], forKey: &Self.shadowViewsKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &Self.shadowViewsKey, with: self) }
+    set { associateValue(newValue, forKey: &Self.shadowViewsKey, with: self) }
   }
 
   @discardableResult

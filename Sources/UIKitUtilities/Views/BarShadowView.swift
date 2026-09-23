@@ -136,7 +136,7 @@ extension SYCompatibility where Base: UIView {
     barShadowView.axis = axis
     barShadowView.thickness = thickness
     barShadowView.backgroundColor = color
-    setAssociatedObject(barShadowView, forKey: &barShadowViewKey, with: base)
+    associateObject(barShadowView, forKey: &barShadowViewKey, with: base)
     base.addSubview(barShadowView)
 
     barShadowView.translatesAutoresizingMaskIntoConstraints = false

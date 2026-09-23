@@ -61,12 +61,12 @@ extension UICollectionView {
 #if DEBUG
   public private(set) var registeredCells: [String: (cellClass: UICollectionViewCell.Type, isNib: Bool)] {
     get { return associatedValue(default: [:], forKey: &registeredCellsKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &registeredCellsKey, with: self) }
+    set { associateValue(newValue, forKey: &registeredCellsKey, with: self) }
   }
 
   public private(set) var registeredSupplementaryViews: [String: (viewClass: UICollectionReusableView.Type, isNib: Bool, kind: ElementKind)] {
     get { return associatedValue(default: [:], forKey: &registeredSupplementaryViewsKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &registeredSupplementaryViewsKey, with: self) }
+    set { associateValue(newValue, forKey: &registeredSupplementaryViewsKey, with: self) }
   }
 #endif
 

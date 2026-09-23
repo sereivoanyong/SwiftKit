@@ -11,24 +11,24 @@ extension UIViewController {
   private static var viewKeyboardLayoutGuideHeightConstraintKey: Void?
   private var viewKeyboardLayoutGuideHeightConstraint: NSLayoutConstraint! {
     get { return associatedObject(forKey: &Self.viewKeyboardLayoutGuideHeightConstraintKey, with: self) }
-    set { setAssociatedObject(newValue, forKey: &Self.viewKeyboardLayoutGuideHeightConstraintKey, with: self) }
+    set { associateObject(newValue, forKey: &Self.viewKeyboardLayoutGuideHeightConstraintKey, with: self) }
   }
 
   private static var keyboardWillChangeFrameNotificationKey: Void?
   public private(set) var keyboardWillChangeFrameNotification: KeyboardNotification? {
     get { return associatedValue(forKey: &Self.keyboardWillChangeFrameNotificationKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &Self.keyboardWillChangeFrameNotificationKey, with: self) } }
+    set { associateValue(newValue, forKey: &Self.keyboardWillChangeFrameNotificationKey, with: self) } }
 
   private static var viewKeyboardLayoutGuideIfLoadedKey: Void?
   public private(set) var viewKeyboardLayoutGuideIfLoaded: KeyboardLayoutGuide? {
     get { return associatedObject(forKey: &Self.viewKeyboardLayoutGuideIfLoadedKey, with: self) }
-    set { setAssociatedObject(newValue, forKey: &Self.viewKeyboardLayoutGuideIfLoadedKey, with: self) }
+    set { associateObject(newValue, forKey: &Self.viewKeyboardLayoutGuideIfLoadedKey, with: self) }
   }
 
   private static var viewKeyboardIntersectionRectKey: Void?
   public private(set) var viewKeyboardIntersectionRect: CGRect {
     get { return associatedValue(forKey: &Self.viewKeyboardIntersectionRectKey, with: self) ?? .zero }
-    set { setAssociatedValue(newValue, forKey: &Self.viewKeyboardIntersectionRectKey, with: self) }
+    set { associateValue(newValue, forKey: &Self.viewKeyboardIntersectionRectKey, with: self) }
   }
 
   /// Accessing this property will also call `loadViewIfNeeded()`

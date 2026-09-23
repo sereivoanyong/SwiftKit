@@ -42,13 +42,13 @@ extension HostingViewProtocol {
 
   public var rootViewConstraints: [NSLayoutConstraint] {
     get { return associatedValue(default: [], forKey: &rootViewConstraintsKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &rootViewConstraintsKey, with: self) }
+    set { associateValue(newValue, forKey: &rootViewConstraintsKey, with: self) }
   }
 
   public var rootViewInsets: DirectionalEdges<CGFloat> {
     get { return associatedValue(default: .zero, forKey: &rootViewInsetsKey, with: self) }
     set {
-      setAssociatedValue(newValue, forKey: &rootViewInsetsKey, with: self)
+      associateValue(newValue, forKey: &rootViewInsetsKey, with: self)
       if rootViewIfLoaded != nil {
         let rootViewConstraints = rootViewConstraints
         rootViewConstraints[0].constant = newValue.top
@@ -63,7 +63,7 @@ extension HostingViewProtocol {
     get { return associatedValue(default: [], forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self) }
     set {
       guard newValue != rootViewAxesPinningContentViewLayoutMargins else { return }
-      setAssociatedValue(newValue, forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self)
+      associateValue(newValue, forKey: &rootViewAxesPinningContentViewLayoutMarginsKey, with: self)
       if let rootViewIfLoaded {
         reloadConstraints(rootView: rootViewIfLoaded)
       }
@@ -72,7 +72,7 @@ extension HostingViewProtocol {
 
   public private(set) var rootViewIfLoaded: RootView? {
     get { return associatedObject(forKey: &rootViewKey, with: self) }
-    set { setAssociatedObject(newValue, forKey: &rootViewKey, with: self) }
+    set { associateObject(newValue, forKey: &rootViewKey, with: self) }
   }
 
   public var rootView: RootView! {

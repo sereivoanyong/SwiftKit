@@ -28,22 +28,22 @@ public func class_exchangeInstanceMethodImplementations(_ cls: AnyClass, _ origi
 // MARK: Modernize
 
 @inlinable
-public func associatedObject<T: AnyObject>(default defaultObject: @autoclosure () -> T, forKey key: UnsafeRawPointer, with source: AnyObject, policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC) -> T {
+public func associatedObject<T: AnyObject>(default defaultObject: @autoclosure () -> T, forKey key: UnsafeRawPointer, policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC, with source: AnyObject) -> T {
   if let object = objc_getAssociatedObject(source, key) as? T {
     return object
   }
   let object = defaultObject()
-  setAssociatedObject(object, forKey: key, with: source, policy: policy)
+  associateObject(object, forKey: key, policy: policy, with: source)
   return object
 }
 
 @inlinable
-public func associatedObject<T: AnyObject>( forKey key: UnsafeRawPointer, with source: AnyObject) -> T? {
+public func associatedObject<T: AnyObject>(forKey key: UnsafeRawPointer, with source: AnyObject) -> T? {
   return objc_getAssociatedObject(source, key) as? T
 }
 
 @inlinable
-public func setAssociatedObject<T: AnyObject>(_ newObject: T?, forKey key: UnsafeRawPointer, with source: AnyObject, policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC) {
+public func associateObject<T: AnyObject>(_ newObject: T?, forKey key: UnsafeRawPointer, policy: objc_AssociationPolicy = .OBJC_ASSOCIATION_RETAIN_NONATOMIC, with source: AnyObject) {
   objc_setAssociatedObject(source, key, newObject, policy)
 }
 
@@ -68,8 +68,8 @@ public func associatedWeakObject<T: AnyObject>(forKey key: UnsafeRawPointer, wit
 }
 
 @inlinable
-public func setAssociatedWeakObject(_ newObject: AnyObject?, forKey key: UnsafeRawPointer, with source: AnyObject) {
-  setAssociatedObject(newObject.map(WeakReference.init), forKey: key, with: source)
+public func associateWeakObject(_ newObject: AnyObject?, forKey key: UnsafeRawPointer, with source: AnyObject) {
+  associateObject(newObject.map(WeakReference.init), forKey: key, with: source)
 }
 
 // MARK: Value
@@ -80,7 +80,7 @@ public func associatedValue<T>(default defaultValue: @autoclosure () -> T, forKe
     return value
   }
   let value = defaultValue()
-  setAssociatedValue(value, forKey: key, with: source)
+  associateValue(value, forKey: key, with: source)
   return value
 }
 
@@ -93,6 +93,6 @@ public func associatedValue<T>(forKey key: UnsafeRawPointer, with source: AnyObj
 }
 
 @inlinable
-public func setAssociatedValue(_ newValue: Any?, forKey key: UnsafeRawPointer, with source: AnyObject) {
-  setAssociatedObject(newValue.map(AnyReference.init), forKey: key, with: source)
+public func associateValue(_ newValue: Any?, forKey key: UnsafeRawPointer, with source: AnyObject) {
+  associateObject(newValue.map(AnyReference.init), forKey: key, with: source)
 }

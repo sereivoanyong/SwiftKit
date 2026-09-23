@@ -19,7 +19,7 @@ extension UIView {
     get { return associatedValue(forKey: &Self.overrideHitTestInsetsKey, with: self) }
     set {
       _ = Self._override_hit_test_swizzler
-      setAssociatedValue(newValue, forKey: &Self.overrideHitTestInsetsKey, with: self)
+      associateValue(newValue, forKey: &Self.overrideHitTestInsetsKey, with: self)
     }
   }
 

@@ -51,6 +51,6 @@ extension UINavigationItem {
   static private var shouldPopKey: Void?
   public var shouldPopHandler: (() -> Bool)? {
     get { return associatedValue(forKey: &UINavigationItem.shouldPopKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &UINavigationItem.shouldPopKey, with: self) }
+    set { associateValue(newValue, forKey: &UINavigationItem.shouldPopKey, with: self) }
   }
 }

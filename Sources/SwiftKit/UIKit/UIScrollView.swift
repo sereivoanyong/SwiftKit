@@ -126,7 +126,7 @@ extension UIScrollView {
   }
 
   public func setAccessoryView(_ accessoryView: UIView, alignmentLayoutGuide: LayoutGuide? = nil, preferredHeight: CGFloat, insets: UIEdgeInsets = .zero) {
-    setAssociatedObject(accessoryView, forKey: &Self.accessoryViewKey,with: self)
+    associateObject(accessoryView, forKey: &Self.accessoryViewKey,with: self)
     addSubview(accessoryView)
 
     contentInset.top = preferredHeight + insets.top + insets.bottom
@@ -158,7 +158,7 @@ extension UIScrollView {
     get { return associatedValue(forKey: &Self.usesContentSizeAsIntrinsicKey, with: self) ?? false }
     set {
       _ = Self.swizzlingHandler;
-      setAssociatedValue(newValue, forKey: &Self.usesContentSizeAsIntrinsicKey, with: self)
+      associateValue(newValue, forKey: &Self.usesContentSizeAsIntrinsicKey, with: self)
     }
   }
 

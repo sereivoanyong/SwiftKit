@@ -35,7 +35,7 @@ extension BackgroundedView where Self: UIView {
           ])
         }
       }
-      setAssociatedObject(newValue, forKey: &kBackgroundViewKey, with: self)
+      associateObject(newValue, forKey: &kBackgroundViewKey, with: self)
     }
   }
 }

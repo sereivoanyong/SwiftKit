@@ -23,11 +23,11 @@ extension UIViewController {
         systemItem = .stop
       }
       let buttonItem = UIBarButtonItem(systemItem: systemItem, target: self, action: #selector(dismiss(_:)))
-      setAssociatedObject(buttonItem, forKey: &Self.dismissButtonItemKey, with: self)
+      associateObject(buttonItem, forKey: &Self.dismissButtonItemKey, with: self)
       return buttonItem
     }
     set {
-      setAssociatedObject(newValue, forKey: &Self.dismissButtonItemKey, with: self)
+      associateObject(newValue, forKey: &Self.dismissButtonItemKey, with: self)
     }
   }
 

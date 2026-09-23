@@ -17,7 +17,7 @@ extension UIBarButtonItem: UIActivityIndicatorContainer {
 
   public private(set) var titleTextAttributesBeforeActivityIndicator: [NSAttributedString.Key: Any]? {
     get { return associatedValue(forKey: &titleTextAttributesBeforeActivityIndicatorKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &titleTextAttributesBeforeActivityIndicatorKey, with: self) }
+    set { associateValue(newValue, forKey: &titleTextAttributesBeforeActivityIndicatorKey, with: self) }
   }
 
   public var containerViewForActivityIndicator: UIView? {

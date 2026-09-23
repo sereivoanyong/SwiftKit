@@ -22,7 +22,7 @@ extension SearchContainingController {
       return searchBar
     }
     let searchBar = UISearchBar()
-    setAssociatedObject(searchBar, forKey: &searchBarKey, with: self)
+    associateObject(searchBar, forKey: &searchBarKey, with: self)
     searchBar.placeholder = "Search"
     searchBar.delegate = self
     return searchBar

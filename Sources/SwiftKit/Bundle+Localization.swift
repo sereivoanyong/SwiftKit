@@ -102,7 +102,7 @@ extension Bundle {
         if let bundleIdentifier {
           Self.selectedLocalizations[bundleIdentifier] = localization
         }
-        setAssociatedValue(localization, forKey: &Self.selectedLocalizationKey, with: self)
+        associateValue(localization, forKey: &Self.selectedLocalizationKey, with: self)
         selectedLocalizationBundle = bundle
         if self == .main {
           UserDefaults.standard["AppleLanguages"] = [localization]
@@ -113,7 +113,7 @@ extension Bundle {
         if let bundleIdentifier {
           Self.selectedLocalizations[bundleIdentifier] = nil
         }
-        setAssociatedValue(nil as String?, forKey: &Self.selectedLocalizationKey, with: self)
+        associateValue(nil as String?, forKey: &Self.selectedLocalizationKey, with: self)
         selectedLocalizationBundle = nil
         if self == .main {
           UserDefaults.standard["AppleLanguages"] = ["en"]
@@ -137,7 +137,7 @@ extension Bundle {
       return associatedObject(forKey: &Self.selectedLocalizationBundleKey, with: self) as Bundle?
     }
     set {
-      setAssociatedObject(newValue, forKey: &Self.selectedLocalizationBundleKey, with: self)
+      associateObject(newValue, forKey: &Self.selectedLocalizationBundleKey, with: self)
     }
   }
 

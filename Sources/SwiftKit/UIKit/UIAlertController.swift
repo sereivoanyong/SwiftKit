@@ -72,7 +72,7 @@ extension UIAlertController {
   private static var windowKey: Void?
   private var window: UIWindow? {
     get { return associatedObject(forKey: &Self.windowKey, with: self) }
-    set { setAssociatedObject(newValue, forKey: &Self.windowKey, with: self) }
+    set { associateObject(newValue, forKey: &Self.windowKey, with: self) }
   }
 
   /// - See: https://stackoverflow.com/a/30941356/11235826

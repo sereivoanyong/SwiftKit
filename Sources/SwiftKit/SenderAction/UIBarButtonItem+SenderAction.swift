@@ -21,7 +21,7 @@ extension BackwardCompatibility where Base: UIBarButtonItem {
           base.action = nil
         }
       }
-      setAssociatedObject(newValue, forKey: &senderActionKey, with: base)
+      associateObject(newValue, forKey: &senderActionKey, with: base)
     }
   }
 

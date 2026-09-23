@@ -88,7 +88,7 @@ extension _KeyValueCodingAndObserving where Self: NSObject {
 
   public var observations: [AnyHashable: NSKeyValueObservation] {
     get { return associatedValue(default: [:], forKey: &kObservationKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &kObservationKey, with: self)}
+    set { associateValue(newValue, forKey: &kObservationKey, with: self)}
   }
 
   @discardableResult

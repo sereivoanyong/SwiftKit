@@ -22,7 +22,7 @@ extension UIControl {
   private static var actionsKey: Void?
   private var actions: [Key: Action] {
     get { return associatedValue(default: [:], forKey: &Self.actionsKey, with: self) }
-    set { setAssociatedValue(newValue, forKey: &Self.actionsKey, with: self) }
+    set { associateValue(newValue, forKey: &Self.actionsKey, with: self) }
   }
 
   /// Adds the `action` to given `events`. They are uniqued based on their `identifier`, and subsequent actions with the same `identifier` replace previously added actions. You may add multiple actions for corresponding `events`, and you may add the same action to multiple `events`.
@@ -90,7 +90,7 @@ extension BackwardCompatibility where Base: UIControl {
       if let newValue {
         base.addTarget(newValue, action: #selector(Action.performAction(_:)), for: .primaryActionTriggered)
       }
-      setAssociatedObject(newValue, forKey: &primaryActionKey, with: base)
+      associateObject(newValue, forKey: &primaryActionKey, with: base)
       base.bc_setPrimaryAction(newValue)
     }
   }

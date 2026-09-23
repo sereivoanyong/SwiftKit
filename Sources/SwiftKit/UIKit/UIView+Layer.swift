@@ -41,7 +41,7 @@ extension UIView {
   public var layerBorderWidth: CGFloat {
     get { return associatedValue(forKey: &layerBorderWidthKey, with: self) ?? layer.borderWidth }
     set {
-      setAssociatedValue(newValue, forKey: &layerBorderWidthKey, with: self)
+      associateValue(newValue, forKey: &layerBorderWidthKey, with: self)
       layer.borderWidth = newValue < 0 ? traitCollection.displayPointPerPixel : newValue
       _ = Self._layerSwizzler
     }
@@ -53,7 +53,7 @@ extension UIView {
     get { return associatedObject(forKey: &layerBorderColorKey, with: self) }
     set {
       isLayerBorderColorConfigured = true
-      setAssociatedObject(newValue, forKey: &layerBorderColorKey, with: self)
+      associateObject(newValue, forKey: &layerBorderColorKey, with: self)
       layer.borderColor = resolveColor(newValue, from: traitCollection).cgColor
       _ = Self._layerSwizzler
     }
@@ -65,7 +65,7 @@ extension UIView {
     get { return associatedObject(forKey: &layerShadowColorKey, with: self) }
     set {
       isLayerShadowColorConfigured = true
-      setAssociatedObject(newValue, forKey: &layerShadowColorKey, with: self)
+      associateObject(newValue, forKey: &layerShadowColorKey, with: self)
       layer.shadowColor = resolveColor(newValue, from: traitCollection).cgColor
       _ = Self._layerSwizzler
     }
@@ -76,7 +76,7 @@ extension UIView {
   public var layerShouldRasterizeAtDisplayScale: Bool {
     get { return associatedValue(forKey: &layerShouldRasterizeAtDisplayScaleKey, with: self) ?? false }
     set {
-      setAssociatedValue(newValue, forKey: &layerShouldRasterizeAtDisplayScaleKey, with: self)
+      associateValue(newValue, forKey: &layerShouldRasterizeAtDisplayScaleKey, with: self)
       layer.rasterizationScale = newValue ? traitCollection.displayScale : 1
       layer.shouldRasterize = newValue
     }
@@ -90,12 +90,12 @@ extension UIView {
 
   private var isLayerBorderColorConfigured: Bool {
     get { return associatedValue(forKey: &isLayerBorderColorConfiguredKey, with: self) ?? false }
-    set { setAssociatedValue(newValue, forKey: &isLayerBorderColorConfiguredKey, with: self) }
+    set { associateValue(newValue, forKey: &isLayerBorderColorConfiguredKey, with: self) }
   }
 
   private var isLayerShadowColorConfigured: Bool {
     get { return associatedValue(forKey: &isLayerShadowColorConfiguredKey, with: self) ?? false }
-    set { setAssociatedValue(newValue, forKey: &isLayerShadowColorConfiguredKey, with: self) }
+    set { associateValue(newValue, forKey: &isLayerShadowColorConfiguredKey, with: self) }
   }
 
   private static let _layerSwizzler: Void = {
