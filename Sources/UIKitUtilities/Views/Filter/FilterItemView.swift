@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftKit
+import Combine
 
 @available(iOS 15.0, *)
 final class FilterItemView: UIView, UIContentView {
@@ -39,6 +40,9 @@ final class FilterItemView: UIView, UIContentView {
     return .systemFont(ofSize: 12, weight: .medium)
   }
 
+  private var toggleIsSelectedCancellable: AnyCancellable?
+  private let toggleActionIdentifier = UIAction.Identifier("ToggleAction")
+
   var buttonConfiguration: UIButton.Configuration {
     didSet {
       button.configuration = buttonConfiguration
@@ -61,11 +65,11 @@ final class FilterItemView: UIView, UIContentView {
     }
   }
 
-  fileprivate var collectionView: UICollectionView? {
+  fileprivate var filterView: FilterView? {
     var superview = superview
     while let targetSuperview = superview {
-      if let collectionView = targetSuperview as? UICollectionView {
-        return collectionView
+      if let filterView = targetSuperview as? FilterView {
+        return filterView
       }
       superview = targetSuperview.superview
     }
@@ -124,20 +128,34 @@ final class FilterItemView: UIView, UIContentView {
   }
 
   func reloadData() {
-    let toggleActionIdentifier = UIAction.Identifier("ToggleAction")
     let item = _configuration.item
     switch item.configuration {
-    case .toggle:
+    case .toggle(let buttonHandler):
+      let item = item as! any ToggleFilterItemProtocol
+      toggleIsSelectedCancellable = item.isSelectedPublisher
+        .sink { [unowned self] isSelected in
+          button.isSelected = isSelected
+        }
+      buttonHandler?(button)
       button.showsMenuAsPrimaryAction = false
       button.menu = nil
       button.addAction(UIAction(title: item.currentTitle, identifier: toggleActionIdentifier) { [unowned self] _ in
         let item = _configuration.item as! any ToggleFilterItemProtocol
+        let filterView = filterView
+        filterView?.unsubscribe()
         item.isSelected.toggle()
-        button.isSelected = item.isSelected
-        collectionView?.collectionViewLayout.invalidateLayout()
+        if item.isSelected, let group = item.group {
+          for _item in group.filterItems where _item !== item && _item.isSelected {
+            _item.isSelected = false
+          }
+        }
+        filterView?.subscribe()
+        filterView?.collectionViewLayout.invalidateLayout()
       }, for: .primaryActionTriggered)
 
-    case .selection(let valuesProvider, let actionConfigurationProvider, let isEqual):
+    case .selection(let buttonHandler, let valuesProvider, let actionConfigurationProvider, let isEqual):
+      toggleIsSelectedCancellable = nil
+      buttonHandler?(button)
       button.removeAction(identifiedBy: toggleActionIdentifier, for: .primaryActionTriggered)
       button.showsMenuAsPrimaryAction = true
       button.menu = UIMenu(children: [UIDeferredMenuElement.uncached { [unowned self] actionsProvider in
@@ -202,7 +220,7 @@ final class FilterItemView: UIView, UIContentView {
                   .font(Self.nameFont)
                 )
                 button.isSelected = item.isSelected
-                collectionView?.collectionViewLayout.invalidateLayout()
+                filterView?.collectionViewLayout.invalidateLayout()
               }
             }
           })

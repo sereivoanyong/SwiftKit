@@ -16,16 +16,18 @@ open class FilterView: UICollectionView, UICollectionViewDataSource, UICollectio
 
   open var items: [any FilterItem] = [] {
     didSet {
-      observe()
+      subscribe()
       reloadData()
     }
   }
 
   open var verticalSectionInsets: YAxisEdges<CGFloat> = .zero
 
-  open private(set) var predicates: [NSPredicate?] = []
+  @CurrentValue open private(set) var predicates: [NSPredicate?] = []
 
-  public let predicatesSubject = PassthroughSubject<[NSPredicate?], Never>()
+  public var predicatesPublisher: AnyPublisher<[NSPredicate?], Never> {
+    return $predicates.eraseToAnyPublisher()
+  }
 
   public init(frame: CGRect = .zero) {
     let flowLayout = UICollectionViewFlowLayout()
@@ -55,20 +57,22 @@ open class FilterView: UICollectionView, UICollectionViewDataSource, UICollectio
     register(UICollectionViewCell.self)
   }
 
-  private func observe(notifySubject: Bool = false) {
+  /// If multiple `items` (such as toggle ones) are publishing predicates simultaneously, you may `unsubscribe()` and `subscribe()` to avoid multiple publishes.
+  open func subscribe() {
     itemCancellables.removeAll()
     predicates = items.map(\.predicate)
     for (index, item) in items.enumerated() {
-      item.predicateSubject
+      item.predicatePublisher
+        .dropFirst()
         .sink { [unowned self] predicate in
           predicates[index] = predicate
-          predicatesSubject.send(predicates)
         }
         .store(in: &itemCancellables)
     }
-    if notifySubject {
-      predicatesSubject.send(predicates)
-    }
+  }
+
+  open func unsubscribe() {
+    itemCancellables.removeAll()
   }
 
   open override func layoutMarginsDidChange() {
