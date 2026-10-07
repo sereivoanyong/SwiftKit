@@ -24,6 +24,10 @@ public struct CurrentValue<Value> {
   public init(wrappedValue: Value) {
     self.projectedValue = CurrentValueSubject(wrappedValue)
   }
+
+  public init(_ subject: CurrentValueSubject<Value, Never>) {
+    self.projectedValue = subject
+  }
 }
 
 #endif
