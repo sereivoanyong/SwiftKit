@@ -8,12 +8,19 @@
 
 import UIKit
 
-extension UIViewController {
+extension UIViewController: SYCompatible { }
 
-  private static var dismissButtonItemKey: Void?
+@MainActor private var dismissButtonItemKey: Void?
+
+@MainActor extension SYCompatibility where Base: UIViewController {
+
+  public var dismissButtonItemIfLoaded: UIBarButtonItem? {
+    return associatedObject(forKey: &dismissButtonItemKey, with: base)
+  }
+
   public var dismissButtonItem: UIBarButtonItem! {
     get {
-      if let buttonItem = associatedObject(forKey: &Self.dismissButtonItemKey, with: self) as UIBarButtonItem? {
+      if let buttonItem = dismissButtonItemIfLoaded {
         return buttonItem
       }
       let systemItem: UIBarButtonItem.SystemItem
@@ -22,13 +29,20 @@ extension UIViewController {
       } else {
         systemItem = .stop
       }
-      let buttonItem = UIBarButtonItem(systemItem: systemItem, target: self, action: #selector(dismiss(_:)))
-      associateObject(buttonItem, forKey: &Self.dismissButtonItemKey, with: self)
+      let buttonItem = UIBarButtonItem(systemItem: systemItem, target: base, action: #selector(Base.dismiss(_:)))
+      associateObject(buttonItem, forKey: &dismissButtonItemKey, with: base)
       return buttonItem
     }
     set {
-      associateObject(newValue, forKey: &Self.dismissButtonItemKey, with: self)
+      associateObject(newValue, forKey: &dismissButtonItemKey, with: base)
     }
+  }
+}
+
+extension UIViewController {
+
+  public var dismissButtonItem: UIBarButtonItem! {
+    return sy.dismissButtonItem
   }
 
   @IBAction open func dismiss(_ sender: Any) {
