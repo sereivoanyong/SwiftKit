@@ -103,10 +103,15 @@ open class NumberTextField<Value: _ObjectiveCBridgeable & StringInitializable & 
 
   /// if `newText` is not nil, it should be unformatted and number-parseable or it will be discarded.
   func setText(_ newText: String?, textTransform: (String) -> String = { $0 }, sendValueChangedActions: Bool = false) {
-    if let newValue = newText.flatMap(value(from:)), let newText = text(from: newValue) {
+    if let newValue = newText.flatMap(value(from:)) {
       let newValidatedValue = validatedValue(newValue)
-      _value = newValidatedValue
-      super.text = textTransform(validatedText(newText, newValidatedValue))
+      if let newText = text(from: newValidatedValue) {
+        _value = newValidatedValue
+        super.text = textTransform(validatedText(newText, newValidatedValue))
+      } else {
+        _value = nil
+        super.text = nil
+      }
     } else {
       _value = nil
       super.text = nil
