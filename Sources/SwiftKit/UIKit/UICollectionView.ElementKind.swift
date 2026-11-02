@@ -44,3 +44,16 @@ extension UICollectionView.ElementKind {
 
   @MainActor public static let sectionBackground: Self = Self("UICollectionElementKindSectionBackground")
 }
+
+extension UICollectionView.SupplementaryRegistration {
+
+  @inlinable
+  public init(kind: UICollectionView.ElementKind, handler: @escaping Handler) {
+    self.init(elementKind: kind.rawValue, handler: handler)
+  }
+
+  @inlinable
+  public init(supplementaryNib: UINib, kind: UICollectionView.ElementKind, handler: @escaping Handler) {
+    self.init(supplementaryNib: supplementaryNib, elementKind: kind.rawValue, handler: handler)
+  }
+}
