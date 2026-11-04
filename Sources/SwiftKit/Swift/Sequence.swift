@@ -65,7 +65,16 @@ extension Sequence {
     }
     return nil
   }
-  
+
+  public func dictionary<Key: Hashable>(keyedBy transform: (Element) throws -> Key) rethrows -> [Key: Element] {
+    var dictionary: [Key: Element] = [:]
+    for element in self {
+      let key = try transform(element)
+      dictionary[key] = element
+    }
+    return dictionary
+  }
+
   public func dictionary<Key: Hashable, Value>(_ transform: (Element) throws -> (Key, Value)?) rethrows -> [Key: Value] {
     var dictionary: [Key: Value] = [:]
     for element in self {

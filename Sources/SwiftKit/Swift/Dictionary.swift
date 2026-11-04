@@ -44,7 +44,23 @@ extension Dictionary {
       return targetValue
     }
   }
-  
+
+  public subscript<T>(key: Key, base baseValue: @autoclosure () -> T) -> T where Value == Any {
+    mutating get {
+      if let value = self[key] as? T {
+        return value
+      }
+      let base = baseValue()
+      self[key] = base
+      return base
+    }
+    _modify {
+      var value = removeValue(forKey: key) as? T ?? baseValue()
+      defer { self[key] = value }
+      yield &value
+    }
+  }
+
   public static func + (lhs: Self, rhs: Self) -> Self {
     var merged = lhs
     for (key, value) in rhs {

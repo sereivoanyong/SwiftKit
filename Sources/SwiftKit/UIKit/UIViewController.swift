@@ -45,14 +45,8 @@ extension UIViewController {
     return sy.dismissButtonItem
   }
 
-  @IBAction open func dismiss(_ sender: Any) {
-    dismiss(animated: true, completion: nil)
-  }
-
-  @IBAction open func endEditing(_ sender: Any) {
-    if isViewLoaded {
-      view.endEditing(true)
-    }
+  @IBAction open func dismiss(_ sender: Any?) {
+    (presentingViewController ?? self).dismiss(animated: true, completion: nil)
   }
 
   /// Check if ViewController is onscreen and not hidden.
@@ -73,16 +67,6 @@ extension UIViewController {
     willMove(toParent: nil)
     view.removeFromSuperview()
     removeFromParent()
-  }
-
-  @discardableResult
-  public func enableEndEditingOnTap(on view: UIView? = nil) -> UITapGestureRecognizer {
-    let view = view ?? self.view!
-    view.isUserInteractionEnabled = true
-    let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(endEditing))
-    tapGestureRecognizer.cancelsTouchesInView = false
-    view.addGestureRecognizer(tapGestureRecognizer)
-    return tapGestureRecognizer
   }
 
   @objc open var topMostViewController: UIViewController? {
@@ -127,7 +111,7 @@ extension UIViewController {
     if let navigationController, navigationController.viewControllers.first !== self {
       navigationController.popViewController(animated: animated, completion: completion)
     } else {
-      dismiss(animated: animated, completion: completion)
+      (presentingViewController ?? self).dismiss(animated: animated, completion: completion)
     }
   }
 

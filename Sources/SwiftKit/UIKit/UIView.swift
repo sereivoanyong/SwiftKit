@@ -93,7 +93,9 @@ extension UIView {
 
   @discardableResult
   public func addTapGestureRecognizerToEndEditing(_ force: Bool = true) -> UITapGestureRecognizer {
-    return addTapGestureRecognizer { [unowned self] _ in
+    addTapGestureRecognizer { gestureRecognizer in
+      gestureRecognizer.cancelsTouchesInView = false
+    } handler: { [unowned self] _ in
       endEditing(force)
     }
   }
